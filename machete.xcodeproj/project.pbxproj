@@ -1,0 +1,297 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		A8885811135CB02F00F7732C /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A8885810135CB02F00F7732C /* Foundation.framework */; };
+		A8885841135CB1FC00F7732C /* engine.h in Headers */ = {isa = PBXBuildFile; fileRef = A8885829135CB1FC00F7732C /* engine.h */; };
+		A8885842135CB1FC00F7732C /* RenderingEngineiOS1.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A888582B135CB1FC00F7732C /* RenderingEngineiOS1.cpp */; };
+		A8885843135CB1FC00F7732C /* RenderingEngineiOS1.h in Headers */ = {isa = PBXBuildFile; fileRef = A888582C135CB1FC00F7732C /* RenderingEngineiOS1.h */; };
+		A8885844135CB1FC00F7732C /* RenderingEngineiOS2.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A888582D135CB1FC00F7732C /* RenderingEngineiOS2.cpp */; };
+		A8885845135CB1FC00F7732C /* RenderingEngineiOS2.h in Headers */ = {isa = PBXBuildFile; fileRef = A888582E135CB1FC00F7732C /* RenderingEngineiOS2.h */; };
+		A8885846135CB1FC00F7732C /* matrix.h in Headers */ = {isa = PBXBuildFile; fileRef = A888582F135CB1FC00F7732C /* matrix.h */; };
+		A8885847135CB1FC00F7732C /* module.h in Headers */ = {isa = PBXBuildFile; fileRef = A8885830135CB1FC00F7732C /* module.h */; };
+		A8885848135CB1FC00F7732C /* quaternion.h in Headers */ = {isa = PBXBuildFile; fileRef = A8885831135CB1FC00F7732C /* quaternion.h */; };
+		A888584B135CB1FC00F7732C /* vector.h in Headers */ = {isa = PBXBuildFile; fileRef = A8885834135CB1FC00F7732C /* vector.h */; };
+		A8885853135CB84B00F7732C /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A8885852135CB84B00F7732C /* OpenGLES.framework */; };
+		A8885855135CB85100F7732C /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A8885854135CB85100F7732C /* QuartzCore.framework */; };
+		A888585F135CBB7D00F7732C /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A888585E135CBB7D00F7732C /* UIKit.framework */; };
+		A8885861135CBB8200F7732C /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A8885860135CBB8200F7732C /* CoreGraphics.framework */; };
+		A8885864135CBB9800F7732C /* MacheteGLView.h in Headers */ = {isa = PBXBuildFile; fileRef = A8885862135CBB9800F7732C /* MacheteGLView.h */; };
+		A8885865135CBB9800F7732C /* MacheteGLView.mm in Sources */ = {isa = PBXBuildFile; fileRef = A8885863135CBB9800F7732C /* MacheteGLView.mm */; };
+		A8885867135CBBEA00F7732C /* ResourceManager.mm in Sources */ = {isa = PBXBuildFile; fileRef = A8885866135CBBEA00F7732C /* ResourceManager.mm */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		A888580D135CB02F00F7732C /* libmachete.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libmachete.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		A8885810135CB02F00F7732C /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		A8885814135CB02F00F7732C /* machete-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "machete-Prefix.pch"; sourceTree = "<group>"; };
+		A8885829135CB1FC00F7732C /* engine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = engine.h; sourceTree = "<group>"; };
+		A888582B135CB1FC00F7732C /* RenderingEngineiOS1.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RenderingEngineiOS1.cpp; sourceTree = "<group>"; };
+		A888582C135CB1FC00F7732C /* RenderingEngineiOS1.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RenderingEngineiOS1.h; sourceTree = "<group>"; };
+		A888582D135CB1FC00F7732C /* RenderingEngineiOS2.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RenderingEngineiOS2.cpp; sourceTree = "<group>"; };
+		A888582E135CB1FC00F7732C /* RenderingEngineiOS2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RenderingEngineiOS2.h; sourceTree = "<group>"; };
+		A888582F135CB1FC00F7732C /* matrix.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = matrix.h; sourceTree = "<group>"; };
+		A8885830135CB1FC00F7732C /* module.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = module.h; sourceTree = "<group>"; };
+		A8885831135CB1FC00F7732C /* quaternion.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = quaternion.h; sourceTree = "<group>"; };
+		A8885834135CB1FC00F7732C /* vector.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = vector.h; sourceTree = "<group>"; };
+		A8885850135CB76300F7732C /* simple.frag */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = simple.frag; sourceTree = "<group>"; };
+		A8885851135CB76300F7732C /* simple.vert */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = simple.vert; sourceTree = "<group>"; };
+		A8885852135CB84B00F7732C /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
+		A8885854135CB85100F7732C /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
+		A888585E135CBB7D00F7732C /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
+		A8885860135CBB8200F7732C /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
+		A8885862135CBB9800F7732C /* MacheteGLView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MacheteGLView.h; sourceTree = "<group>"; };
+		A8885863135CBB9800F7732C /* MacheteGLView.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = MacheteGLView.mm; sourceTree = "<group>"; };
+		A8885866135CBBEA00F7732C /* ResourceManager.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = ResourceManager.mm; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		A888580A135CB02F00F7732C /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A8885861135CBB8200F7732C /* CoreGraphics.framework in Frameworks */,
+				A888585F135CBB7D00F7732C /* UIKit.framework in Frameworks */,
+				A8885855135CB85100F7732C /* QuartzCore.framework in Frameworks */,
+				A8885853135CB84B00F7732C /* OpenGLES.framework in Frameworks */,
+				A8885811135CB02F00F7732C /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		A8885802135CB02F00F7732C = {
+			isa = PBXGroup;
+			children = (
+				A8885860135CBB8200F7732C /* CoreGraphics.framework */,
+				A888585E135CBB7D00F7732C /* UIKit.framework */,
+				A8885854135CB85100F7732C /* QuartzCore.framework */,
+				A8885852135CB84B00F7732C /* OpenGLES.framework */,
+				A8885812135CB02F00F7732C /* machete */,
+				A888580F135CB02F00F7732C /* Frameworks */,
+				A888580E135CB02F00F7732C /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		A888580E135CB02F00F7732C /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				A888580D135CB02F00F7732C /* libmachete.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		A888580F135CB02F00F7732C /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				A8885810135CB02F00F7732C /* Foundation.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		A8885812135CB02F00F7732C /* machete */ = {
+			isa = PBXGroup;
+			children = (
+				A888581A135CB1FC00F7732C /* machete */,
+				A8885813135CB02F00F7732C /* Supporting Files */,
+				A8885862135CBB9800F7732C /* MacheteGLView.h */,
+				A8885863135CBB9800F7732C /* MacheteGLView.mm */,
+			);
+			path = machete;
+			sourceTree = "<group>";
+		};
+		A8885813135CB02F00F7732C /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				A8885814135CB02F00F7732C /* machete-Prefix.pch */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		A888581A135CB1FC00F7732C /* machete */ = {
+			isa = PBXGroup;
+			children = (
+				A8885850135CB76300F7732C /* simple.frag */,
+				A8885851135CB76300F7732C /* simple.vert */,
+				A8885829135CB1FC00F7732C /* engine.h */,
+				A888582A135CB1FC00F7732C /* ios */,
+				A888582F135CB1FC00F7732C /* matrix.h */,
+				A8885830135CB1FC00F7732C /* module.h */,
+				A8885831135CB1FC00F7732C /* quaternion.h */,
+				A8885834135CB1FC00F7732C /* vector.h */,
+			);
+			path = machete;
+			sourceTree = "<group>";
+		};
+		A888582A135CB1FC00F7732C /* ios */ = {
+			isa = PBXGroup;
+			children = (
+				A888582B135CB1FC00F7732C /* RenderingEngineiOS1.cpp */,
+				A888582C135CB1FC00F7732C /* RenderingEngineiOS1.h */,
+				A888582D135CB1FC00F7732C /* RenderingEngineiOS2.cpp */,
+				A888582E135CB1FC00F7732C /* RenderingEngineiOS2.h */,
+				A8885866135CBBEA00F7732C /* ResourceManager.mm */,
+			);
+			path = ios;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		A888580B135CB02F00F7732C /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A8885841135CB1FC00F7732C /* engine.h in Headers */,
+				A8885843135CB1FC00F7732C /* RenderingEngineiOS1.h in Headers */,
+				A8885845135CB1FC00F7732C /* RenderingEngineiOS2.h in Headers */,
+				A8885846135CB1FC00F7732C /* matrix.h in Headers */,
+				A8885847135CB1FC00F7732C /* module.h in Headers */,
+				A8885848135CB1FC00F7732C /* quaternion.h in Headers */,
+				A888584B135CB1FC00F7732C /* vector.h in Headers */,
+				A8885864135CBB9800F7732C /* MacheteGLView.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		A888580C135CB02F00F7732C /* machete */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A8885817135CB02F00F7732C /* Build configuration list for PBXNativeTarget "machete" */;
+			buildPhases = (
+				A8885809135CB02F00F7732C /* Sources */,
+				A888580A135CB02F00F7732C /* Frameworks */,
+				A888580B135CB02F00F7732C /* Headers */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = machete;
+			productName = machete;
+			productReference = A888580D135CB02F00F7732C /* libmachete.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		A8885804135CB02F00F7732C /* Project object */ = {
+			isa = PBXProject;
+			buildConfigurationList = A8885807135CB02F00F7732C /* Build configuration list for PBXProject "machete" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = A8885802135CB02F00F7732C;
+			productRefGroup = A888580E135CB02F00F7732C /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				A888580C135CB02F00F7732C /* machete */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		A8885809135CB02F00F7732C /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A8885842135CB1FC00F7732C /* RenderingEngineiOS1.cpp in Sources */,
+				A8885844135CB1FC00F7732C /* RenderingEngineiOS2.cpp in Sources */,
+				A8885865135CBB9800F7732C /* MacheteGLView.mm in Sources */,
+				A8885867135CBBEA00F7732C /* ResourceManager.mm in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		A8885815135CB02F00F7732C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = DEBUG;
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
+				SDKROOT = iphoneos;
+			};
+			name = Debug;
+		};
+		A8885816135CB02F00F7732C /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 4.3;
+				SDKROOT = iphoneos;
+			};
+			name = Release;
+		};
+		A8885818135CB02F00F7732C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				DSTROOT = /tmp/machete.dst;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "machete/machete-Prefix.pch";
+				"GCC_PREPROCESSOR_DEFINITIONS[arch=*]" = TARGET_IOS;
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		A8885819135CB02F00F7732C /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				DSTROOT = /tmp/machete.dst;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "machete/machete-Prefix.pch";
+				"GCC_PREPROCESSOR_DEFINITIONS[arch=*]" = TARGET_IOS;
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		A8885807135CB02F00F7732C /* Build configuration list for PBXProject "machete" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A8885815135CB02F00F7732C /* Debug */,
+				A8885816135CB02F00F7732C /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A8885817135CB02F00F7732C /* Build configuration list for PBXNativeTarget "machete" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A8885818135CB02F00F7732C /* Debug */,
+				A8885819135CB02F00F7732C /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = A8885804135CB02F00F7732C /* Project object */;
+}

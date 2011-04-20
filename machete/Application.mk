@@ -1,0 +1,2 @@
+APP_CFLAGS	+= -DTARGET_ANDROID -DANDROID_NDK
+APP_ABI		:= armeabi armeabi-v7a
