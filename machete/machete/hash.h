@@ -21,7 +21,7 @@ public:
         empty = true;
         left = NULL;
         right = NULL;
-        red = true;
+        red = false;
     }
     
     Hash(Hash<K, T> *parent, K key, T value) {
@@ -30,7 +30,12 @@ public:
         this->value = value;
         left = NULL;
         right = NULL;
-        red = true;
+        
+        if (parent == NULL) {
+            red = false;
+        } else {
+            red = true;
+        }
         empty = false;
     }
     
@@ -41,7 +46,7 @@ public:
         this->value = value;
         left = NULL;
         right = NULL;
-        red = true;
+        red = false;
         empty = false;
     }
     
@@ -76,6 +81,7 @@ public:
         if (empty) {
             this->key = key;
             this->value = value;
+            red = false;
             empty = false;
             hash = this;
         } else if (key < this->key) {
@@ -169,104 +175,116 @@ protected:
     }
     
     void RotateLeft() {
-        Hash<K, T> *myRight = right;
-        Hash<K, T> *beta = myRight->left;
+        Hash<K, T> *C = right;
+        Hash<K, T> *c = C->left;
         
-        Hash<K, T> *prevParent = parent;
+        if (parent != NULL) {
+            parent->Replace(this, C);
+        }
         
-        parent = myRight;
-        myRight->left = this;
-        right = beta;
-        myRight->parent = prevParent;
+        C->parent = parent;
+        C->left = this;
+        right = c;
+        parent = C;
         
-        if (prevParent != NULL) {
-            prevParent->Replace(this, myRight);
+        if (c != NULL) {
+            c->parent = this;
         }
     }
     
     void RotateRight() {
-        Hash<K, T> *myLeft = left;
-        Hash<K, T> *beta = myLeft->right;
+        Hash<K, T> *A = left;
+        Hash<K, T> *b = A->right;
         
-        Hash<K, T> *prevParent = parent;
+        if (parent != NULL) {
+            parent->Replace(this, A);
+        }
         
-        parent = myLeft;
-        myLeft->right = this;
-        left = beta;
-        myLeft->parent = prevParent;
+        A->parent = parent;
+        A->right = this;
+        left = b;
+        parent = A;
         
-        if (prevParent != NULL) {
-            prevParent->Replace(this, myLeft);
+        if (b != NULL) {
+            b->parent = this;
         }
     }
     
     void InsertFixup() {
-        if (parent == NULL || parent->red == false || parent->parent == NULL) {
+        if (parent == NULL || parent->red == false) {
             Root()->red = false;
             return;
         }
         
-        if (parent == parent->parent->left) {
-            if (parent->parent->IsRightBlack() == false) {
-                InsertCase1L();
-            } else if (this == parent->right) {
-                InsertCase2L();
+        if (this == parent->left) {
+            if (parent == parent->parent->left) {
+                if (parent->parent->IsRightBlack()) {
+                    InsertCase2A();
+                } else {
+                    InsertCase1B();
+                }
+            } else if (parent->parent->IsLeftBlack() == false) {
+                InsertCase1A();
             } else {
-                InsertCase3L();
+                InsertCase3A();
             }
-        } else if (parent == parent->parent->right) {
-            if (parent->parent->IsLeftBlack() == false) {
-                InsertCase1R();
-            } else if (this == parent->left) {
-                InsertCase2R();
+        } else {
+            if (parent == parent->parent->right) {
+                if (parent->parent->IsLeftBlack()) {
+                    InsertCase2B();
+                } else {
+                    InsertCase1A();
+                }
+            } else if (parent->parent->IsRightBlack() == false) {
+                InsertCase1B();
             } else {
-                InsertCase3R();
+                InsertCase3B();
             }
         }
-        
-        Root()->red = false;
     }
     
-    void InsertCase1L() {
-        Hash<K, T> *y = parent->parent->right;
+    void InsertCase1A() {
         parent->red = false;
-        y->red = false;
         parent->parent->red = true;
+        parent->parent->left->red = false;
+        
         parent->parent->InsertFixup();
     }
     
-    void InsertCase2L() {
-        parent->RotateLeft();
-        
-        left->InsertCase3L();
-    }
-    
-    void InsertCase3L() {
+    void InsertCase2A() {
         parent->red = false;
         parent->parent->red = true;
+        
         parent->parent->RotateRight();
     }
-    
-    void InsertCase1R() {
-        Hash<K, T> *y = parent->parent->left;
+
+    void InsertCase3A() {
+        parent->RotateRight();
+        
+        right->InsertFixup();
+    }
+
+    void InsertCase1B() {
         parent->red = false;
-        y->red = false;
         parent->parent->red = true;
+        parent->parent->right->red = false;
+        
         parent->parent->InsertFixup();
     }
     
-    void InsertCase2R() {
-        parent->RotateRight();
-        
-        right->InsertCase3R();
-    }
-    
-    void InsertCase3R() {
+    void InsertCase2B() {
         parent->red = false;
         parent->parent->red = true;
+        
         parent->parent->RotateLeft();
     }
-
+    
+    void InsertCase3B() {
+        parent->RotateLeft();
+        
+        left->InsertFixup();
+    }
+    
     Hash<K, T>* SuccessorHash(K key) {
         if (left == NULL && right == NULL) {
             if (this->key <= key) {
