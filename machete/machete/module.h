@@ -8,6 +8,8 @@
 #include "vector.h"
 #include "engine.h"
 
+namespace machete { namespace draw {
+
 struct module : public IRenderable {
     vec2 size;
     vertuv verts[4];
@@ -67,3 +69,4 @@ struct module : public IRenderable {
     }
 };
 
+} }

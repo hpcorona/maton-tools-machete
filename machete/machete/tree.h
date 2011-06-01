@@ -12,10 +12,12 @@
 #define NULL 0
 #endif
 
+namespace machete { namespace data {
+
 template <class K, class T>
-class Hash {
+class Tree {
 public:
-    Hash() {
+    Tree() {
         // LVM 2.0 se awita si uso :this(NULL,key,value)
         this->parent = NULL;
         empty = true;
@@ -24,7 +26,7 @@ public:
         red = false;
     }
     
-    Hash(Hash<K, T> *parent, K key, T value) {
+    Tree(Tree<K, T> *parent, K key, T value) {
         this->parent = parent;
         this->key = key;
         this->value = value;
@@ -39,7 +41,7 @@ public:
         empty = false;
     }
     
-    Hash(K key, T value) {
+    Tree(K key, T value) {
         // LVM 2.0 se awita si uso :this(NULL,key,value)
         this->parent = NULL;
         this->key = key;
@@ -50,6 +52,16 @@ public:
         empty = false;
     }
     
+    ~Tree() {
+        if (left != NULL) {
+            delete left;
+        }
+        
+        if (right != NULL) {
+            delete right;
+        }
+    }
+    
     T GetKey() {
         return key;
     }
@@ -58,26 +70,30 @@ public:
         return value;
     }
     
-    Hash<K, T>* SeekHash(K key) {
+    Tree<K, T>* SeekTree(K key) {
         if (key == this->key) {
             return this;
         }
         
         if (key < this->key && left != NULL) {
-            return left->SeekHash(key);
+            return left->SeekTree(key);
         } else if (key > this->key && right != NULL) {
-            return right->SeekHash(key);
+            return right->SeekTree(key);
         }
         
         return NULL;
     }
 
-    Hash<K, T>* SuccessorHash() {
-        return SuccessorHash(this->key);
+    Tree<K, T>* Minimum() {
+        return left == NULL ? this : left->Minimum();
     }
 
-    Hash<K, T>* Insert(K key, T value) {
-        Hash<K, T>* hash = NULL;
+    Tree<K, T>* Maximum() {
+        return right == NULL ? this : right->Minimum();
+    }
+
+    Tree<K, T>* Insert(K key, T value) {
+        Tree<K, T>* hash = NULL;
         if (empty) {
             this->key = key;
             this->value = value;
@@ -86,7 +102,7 @@ public:
             hash = this;
         } else if (key < this->key) {
             if (left == NULL) {
-                hash = new Hash<K, T>(this, key, value);
+                hash = new Tree<K, T>(this, key, value);
                 left = hash;
                 left->InsertFixup();
             } else {
@@ -94,7 +110,7 @@ public:
             }
         } else if (key > this->key) {
             if (right == NULL) {
-                hash = new Hash<K, T>(this, key, value);
+                hash = new Tree<K, T>(this, key, value);
                 right = hash;
                 right->InsertFixup();
             } else {
@@ -106,47 +122,11 @@ public:
     }
     
     void Delete(K key) {
-        Hash<K, T> *node = SeekHash(key);
+        Tree<K, T> *node = SeekHash(key);
         
         if (node != NULL) {
             node->Delete();
         }
-    }
-    
-    void Delete() {
-        Hash<K, T> *y = NULL;
-        Hash<K, T> *x = NULL;
-        
-        if (left == NULL || right == NULL) {
-            y = this;
-        } else {
-            y = SuccessorHash();
-        }
-        
-        if (y->left != NULL) {
-            x = y->left;
-        } else {
-            x = y->right;
-        }
-        
-        if (x != NULL) {
-            x->parent = y->parent;
-        }
-        
-        if (y->parent != NULL) {
-            y->parent->Replace(y, x);
-        }
-        
-        if (y != this) {
-            this->key = y->key;
-            this->value = y->value;
-        }
-        
-        if (x != NULL) {
-            x->DeleteFixup();
-        }
-
-        delete y;
     }
     
     bool IsLeftBlack() {
@@ -157,16 +137,41 @@ public:
         return (right == NULL || right->red == false);
     }
     
-    Hash<K, T> *Root() {
+    Tree<K, T> *Root() {
         if (parent == NULL) {
             return this;
         }
         
         return parent->Root();
     }
+    
+    bool IsLeaf() {
+        return left == NULL && right == NULL;
+    }
+    
+    unsigned short ChildCount() {
+        if (left != NULL && right != NULL) {
+            return 2;
+        } else if (left == NULL && right == NULL) {
+            return 0;
+        }
+        
+        return 1;
+    }
+
+    void Delete() {
+        // Based on http://gauss.ececs.uc.edu/RedBlack/redblack.html
+        
+        // Case 1: Not Implemented Yet
+        
+        // Case 4: Child is a Leaf, Only 1 Child
+        if (ChildCount() == 1) {
+            
+        }
+    }
 
 protected:
-    void Replace(Hash<K, T> *child, Hash<K, T> *newChild) {
+    void Replace(Tree<K, T> *child, Tree<K, T> *newChild) {
         if (child == left) {
             left = newChild;
         } else if (child == right) {
@@ -175,8 +180,8 @@ protected:
     }
     
     void RotateLeft() {
-        Hash<K, T> *C = right;
-        Hash<K, T> *c = C->left;
+        Tree<K, T> *C = right;
+        Tree<K, T> *c = C->left;
         
         if (parent != NULL) {
             parent->Replace(this, C);
@@ -193,8 +198,8 @@ protected:
     }
     
     void RotateRight() {
-        Hash<K, T> *A = left;
-        Hash<K, T> *b = A->right;
+        Tree<K, T> *A = left;
+        Tree<K, T> *b = A->right;
         
         if (parent != NULL) {
             parent->Replace(this, A);
@@ -285,67 +290,6 @@ protected:
         left->InsertFixup();
     }
     
-    Hash<K, T>* SuccessorHash(K key) {
-        if (left == NULL && right == NULL) {
-            if (this->key <= key) {
-                return NULL;
-            } else {
-                return this;
-            }
-        }
-        
-        if (key < this->key && left != NULL) {
-            return left->SuccessorHash(key);
-        } else if (key < this->key) {
-            return this;
-        } else if (right != NULL) {
-            return right->SuccessorHash(key);
-        }
-        
-        return NULL;
-    }
-    
-    void DeleteFixup() {
-        if (parent == NULL || red == true) {
-            return;
-        }
-        
-        if (this == parent->left) {
-            Hash<K, T> *w = parent->right;
-            if (w->red == true) {
-                DeleteCase1L();
-            } else if (IsLeftBlack() && IsRightBlack()) {
-                DeleteCase2L();
-            } else if (IsRightBlack()) {
-                DeleteCase3L();
-            } else {
-                DeleteCase4L();
-            }
-        }
-    }
-    
-    void DeleteCase1L() {
-        Hash<K, T> *w = parent->right;
-        w->red = false;
-        parent->red = true;
-        parent->RotateLeft();
-        // w <- right[parent[x]];
-    }
-    
-    void DeleteCase2L() {
-        Hash<K, T> *w = parent->right;
-        
-    }
-    
-    void DeleteCase3L() {
-        Hash<K, T> *w = parent->right;
-        
-    }
-    
-    void DeleteCase4L() {
-        Hash<K, T> *w = parent->right;
-        
-    }
 
 private:
     bool red;
@@ -354,7 +298,41 @@ private:
     K key;
     T value;
     
-    Hash<K, T> *left;
-    Hash<K, T> *right;
-    Hash<K, T> *parent;
+    Tree<K, T> *left;
+    Tree<K, T> *right;
+    Tree<K, T> *parent;
 };
+
+template <class K, class T>
+class Hash {
+public:
+    Hash() {
+        tree = new Tree<K, T>();
+    }
+        
+    ~Hash() {
+        delete tree;
+    }
+        
+    Tree<K, T>* Add(K key, T value) {
+        Tree<K, T>* nt = tree->Insert(key, value);
+        tree = tree->Root();
+            
+        return nt;
+    }
+        
+    Tree<K, T>* Seek(K key) {
+        return tree->SeekTree(key);
+    }
+        
+    void Delete(K key) {
+        tree->Delete(key);
+            
+        tree = tree->Root();
+    }
+
+private:
+    Tree<K, T> tree;
+};
+    
+} }

@@ -18,12 +18,12 @@
 #import "machete/ios/ResourceManager.mm"
 
 @interface MacheteGLView : UIView {
-    ResourceManager *resMan;
+    machete::ResourceManager *resMan;
     EAGLContext *context;
-    IRenderingEngine* renEngine;
+    machete::IRenderingEngine* renEngine;
     float timestamp;
     
-    IGame *game;
+    machete::IGame *game;
 }
 
 - (void)drawView:(CADisplayLink*)displayLink;

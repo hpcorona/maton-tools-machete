@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		A82B807F135E891700B3DFAD /* hash.h in Headers */ = {isa = PBXBuildFile; fileRef = A82B807E135E891700B3DFAD /* hash.h */; };
 		A8885811135CB02F00F7732C /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A8885810135CB02F00F7732C /* Foundation.framework */; };
 		A8885841135CB1FC00F7732C /* engine.h in Headers */ = {isa = PBXBuildFile; fileRef = A8885829135CB1FC00F7732C /* engine.h */; };
 		A8885842135CB1FC00F7732C /* RenderingEngineiOS1.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A888582B135CB1FC00F7732C /* RenderingEngineiOS1.cpp */; };
@@ -25,10 +24,11 @@
 		A8885864135CBB9800F7732C /* MacheteGLView.h in Headers */ = {isa = PBXBuildFile; fileRef = A8885862135CBB9800F7732C /* MacheteGLView.h */; };
 		A8885865135CBB9800F7732C /* MacheteGLView.mm in Sources */ = {isa = PBXBuildFile; fileRef = A8885863135CBB9800F7732C /* MacheteGLView.mm */; };
 		A8885867135CBBEA00F7732C /* ResourceManager.mm in Sources */ = {isa = PBXBuildFile; fileRef = A8885866135CBBEA00F7732C /* ResourceManager.mm */; };
+		A89365531375ACA900B0B46C /* tree.h in Headers */ = {isa = PBXBuildFile; fileRef = A89365521375ACA900B0B46C /* tree.h */; };
+		A89365571375B62300B0B46C /* str.h in Headers */ = {isa = PBXBuildFile; fileRef = A89365551375B62200B0B46C /* str.h */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		A82B807E135E891700B3DFAD /* hash.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = hash.h; sourceTree = "<group>"; };
 		A888580D135CB02F00F7732C /* libmachete.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libmachete.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		A8885810135CB02F00F7732C /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		A8885814135CB02F00F7732C /* machete-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "machete-Prefix.pch"; sourceTree = "<group>"; };
@@ -50,6 +50,8 @@
 		A8885862135CBB9800F7732C /* MacheteGLView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MacheteGLView.h; sourceTree = "<group>"; };
 		A8885863135CBB9800F7732C /* MacheteGLView.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = MacheteGLView.mm; sourceTree = "<group>"; };
 		A8885866135CBBEA00F7732C /* ResourceManager.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = ResourceManager.mm; sourceTree = "<group>"; };
+		A89365521375ACA900B0B46C /* tree.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tree.h; sourceTree = "<group>"; };
+		A89365551375B62200B0B46C /* str.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = str.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -119,6 +121,7 @@
 		A888581A135CB1FC00F7732C /* machete */ = {
 			isa = PBXGroup;
 			children = (
+				A89365521375ACA900B0B46C /* tree.h */,
 				A8885850135CB76300F7732C /* simple.frag */,
 				A8885851135CB76300F7732C /* simple.vert */,
 				A8885829135CB1FC00F7732C /* engine.h */,
@@ -127,7 +130,7 @@
 				A8885830135CB1FC00F7732C /* module.h */,
 				A8885831135CB1FC00F7732C /* quaternion.h */,
 				A8885834135CB1FC00F7732C /* vector.h */,
-				A82B807E135E891700B3DFAD /* hash.h */,
+				A89365551375B62200B0B46C /* str.h */,
 			);
 			path = machete;
 			sourceTree = "<group>";
@@ -159,7 +162,8 @@
 				A8885848135CB1FC00F7732C /* quaternion.h in Headers */,
 				A888584B135CB1FC00F7732C /* vector.h in Headers */,
 				A8885864135CBB9800F7732C /* MacheteGLView.h in Headers */,
-				A82B807F135E891700B3DFAD /* hash.h in Headers */,
+				A89365531375ACA900B0B46C /* tree.h in Headers */,
+				A89365571375B62300B0B46C /* str.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

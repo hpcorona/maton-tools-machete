@@ -10,6 +10,8 @@
 
 #ifdef TARGET_IOS
 
+namespace machete {
+
 RenderingEngineiOS1::RenderingEngineiOS1(IResourceManager* sm) {
     resMan = sm;
     glGenRenderbuffersOES(1, &renderbuffer);
@@ -200,6 +202,8 @@ void RenderingEngineiOS1::CreateBuffers() {
     
     vtxCount = 0;
     primCount = 0;
+}
+
 }
 
 #endif

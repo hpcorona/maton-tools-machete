@@ -10,13 +10,17 @@
 #ifdef TARGET_IOS
 
 #include <math.h>
-//#include <cmath>
+
+namespace machete { namespace math {
+
 #define cabs(a) fabs(a)
 #define catan(a) atan(a)
 #define cmin(a,b) (a>b?b:a)
 #define cmax(a,b) (a>b?a:b)
 
 #else
+    
+namespace machete { namespace math {
 
 #include <math.h>
 #include <GLES/gl.h>
@@ -369,3 +373,4 @@ struct Rect2D {
     vec2 size;
 };
 
+} }

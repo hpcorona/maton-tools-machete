@@ -12,6 +12,10 @@
 
 #include "vector.h"
 
+namespace machete {
+
+using namespace math;
+
 struct Tex {
     unsigned int id;
     ivec2 size;
@@ -66,5 +70,7 @@ struct IGame {
 	virtual void OnStart() = 0;
 	virtual void OnStop() = 0;
 };
+    
+}
 
-struct IGame* CreateGame(IRenderingEngine* rm);
+struct machete::IGame* CreateGame(machete::IRenderingEngine* rm);

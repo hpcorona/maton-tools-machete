@@ -9,6 +9,8 @@
 #pragma once
 #include "vector.h"
 
+namespace machete { namespace math {
+
 template <typename T>
 struct Matrix2 {
     Matrix2()
@@ -260,3 +262,4 @@ typedef Matrix2<float> mat2;
 typedef Matrix3<float> mat3;
 typedef Matrix4<float> mat4;
 
+} }

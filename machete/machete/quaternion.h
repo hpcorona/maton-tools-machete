@@ -8,6 +8,8 @@
 #pragma once
 #include "matrix.h"
 
+namespace machete { namespace math {
+    
 template <typename T>
 struct QuaternionT {
     T x;
@@ -204,3 +206,4 @@ inline void QuaternionT<T>::Rotate(const QuaternionT<T>& q2)
 
 typedef QuaternionT<float> Quaternion;
 
+} }

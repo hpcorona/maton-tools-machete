@@ -16,7 +16,7 @@
     bool force = false;
     self = [super initWithFrame:frame];
     if (self) {
-        resMan = new ResourceManager();
+        resMan = new machete::ResourceManager();
         
         CAEAGLLayer* eaglLayer = (CAEAGLLayer*)super.layer;
         
@@ -51,7 +51,7 @@
         game = CreateGame(renEngine);
         game->OnStart();
         game->OnResume();
-        game->Initialize(CGRectGetWidth(frame), CGRectGetHeight(frame), DeviceOrientationPortrait);
+        game->Initialize(CGRectGetWidth(frame), CGRectGetHeight(frame), machete::DeviceOrientationPortrait);
         
         [self drawView:nil];
         timestamp = CACurrentMediaTime();

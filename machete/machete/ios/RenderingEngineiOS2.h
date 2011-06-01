@@ -24,6 +24,8 @@
 #define MAX_VTX (MAX_SPR*4)
 #define MAX_IDX (MAX_SPR*6)
 
+namespace machete {
+
 class RenderingEngineiOS2 : public IRenderingEngine {
 public:
     RenderingEngineiOS2(IResourceManager* rm);
@@ -70,12 +72,14 @@ private:
     GLuint vtxBind;
 };
 
-IRenderingEngine* CreateRendereriOS2(IResourceManager *rm) {
-    return new RenderingEngineiOS2(rm);
+machete::IRenderingEngine* CreateRendereriOS2(machete::IResourceManager *rm) {
+    return new machete::RenderingEngineiOS2(rm);
 }
 
 #else
-IRenderingEngine* CreateRendereriOS2(IResourceManager *rm) {
+machete::IRenderingEngine* CreateRendereriOS2(machete::IResourceManager *rm) {
     return NULL;
 }
 #endif
+
+}

@@ -3,6 +3,8 @@
 #import <UIKit/UIKit.h>
 #include "../engine.h"
 
+namespace machete {
+    
 class ResourceManager : public IResourceManager {
 public:
     const char* GetResourcePath() const {
@@ -37,3 +39,5 @@ private:
     CFDataRef imageData;
     ivec2 imageSize;
 };
+
+}
