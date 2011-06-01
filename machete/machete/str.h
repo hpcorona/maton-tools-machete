@@ -22,6 +22,17 @@ namespace machete { namespace data {
             len = 0;
         }
         
+        str(const char *v, int cap) {
+            int i = 0;
+            while (v[i] != 0) { i++; }
+
+            capacity = cap;
+            chars = new char[capacity];
+            this->len = 0;
+            
+            append(v, 0, i);
+        }
+        
         str(const char *v, int len, int cap) {
             capacity = cap;
             chars = new char[capacity];
@@ -51,6 +62,14 @@ namespace machete { namespace data {
             append(v, 0, len);
         }
         
+        void assign(const char *v) {
+            int i = 0;
+            
+            while (v[i] != 0) { i++; }
+            
+            assign(v, i);
+        }
+        
         const str substr(int idx0, int len) {
             str newStr(len);
             
@@ -68,6 +87,12 @@ namespace machete { namespace data {
         
         str & operator = (const str &ostr) {
             assign(ostr.chars, ostr.len);
+            
+            return *this;
+        }
+        
+        str & operator = (const char *v) {
+            assign(v);
             
             return *this;
         }
