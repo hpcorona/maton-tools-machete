@@ -22,15 +22,23 @@ namespace machete { namespace data {
             len = 0;
         }
         
-        str(const char *v, int cap) {
+        str(const char *v) {
             int i = 0;
             while (v[i] != 0) { i++; }
-
-            capacity = cap;
+            
+            capacity = i;
             chars = new char[capacity];
             this->len = 0;
             
             append(v, 0, i);
+        }
+        
+        str(const char *v, int cap) {
+            capacity = cap;
+            chars = new char[capacity];
+            this->len = 0;
+            
+            append(v);
         }
         
         str(const char *v, int len, int cap) {
@@ -70,6 +78,14 @@ namespace machete { namespace data {
             assign(v, i);
         }
         
+        void append(const char *v) {
+            int i = 0;
+            
+            while (v[i] != 0) { i++; }
+            
+            append(v, 0, i);
+        }
+        
         const str substr(int idx0, int len) {
             str newStr(len);
             
@@ -102,7 +118,13 @@ namespace machete { namespace data {
             
             return *this;
         }
-        
+
+        str & operator += (const char* v) {
+            append(v);
+            
+            return *this;
+        }
+
         const str operator + (const str &ostr) {
             str newStr(this->len + ostr.len);
             
@@ -111,7 +133,18 @@ namespace machete { namespace data {
             
             return newStr;
         }
-        
+
+        const str operator + (const char *v) {
+            str ostr(v);
+            str newStr(this->len + ostr.len);
+            
+            newStr += *this;
+            
+            newStr += ostr;
+            
+            return newStr;
+        }
+
         int compareTo(const str &ostr) const {
             int toComp = this->len;
             if (ostr.len < toComp) {
