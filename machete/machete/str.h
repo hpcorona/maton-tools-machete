@@ -6,23 +6,25 @@
 //  Copyright 2011 __MyCompanyName__. All rights reserved.
 //
 
+#include "lists.h"
+
 namespace machete { namespace data {
     
-    class str {
+    class Str {
     public:
-        str(int cap) {
+        Str(int cap) {
             capacity = cap;
             chars = new char[capacity];
             len = 0;
         }
         
-        str() {
+        Str() {
             capacity = 50;
             chars = new char[capacity];
             len = 0;
         }
         
-        str(const char *v) {
+        Str(const char *v) {
             int i = 0;
             while (v[i] != 0) { i++; }
             
@@ -30,30 +32,39 @@ namespace machete { namespace data {
             chars = new char[capacity];
             this->len = 0;
             
-            append(v, 0, i);
+            Append(v, 0, i);
         }
         
-        str(const char *v, int cap) {
+        Str(const char *v, int cap) {
             capacity = cap;
             chars = new char[capacity];
             this->len = 0;
             
-            append(v);
+            Append(v);
         }
         
-        str(const char *v, int len, int cap) {
+        Str(const char *v, int len, int cap) {
             capacity = cap;
             chars = new char[capacity];
             this->len = 0;
 
-            append(v, 0, len);
+            Append(v, 0, len);
+        }
+      
+        Str(const Str &s) {
+          capacity = s.len;
+          chars = new char[capacity];
+          this->len = 0;
+          
+          Append(s.chars, 0, capacity);
         }
         
-        virtual ~str() {
-            delete chars;
+        ~Str() {
+          delete chars;
+          chars = NULL;
         }
         
-        void append(const char *v, int start, int len) {
+        void Append(const char *v, int start, int len) {
             int idx = start;
             
             if (this->len + len > capacity) {
@@ -65,29 +76,29 @@ namespace machete { namespace data {
             }
         }
         
-        void assign(const char *v, int len) {
+        void Assign(const char *v, int len) {
             this->len = 0;
-            append(v, 0, len);
+            Append(v, 0, len);
         }
         
-        void assign(const char *v) {
+        void Assign(const char *v) {
             int i = 0;
             
             while (v[i] != 0) { i++; }
             
-            assign(v, i);
+            Assign(v, i);
         }
         
-        void append(const char *v) {
+        void Append(const char *v) {
             int i = 0;
             
             while (v[i] != 0) { i++; }
             
-            append(v, 0, i);
+            Append(v, 0, i);
         }
         
-        const str substr(int idx0, int len) {
-            str newStr(len);
+        const Str Substr(int idx0, int len) {
+            Str newStr(len);
             
             if (idx0 > this->len) {
                 idx0 = 0;
@@ -96,37 +107,44 @@ namespace machete { namespace data {
                 len = this->len - idx0;
             }
             
-            newStr.append(chars, idx0, len);
+            newStr.Append(chars, idx0, len);
             
             return newStr;
         }
         
-        str & operator = (const str &ostr) {
-            assign(ostr.chars, ostr.len);
+        Str & operator = (const Str &ostr) {
+            if (ostr.len > capacity) {
+              delete chars;
+              
+              capacity = ostr.len;
+              chars = new char[capacity];
+              len = 0;
+            }
+            Assign(ostr.chars, ostr.len);
             
             return *this;
         }
         
-        str & operator = (const char *v) {
-            assign(v);
+        Str & operator = (const char *v) {
+            Assign(v);
             
             return *this;
         }
         
-        str & operator += (const str &ostr) {
-            append(ostr.chars, 0, ostr.len);
+        Str & operator += (const Str &ostr) {
+            Append(ostr.chars, 0, ostr.len);
             
             return *this;
         }
 
-        str & operator += (const char* v) {
-            append(v);
+        Str & operator += (const char* v) {
+            Append(v);
             
             return *this;
         }
 
-        const str operator + (const str &ostr) {
-            str newStr(this->len + ostr.len);
+        const Str operator + (const Str &ostr) {
+            Str newStr(this->len + ostr.len);
             
             newStr += *this;
             newStr += ostr;
@@ -134,9 +152,9 @@ namespace machete { namespace data {
             return newStr;
         }
 
-        const str operator + (const char *v) {
-            str ostr(v);
-            str newStr(this->len + ostr.len);
+        const Str operator + (const char *v) {
+            Str ostr(v);
+            Str newStr(this->len + ostr.len);
             
             newStr += *this;
             
@@ -145,7 +163,7 @@ namespace machete { namespace data {
             return newStr;
         }
 
-        int compareTo(const str &ostr) const {
+        int compareTo(const Str &ostr) const {
             int toComp = this->len;
             if (ostr.len < toComp) {
                 toComp = ostr.len;
@@ -165,34 +183,116 @@ namespace machete { namespace data {
             return diff;
         }
         
-        bool operator == (const str &ostr) const {
+        bool operator == (const Str &ostr) const {
             return compareTo(ostr) == 0;
         }
         
-        bool operator != (const str &ostr) const {
+        bool operator != (const Str &ostr) const {
             return compareTo(ostr) != 0;
         }
         
-        bool operator > (const str &ostr) const {
+        bool operator > (const Str &ostr) const {
             return compareTo(ostr) > 0;
         }
 
-        bool operator >= (const str &ostr) const {
+        bool operator >= (const Str &ostr) const {
             return compareTo(ostr) >= 0;
         }
 
-        bool operator < (const str &ostr) const {
+        bool operator < (const Str &ostr) const {
             return compareTo(ostr) < 0;
         }
 
-        bool operator <= (const str &ostr) const {
+        bool operator <= (const Str &ostr) const {
             return compareTo(ostr) <= 0;
         }
-        
+      
     private:
         char *chars;
         int capacity;
         int len;
+    };
+
+    typedef Iterator<Str> StrParam;
+
+    class TplSection {
+    public:
+      TplSection() {
+        value = NULL;
+        idx = 0;
+      }
+      
+      TplSection(const Str &v) {
+        value = new Str(v);
+        idx = 0;
+      }
+      
+      TplSection(int i) {
+        value = NULL;
+        idx = i;
+      }
+      
+      ~TplSection() {
+        idx = 0;
+        
+        delete value;
+      }
+      
+      Str & GetValue(StrParam *sp) {
+        if (idx == 0) {
+          return *value;
+        }
+        
+        sp->Reset();
+        int i = idx;
+        
+        while (--i >= 0) {
+          if (sp->Next() == false) {
+            break;
+          }
+          
+          if (i == 0) {
+            return sp->GetCurrent()->GetValue();
+          }
+        }
+        
+        return sp->GetCurrent()->GetValue();
+      }
+      
+      TplSection & operator = (const TplSection &s) {
+        if (s.value != NULL) {
+          value = new Str(*s.value);
+        } else {
+          delete value;
+          
+          value = NULL;
+        }
+        idx = s.idx;
+        
+        return *this;
+      }
+
+      
+    private:
+      int idx;
+      Str *value;
+    };
+  
+    typedef Iterator<TplSection> TplPart;
+    
+    class StrTpl : public TplPart {
+    public:
+      Str Build(int cap, StrParam *params) {
+        Str base(cap);
+        
+        Reset();
+        
+        while (Next()) {
+          base = base + GetCurrent()->GetValue().GetValue(params);
+        }
+
+        return base;
+      }
     };
     
 } }

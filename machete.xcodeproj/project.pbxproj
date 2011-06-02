@@ -26,6 +26,7 @@
 		A8885867135CBBEA00F7732C /* ResourceManager.mm in Sources */ = {isa = PBXBuildFile; fileRef = A8885866135CBBEA00F7732C /* ResourceManager.mm */; };
 		A89365531375ACA900B0B46C /* tree.h in Headers */ = {isa = PBXBuildFile; fileRef = A89365521375ACA900B0B46C /* tree.h */; };
 		A89365571375B62300B0B46C /* str.h in Headers */ = {isa = PBXBuildFile; fileRef = A89365551375B62200B0B46C /* str.h */; };
+		A8F90985139606F80029D78E /* lists.h in Headers */ = {isa = PBXBuildFile; fileRef = A8F90984139606F80029D78E /* lists.h */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -52,6 +53,7 @@
 		A8885866135CBBEA00F7732C /* ResourceManager.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = ResourceManager.mm; sourceTree = "<group>"; };
 		A89365521375ACA900B0B46C /* tree.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tree.h; sourceTree = "<group>"; };
 		A89365551375B62200B0B46C /* str.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = str.h; sourceTree = "<group>"; };
+		A8F90984139606F80029D78E /* lists.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = lists.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -131,6 +133,7 @@
 				A8885831135CB1FC00F7732C /* quaternion.h */,
 				A8885834135CB1FC00F7732C /* vector.h */,
 				A89365551375B62200B0B46C /* str.h */,
+				A8F90984139606F80029D78E /* lists.h */,
 			);
 			path = machete;
 			sourceTree = "<group>";
@@ -164,6 +167,7 @@
 				A8885864135CBB9800F7732C /* MacheteGLView.h in Headers */,
 				A89365531375ACA900B0B46C /* tree.h in Headers */,
 				A89365571375B62300B0B46C /* str.h in Headers */,
+				A8F90985139606F80029D78E /* lists.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
