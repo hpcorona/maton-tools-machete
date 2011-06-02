@@ -96,8 +96,40 @@ namespace machete { namespace data {
             
             Append(v, 0, i);
         }
+      
+        char ByteAt(int idx) const {
+          return chars[idx];
+        }
+      
+        int Index(wchar_t c, int start) const {
+          for (int i = start; i < len; i++) {
+            if (c == chars[i]) {
+              return i;
+            }
+          }
+          
+          return -1;
+        }
+      
+        int LastIndex(wchar_t c) const {
+          for (int i = len - 1; i >= 0; i--) {
+            if (c == chars[i]) {
+              return i;
+            }
+          }
+          
+          return -1;
+        }
+      
+        const Str Slice(int idx0, int idx1) const {
+          Str newStr(idx1 - idx0);
+          
+          newStr.Append(chars, idx0, idx1 - idx0);
+          
+          return newStr;
+        }
         
-        const Str Substr(int idx0, int len) {
+        const Str Substr(int idx0, int len) const {
             Str newStr(len);
             
             if (idx0 > this->len) {
@@ -207,6 +239,28 @@ namespace machete { namespace data {
             return compareTo(ostr) <= 0;
         }
       
+        int Size() const {
+          return len;
+        }
+      
+        int ToInt() const {
+          int n = 0;
+        
+          char c;
+          for (int i = 0; i < len; i++) {
+            c = chars[i];
+            if (c < '0' || c > '9') {
+              break;
+            }
+            
+            c -= 48;
+            n = n * 10 + c;
+          }
+          
+          return n;
+        }
+
+      
     private:
         char *chars;
         int capacity;
@@ -271,7 +325,6 @@ namespace machete { namespace data {
         
         return *this;
       }
-
       
     private:
       int idx;
@@ -282,6 +335,49 @@ namespace machete { namespace data {
     
     class StrTpl : public TplPart {
     public:
+      StrTpl() : TplPart() {
+        
+      }
+      
+      StrTpl(const Str &tpl) : TplPart() {
+        int prev = 0;
+        int idx = tpl.Index('%', prev);
+        while (idx >= 0) {
+          if (idx > 0 && tpl.ByteAt(idx - 1) == '\\') {
+            idx = tpl.Index('%', idx + 1);
+            continue;
+          }
+          
+          char c = tpl.ByteAt(idx + 1);
+          if (c < '0' || c > '9') {
+            idx = tpl.Index('%', idx + 1);
+            continue;
+          }
+          
+          Append(TplSection(tpl.Slice(prev, idx)));
+          prev = idx + 1;
+          idx = prev;
+          
+          while (c >= '0' && c <= '9') {
+            idx++;
+            c = tpl.ByteAt(idx);
+          }
+          
+          Append(TplSection(tpl.Slice(prev, idx).ToInt()));
+          
+          if (c == '_') {
+            idx++;
+          }
+          
+          prev = idx;
+          idx = tpl.Index('%', prev);
+        }
+        
+        if (tpl.Size() > prev) {
+          Append(TplSection(tpl.Slice(prev, tpl.Size())));
+        }
+      }
+      
       Str Build(int cap, StrParam *params) {
         Str base(cap);
         
