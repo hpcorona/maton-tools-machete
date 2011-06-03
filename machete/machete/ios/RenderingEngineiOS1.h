@@ -23,38 +23,40 @@ namespace machete {
 
 class RenderingEngineiOS1 : public IRenderingEngine {
 public:
-    RenderingEngineiOS1(IResourceManager* rm);
-    void Initialize(int width, int height);
-    void Draw(vec2 pos, vec2 size, float rotation, float scale, vertuv* verts, unsigned int texId);
-    void Draw();
+  RenderingEngineiOS1(IResourceManager* rm);
+  void Initialize(int width, int height);
+  void Draw(vec2 pos, vec2 size, float rotation, float scale, vertuv* verts, unsigned int texId);
+  void Draw();
     
-    GLuint CreateBuffer(vertuv* verts) const;
-    void DeleteBuffer(GLuint buffer) const;
-    void CreateBuffers();
+  GLuint CreateBuffer(vertuv* verts) const;
+  void DeleteBuffer(GLuint buffer) const;
+  void CreateBuffers();
 
-    Tex CreateTexture(const char* texture);
-    void Clear();
-    ivec2 GetScreenSize() const;
+  Tex CreateTexture(const char* texture);
+  void Clear();
+  ivec2 GetScreenSize() const;
+  
+  IResourceManager* GetResMan() const { return resMan; }
     
 private:
-    GLuint framebuffer;
-    GLuint renderbuffer;
-    IResourceManager* resMan;
+  GLuint framebuffer;
+  GLuint renderbuffer;
+  IResourceManager* resMan;
     
-    GLushort indices[MAX_IDX];
-    vertuv vertexesRing[MAX_RING][MAX_VTX];
-    vertuv* vertexes;
-    GLuint indexBuffer;
-    GLuint vertexBuffer;
-    GLuint vertexBufferRing[MAX_RING];
-    unsigned int ringIdx;
-    unsigned int primCount;
-    unsigned int vtxCount;
+  GLushort indices[MAX_IDX];
+  vertuv vertexesRing[MAX_RING][MAX_VTX];
+  vertuv* vertexes;
+  GLuint indexBuffer;
+  GLuint vertexBuffer;
+  GLuint vertexBufferRing[MAX_RING];
+  unsigned int ringIdx;
+  unsigned int primCount;
+  unsigned int vtxCount;
     
-    ivec2 size;
-    GLuint lastBind;
-    GLuint vtxBind;
-    GLuint batchBind;
+  ivec2 size;
+  GLuint lastBind;
+  GLuint vtxBind;
+  GLuint batchBind;
 };
 
 machete::IRenderingEngine* CreateRendereriOS1(machete::IResourceManager* rm) {

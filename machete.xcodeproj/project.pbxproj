@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		A85B7EE71398909A008776AB /* mbd.h in Headers */ = {isa = PBXBuildFile; fileRef = A85B7EE61398909A008776AB /* mbd.h */; };
 		A8885811135CB02F00F7732C /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A8885810135CB02F00F7732C /* Foundation.framework */; };
 		A8885841135CB1FC00F7732C /* engine.h in Headers */ = {isa = PBXBuildFile; fileRef = A8885829135CB1FC00F7732C /* engine.h */; };
 		A8885842135CB1FC00F7732C /* RenderingEngineiOS1.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A888582B135CB1FC00F7732C /* RenderingEngineiOS1.cpp */; };
@@ -30,6 +31,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		A85B7EE61398909A008776AB /* mbd.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mbd.h; sourceTree = "<group>"; };
 		A888580D135CB02F00F7732C /* libmachete.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libmachete.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		A8885810135CB02F00F7732C /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		A8885814135CB02F00F7732C /* machete-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "machete-Prefix.pch"; sourceTree = "<group>"; };
@@ -134,6 +136,7 @@
 				A8885834135CB1FC00F7732C /* vector.h */,
 				A89365551375B62200B0B46C /* str.h */,
 				A8F90984139606F80029D78E /* lists.h */,
+				A85B7EE61398909A008776AB /* mbd.h */,
 			);
 			path = machete;
 			sourceTree = "<group>";
@@ -168,6 +171,7 @@
 				A89365531375ACA900B0B46C /* tree.h in Headers */,
 				A89365571375B62300B0B46C /* str.h in Headers */,
 				A8F90985139606F80029D78E /* lists.h in Headers */,
+				A85B7EE71398909A008776AB /* mbd.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
