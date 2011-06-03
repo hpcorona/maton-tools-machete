@@ -58,7 +58,7 @@ namespace machete { namespace data {
           
           Append(s.chars, 0, capacity);
         }
-        
+      
         ~Str() {
           delete chars;
           chars = NULL;
@@ -95,6 +95,53 @@ namespace machete { namespace data {
             while (v[i] != 0) { i++; }
             
             Append(v, 0, i);
+        }
+      
+        void AppendInt(int i) {
+          char str[20] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+          
+          bool sign = false;
+          if (i < 0) {
+            sign = true;
+            i = i * -1;
+          }
+          
+          int pos = 18;
+          while (i != 0) {
+            int v = i % 10;
+            i = i / 10;
+            str[pos--] = v + 48;
+          }
+          
+          if (sign) {
+            str[pos] = '-';
+          } else {
+            pos++;
+          }
+          
+          Append(&str[pos]);
+        }
+      
+        void AppendFloat(float f) {
+          AppendInt((int)f);
+          
+          float dp = f - (int)f;
+          if (dp < 0) {
+            dp = dp * -1;
+          }
+          
+          if (dp != 0) {
+            *this += ".";
+            
+            for (int i = 0; i < 5; i++) {
+              dp = dp * 10.0f;
+              if (dp - (int)dp == 0) {
+                break;
+              }
+            }
+            
+            AppendInt((int)dp);
+          }
         }
       
         char ByteAt(int idx) const {
@@ -162,7 +209,21 @@ namespace machete { namespace data {
             
             return *this;
         }
+      
+        Str & operator = (int i) {
+          len = 0;
+          AppendInt(i);
+          
+          return *this;
+        }
+
+        Str & operator = (float f) {
+          len = 0;
+          AppendFloat(f);
         
+          return *this;
+        }
+
         Str & operator += (const Str &ostr) {
             Append(ostr.chars, 0, ostr.len);
             
@@ -173,6 +234,18 @@ namespace machete { namespace data {
             Append(v);
             
             return *this;
+        }
+      
+        Str & operator += (int i) {
+          AppendInt(i);
+          
+          return *this;
+        }
+
+        Str & operator += (float f) {
+          AppendFloat(f);
+        
+          return *this;
         }
 
         const Str operator + (const Str &ostr) {
@@ -193,6 +266,24 @@ namespace machete { namespace data {
             newStr += ostr;
             
             return newStr;
+        }
+
+        const Str operator + (int i) {
+          Str newStr(this->len + 20);
+        
+          newStr += *this;
+          newStr += i;
+        
+          return newStr;
+        }
+
+        const Str operator + (float f) {
+          Str newStr(this->len + 26);
+        
+          newStr += *this;
+          newStr += f;
+        
+          return newStr;
         }
 
         int compareTo(const Str &ostr) const {
@@ -244,10 +335,19 @@ namespace machete { namespace data {
         }
       
         int ToInt() const {
+          return ToInt(0, len);
+        }
+      
+        int ToInt(int idx0, int idx1) const {
           int n = 0;
+          int s = idx0;
+          
+          if (chars[idx0] == '-') {
+            s++;
+          }
         
           char c;
-          for (int i = 0; i < len; i++) {
+          for (int i = s; i < idx1; i++) {
             c = chars[i];
             if (c < '0' || c > '9') {
               break;
@@ -257,7 +357,34 @@ namespace machete { namespace data {
             n = n * 10 + c;
           }
           
+          if (chars[idx0] == '-') {
+            n = n * -1;
+          }
+          
           return n;
+        }
+      
+        float ToFloat() const {
+          int pp = Index('.', 0);
+          
+          if (pp < 1) {
+            return (float)ToInt();
+          } else {
+            float ent = ToInt(0, pp);
+            float dec = ToInt(pp + 1, len);
+            
+            for (int i = pp + 1; i < len; i++) {
+              if (chars[i] < '0' || chars[i] > '9') break;
+              
+              dec /= 10.0f;
+            }
+            
+            if (ent < 0) {
+              return ent - dec;
+            } else {
+              return ent + dec;
+            }
+          }
         }
 
       
