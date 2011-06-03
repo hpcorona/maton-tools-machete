@@ -147,7 +147,22 @@ namespace machete { namespace data {
         char ByteAt(int idx) const {
           return chars[idx];
         }
-      
+
+        wchar_t CharAt(int idx) const {
+          wchar_t c;
+          
+          int s = CharSizeAt(idx);
+          if (s == 3) {
+            c = chars[idx] + chars[idx+1] >> 8 + chars[idx+2] >> 16;
+          } else if (s == 2) {
+            c = chars[idx] + chars[idx+1] >> 8;
+          } else {
+            c = chars[idx];
+          }
+          
+          return c;
+        }
+
         int Index(wchar_t c, int start) const {
           for (int i = start; i < len; i++) {
             if (c == chars[i]) {
@@ -286,7 +301,7 @@ namespace machete { namespace data {
           return newStr;
         }
 
-        int compareTo(const Str &ostr) const {
+        int CompareTo(const Str &ostr) const {
             int toComp = this->len;
             if (ostr.len < toComp) {
                 toComp = ostr.len;
@@ -307,27 +322,27 @@ namespace machete { namespace data {
         }
         
         bool operator == (const Str &ostr) const {
-            return compareTo(ostr) == 0;
+            return CompareTo(ostr) == 0;
         }
         
         bool operator != (const Str &ostr) const {
-            return compareTo(ostr) != 0;
+            return CompareTo(ostr) != 0;
         }
         
         bool operator > (const Str &ostr) const {
-            return compareTo(ostr) > 0;
+            return CompareTo(ostr) > 0;
         }
 
         bool operator >= (const Str &ostr) const {
-            return compareTo(ostr) >= 0;
+            return CompareTo(ostr) >= 0;
         }
 
         bool operator < (const Str &ostr) const {
-            return compareTo(ostr) < 0;
+            return CompareTo(ostr) < 0;
         }
 
         bool operator <= (const Str &ostr) const {
-            return compareTo(ostr) <= 0;
+            return CompareTo(ostr) <= 0;
         }
       
         int Size() const {
@@ -336,6 +351,16 @@ namespace machete { namespace data {
       
         int ToInt() const {
           return ToInt(0, len);
+        }
+      
+        int CharSizeAt(int idx) const {
+          if (chars[idx] <= 127) {
+            return 1;
+          } else if (*((unsigned short *)(&chars[idx])) <= 2047) {
+            return 2;
+          } else {
+            return 3;
+          }
         }
       
         int ToInt(int idx0, int idx1) const {
