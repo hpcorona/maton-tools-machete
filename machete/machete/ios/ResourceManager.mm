@@ -28,22 +28,18 @@ public:
       NSString* resourcePath = [[NSBundle mainBundle] resourcePath];
       NSString* fullPath = [resourcePath stringByAppendingPathComponent:basePath];
       
-      NSError* err = nil;
-      NSStringEncoding enc;
+      NSData* content = [NSData dataWithContentsOfFile:fullPath];
       
-      NSString* content = [NSString stringWithContentsOfFile:fullPath usedEncoding:&enc error:&err];
-      
-      if (err != nil) {
+      if (content == nil) {
         *data = 0;
         return 0;
       }
       
-      unsigned int size = [content lengthOfBytesUsingEncoding:enc] + 1;
+      unsigned int size = [content length];
       *data = new char[size];
-      data[size - 1] = 0;
       unsigned int total = size;
       
-      [content getBytes:*data maxLength:size usedLength:&total encoding:enc options:nil range:NSMakeRange(0,size) remainingRange:nil];
+      [content getBytes:*data length:size];
       
       return total;
     }

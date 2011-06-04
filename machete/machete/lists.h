@@ -6,6 +6,8 @@
 //  Copyright 2011 __MyCompanyName__. All rights reserved.
 //
 
+#pragma once
+
 namespace machete { namespace data {
     
   template<class T>

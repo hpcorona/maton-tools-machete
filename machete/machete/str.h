@@ -6,6 +6,8 @@
 //  Copyright 2011 __MyCompanyName__. All rights reserved.
 //
 
+#pragma once
+
 #include "lists.h"
 
 namespace machete { namespace data {
@@ -492,6 +494,8 @@ namespace machete { namespace data {
       }
       
       StrTpl(const Str &tpl) : TplPart() {
+        totalParams = 0;
+        
         int prev = 0;
         int idx = tpl.Index('%', prev);
         while (idx >= 0) {
@@ -516,6 +520,7 @@ namespace machete { namespace data {
           }
           
           Append(TplSection(tpl.Slice(prev, idx).ToInt()));
+          totalParams++;
           
           if (c == '_') {
             idx++;
@@ -530,17 +535,19 @@ namespace machete { namespace data {
         }
       }
       
-      Str Build(int cap, StrParam *params) {
-        Str base(cap);
-        
+      void Build(Str & base, StrParam *params) {
         Reset();
         
         while (Next()) {
-          base = base + GetCurrent()->GetValue().GetValue(params);
+          base += GetCurrent()->GetValue().GetValue(params);
         }
-
-        return base;
       }
+      
+      int GetNumParams() {
+        return totalParams;
+      }
+    private:
+      int totalParams;
     };
     
 } }

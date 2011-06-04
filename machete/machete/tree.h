@@ -321,7 +321,7 @@ public:
         return nt;
     }
         
-    Tree<K, T>* Seek(K key) {
+    Tree<K, T>* Seek(K key) const {
         return tree->SeekTree(key);
     }
         
@@ -332,7 +332,7 @@ public:
     }
 
 private:
-    Tree<K, T> tree;
+    Tree<K, T> *tree;
 };
     
 } }
