@@ -10,14 +10,14 @@
 
 namespace machete { namespace draw {
 
-struct module : public IRenderable {
+struct Module : public IRenderable {
     vec2 size;
     vertuv verts[4];
     unsigned int texId;
     
-    module() { }
+    Module() { }
 
-    module(vec2 s, vec2 uv0, vec2 uv1, unsigned int tid) {
+    Module(vec2 s, vec2 uv0, vec2 uv1, unsigned int tid) {
         size = s;
         
         verts[0].vert.x = 0; verts[0].vert.y = 0; verts[0].vert.z = 0;

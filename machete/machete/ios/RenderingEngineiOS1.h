@@ -20,53 +20,57 @@
 #define MAX_IDX (MAX_SPR*6)
 
 namespace machete {
-
-class RenderingEngineiOS1 : public IRenderingEngine {
-public:
-  RenderingEngineiOS1(IResourceManager* rm);
-  void Initialize(int width, int height);
-  void Draw(vec2 pos, vec2 size, float rotation, float scale, vertuv* verts, unsigned int texId);
-  void Draw();
-    
-  GLuint CreateBuffer(vertuv* verts) const;
-  void DeleteBuffer(GLuint buffer) const;
-  void CreateBuffers();
-
-  Tex CreateTexture(const char* texture);
-  void Clear();
-  ivec2 GetScreenSize() const;
   
-  IResourceManager* GetResMan() const { return resMan; }
+  class RenderingEngineiOS1 : public IRenderingEngine {
+  public:
+    RenderingEngineiOS1(RenderTarget, IResourceManager* rm);
+    void Initialize(int width, int height);
+    void Draw(vec2 pos, vec2 size, float rotation, float scale, vertuv* verts, unsigned int texId);
+    void Draw();
     
-private:
-  GLuint framebuffer;
-  GLuint renderbuffer;
-  IResourceManager* resMan;
+    GLuint CreateBuffer(vertuv* verts) const;
+    void DeleteBuffer(GLuint buffer) const;
+    void CreateBuffers();
     
-  GLushort indices[MAX_IDX];
-  vertuv vertexesRing[MAX_RING][MAX_VTX];
-  vertuv* vertexes;
-  GLuint indexBuffer;
-  GLuint vertexBuffer;
-  GLuint vertexBufferRing[MAX_RING];
-  unsigned int ringIdx;
-  unsigned int primCount;
-  unsigned int vtxCount;
+    Tex CreateTexture(const char* texture);
+    void Clear();
+    ivec2 GetScreenSize() const;
     
-  ivec2 size;
-  GLuint lastBind;
-  GLuint vtxBind;
-  GLuint batchBind;
-};
-
-machete::IRenderingEngine* CreateRendereriOS1(machete::IResourceManager* rm) {
-    return new machete::RenderingEngineiOS1(rm);
-}
-
+    IResourceManager* GetResourceManager() const { return resMan; }
+    GLuint GetRenderTexture() const { return tex; }
+    
+  private:
+    RenderTarget target;
+    GLuint tex;
+    
+    GLuint framebuffer;
+    GLuint renderbuffer;
+    IResourceManager* resMan;
+    
+    GLushort indices[MAX_IDX];
+    vertuv vertexesRing[MAX_RING][MAX_VTX];
+    vertuv* vertexes;
+    GLuint indexBuffer;
+    GLuint vertexBuffer;
+    GLuint vertexBufferRing[MAX_RING];
+    unsigned int ringIdx;
+    unsigned int primCount;
+    unsigned int vtxCount;
+    
+    ivec2 size;
+    GLuint lastBind;
+    GLuint vtxBind;
+    GLuint batchBind;
+  };
+  
+  machete::IRenderingEngine* CreateRendereriOS1(machete::RenderTarget target, machete::IResourceManager* rm) {
+    return new machete::RenderingEngineiOS1(target, rm);
+  }
+  
 #else
-machete::IRenderingEngine* CreateRendereriOS1(machete::IResourceManager* rm) {
+  machete::IRenderingEngine* CreateRendereriOS1(machete::IResourceManager* rm) {
     return NULL;
-}
+  }
 #endif
-
+  
 }

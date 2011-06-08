@@ -11,16 +11,27 @@
 #ifdef TARGET_IOS
 
 namespace machete {
-
-RenderingEngineiOS1::RenderingEngineiOS1(IResourceManager* sm) {
+  
+  RenderingEngineiOS1::RenderingEngineiOS1(RenderTarget t, IResourceManager* sm) {
     resMan = sm;
-    glGenRenderbuffersOES(1, &renderbuffer);
-    glBindRenderbufferOES(GL_RENDERBUFFER_OES, renderbuffer);
-}
-
-ivec2 RenderingEngineiOS1::GetScreenSize() const { return size; }
-
-void RenderingEngineiOS1::Initialize(int width, int height) {
+    target = t;
+    
+    if (target == TargetScreen) {
+      glGenRenderbuffersOES(1, &renderbuffer);
+      glBindRenderbufferOES(GL_RENDERBUFFER_OES, renderbuffer);
+    }
+  }
+  
+  ivec2 RenderingEngineiOS1::GetScreenSize() const { return size; }
+  
+  void RenderingEngineiOS1::Initialize(int width, int height) {
+    if (target == TargetTexture) {
+      glGenTextures(1, &tex);
+      glBindTexture(GL_TEXTURE_2D, tex);
+      glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8_OES, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
+      glFramebufferTexture2DOES(GL_FRAMEBUFFER_OES, GL_COLOR_ATTACHMENT0_OES, GL_TEXTURE_2D, tex, 0);
+    }
+    
     lastBind = -1;
     vtxBind = -1;
     primCount = 0;
@@ -50,65 +61,67 @@ void RenderingEngineiOS1::Initialize(int width, int height) {
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
     glTranslatef(0, size.y, 0);
-
+    
     glClearColor(0.5f, 0.5f, 0.5f, 1);
     
     CreateBuffers();
-}
-
-void RenderingEngineiOS1::Clear() {
+  }
+  
+  void RenderingEngineiOS1::Clear() {
+    glBindFramebufferOES(GL_FRAMEBUFFER_OES, framebuffer);
+    
     glClear(GL_COLOR_BUFFER_BIT);
     primCount = 0;
     vtxCount = 0;
-}
-
-void RenderingEngineiOS1::Draw(vec2 pos, vec2 size, float rotation, float scale, vertuv *verts, unsigned int texId) {
-
-    if (lastBind != texId || vtxCount == MAX_IDX) {
-        Draw();
-        
-        if (lastBind != texId) {
-            glBindTexture(GL_TEXTURE_2D, texId);
-            glActiveTexture(GL_TEXTURE0);
-            lastBind = texId;
-        }
-    }
-
-    if (rotation == 0.0f && scale == 1.0f) {
-        vertexes[primCount++] = verts[0];
-        vertexes[primCount++] = verts[1];
-        vertexes[primCount++] = verts[2];
-        vertexes[primCount++] = verts[3];
-        
-        vec4 pos4 = vec4(pos.x, pos.y, 0, 0);
-        vertexes[primCount - 4].vert += pos4;
-        vertexes[primCount - 3].vert += pos4;
-        vertexes[primCount - 2].vert += pos4;
-        vertexes[primCount - 1].vert += pos4;
-    } else {
-        mat4 loc;
-        
-        loc = loc.Translate(-size.x / 2, size.y / 2, 0) * loc.Scale(scale) * loc.Rotate(rotation) * loc.Translate(size.x / 2, -size.y / 2, 0) * loc.Translate(pos.x, pos.y, 0);
-        
-        mat4 v1 = loc.Translate(verts[0].vert) * loc;
-        mat4 v2 = loc.Translate(verts[1].vert) * loc;
-        mat4 v3 = loc.Translate(verts[2].vert) * loc;
-        mat4 v4 = loc.Translate(verts[3].vert) * loc;
-
+  }
+  
+  void RenderingEngineiOS1::Draw(vec2 pos, vec2 size, float rotation, float scale, vertuv *verts, unsigned int texId) {
     
-        vertexes[primCount].vert = v1.w; vertexes[primCount].uv = verts[0].uv; vertexes[primCount].color = verts[0].color;
-        primCount++;
-        vertexes[primCount].vert = v2.w; vertexes[primCount].uv = verts[1].uv; vertexes[primCount].color = verts[1].color;
-        primCount++;
-        vertexes[primCount].vert = v3.w; vertexes[primCount].uv = verts[2].uv; vertexes[primCount].color = verts[2].color;
-        primCount++;
-        vertexes[primCount].vert = v4.w; vertexes[primCount].uv = verts[3].uv; vertexes[primCount].color = verts[3].color;
-        primCount++;
+    if (lastBind != texId || vtxCount == MAX_IDX) {
+      Draw();
+      
+      if (lastBind != texId) {
+        glBindTexture(GL_TEXTURE_2D, texId);
+        glActiveTexture(GL_TEXTURE0);
+        lastBind = texId;
+      }
+    }
+    
+    if (rotation == 0.0f && scale == 1.0f) {
+      vertexes[primCount++] = verts[0];
+      vertexes[primCount++] = verts[1];
+      vertexes[primCount++] = verts[2];
+      vertexes[primCount++] = verts[3];
+      
+      vec4 pos4 = vec4(pos.x, pos.y, 0, 0);
+      vertexes[primCount - 4].vert += pos4;
+      vertexes[primCount - 3].vert += pos4;
+      vertexes[primCount - 2].vert += pos4;
+      vertexes[primCount - 1].vert += pos4;
+    } else {
+      mat4 loc;
+      
+      loc = loc.Translate(-size.x / 2, size.y / 2, 0) * loc.Scale(scale) * loc.Rotate(rotation) * loc.Translate(size.x / 2, -size.y / 2, 0) * loc.Translate(pos.x, pos.y, 0);
+      
+      mat4 v1 = loc.Translate(verts[0].vert) * loc;
+      mat4 v2 = loc.Translate(verts[1].vert) * loc;
+      mat4 v3 = loc.Translate(verts[2].vert) * loc;
+      mat4 v4 = loc.Translate(verts[3].vert) * loc;
+      
+      
+      vertexes[primCount].vert = v1.w; vertexes[primCount].uv = verts[0].uv; vertexes[primCount].color = verts[0].color;
+      primCount++;
+      vertexes[primCount].vert = v2.w; vertexes[primCount].uv = verts[1].uv; vertexes[primCount].color = verts[1].color;
+      primCount++;
+      vertexes[primCount].vert = v3.w; vertexes[primCount].uv = verts[2].uv; vertexes[primCount].color = verts[2].color;
+      primCount++;
+      vertexes[primCount].vert = v4.w; vertexes[primCount].uv = verts[3].uv; vertexes[primCount].color = verts[3].color;
+      primCount++;
     }
     vtxCount += 6;
-}
-
-void RenderingEngineiOS1::Draw() {
+  }
+  
+  void RenderingEngineiOS1::Draw() {
     if (vtxCount == 0) return;
     
     vertuv* POSITION = 0;
@@ -127,13 +140,13 @@ void RenderingEngineiOS1::Draw() {
     
     ringIdx++;
     if (ringIdx >= MAX_RING) {
-        ringIdx = 0;
+      ringIdx = 0;
     }
     vertexes = vertexesRing[ringIdx];
     vertexBuffer = vertexBufferRing[ringIdx];
-}
-
-GLuint RenderingEngineiOS1::CreateBuffer(vertuv* verts) const {
+  }
+  
+  GLuint RenderingEngineiOS1::CreateBuffer(vertuv* verts) const {
     GLuint buff;
     
     glGenBuffers(1, &buff);
@@ -141,31 +154,31 @@ GLuint RenderingEngineiOS1::CreateBuffer(vertuv* verts) const {
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertuv) * MAX_VTX, verts, GL_DYNAMIC_DRAW);
     
     return buff;
-}
-
-void RenderingEngineiOS1::DeleteBuffer(GLuint buffer) const {
+  }
+  
+  void RenderingEngineiOS1::DeleteBuffer(GLuint buffer) const {
     glDeleteBuffers(1, &buffer);
-}
-
-
-Tex RenderingEngineiOS1::CreateTexture(const char* texture) {
+  }
+  
+  
+  Tex RenderingEngineiOS1::CreateTexture(const char* texture) {
     Tex tTex;
     
     glGenTextures(1, &tTex.id);
     glBindTexture(GL_TEXTURE_2D, tTex.id);
     
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
-                       GL_NEAREST);
+                    GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,
-                       GL_LINEAR);
+                    GL_LINEAR);
     
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S,
-                       GL_CLAMP_TO_EDGE);
+                    GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T,
-                       GL_CLAMP_TO_EDGE);
+                    GL_CLAMP_TO_EDGE);
     
     glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE,
-                 GL_MODULATE);
+              GL_MODULATE);
     
     resMan->LoadImage(texture);
     void* pixels = resMan->GetImageData();
@@ -174,17 +187,17 @@ Tex RenderingEngineiOS1::CreateTexture(const char* texture) {
     resMan->UnloadImage();
     
     return tTex;
-}
-
-
-void RenderingEngineiOS1::CreateBuffers() {
+  }
+  
+  
+  void RenderingEngineiOS1::CreateBuffers() {
     unsigned int vtx = 0;
     
     for (unsigned int idx = 0; idx < MAX_IDX; idx += 6) {
-        indices[idx] = vtx; indices[idx+1] = vtx+1; indices[idx+2] = vtx+2;
-        indices[idx+3] = vtx+2; indices[idx+4] = vtx+1; indices[idx+5] = vtx+3;
-        
-        vtx += 4;
+      indices[idx] = vtx; indices[idx+1] = vtx+1; indices[idx+2] = vtx+2;
+      indices[idx+3] = vtx+2; indices[idx+4] = vtx+1; indices[idx+5] = vtx+3;
+      
+      vtx += 4;
     }
     
     glGenBuffers(1, &indexBuffer);
@@ -192,7 +205,7 @@ void RenderingEngineiOS1::CreateBuffers() {
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLushort) * MAX_IDX, indices, GL_STATIC_DRAW);
     
     for (unsigned int i = 0; i < MAX_RING; i++) {
-        vertexBufferRing[i] = CreateBuffer(vertexesRing[i]);
+      vertexBufferRing[i] = CreateBuffer(vertexesRing[i]);
     }
     
     ringIdx = 0;
@@ -202,8 +215,8 @@ void RenderingEngineiOS1::CreateBuffers() {
     
     vtxCount = 0;
     primCount = 0;
-}
-
+  }
+  
 }
 
 #endif

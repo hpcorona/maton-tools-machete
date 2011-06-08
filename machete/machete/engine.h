@@ -28,6 +28,11 @@ enum DeviceOrientation {
     DeviceOrientationLandscapeLeft,
     DeviceOrientationLandscapeRight
 };
+  
+enum RenderTarget {
+    TargetScreen,
+    TargetTexture
+};
 
 struct IResourceManager {
   IResourceManager() {}
@@ -39,10 +44,10 @@ struct IResourceManager {
   virtual ~IResourceManager() {};
 };
 
-struct IRenderingEngine* CreateRendereriOS1(IResourceManager* rm);
-struct IRenderingEngine* CreateRendereriOS2(IResourceManager* rm);
-struct IRenderingEngine* CreateRendererAndroid1(IResourceManager* rm);
-struct IRenderingEngine* CreateRendererAndroid2(IResourceManager* rm);
+struct IRenderingEngine* CreateRendereriOS1(RenderTarget, IResourceManager* rm);
+struct IRenderingEngine* CreateRendereriOS2(RenderTarget, IResourceManager* rm);
+struct IRenderingEngine* CreateRendererAndroid1(RenderTarget, IResourceManager* rm);
+struct IRenderingEngine* CreateRendererAndroid2(RenderTarget, IResourceManager* rm);
 
 struct IRenderingEngine {
   virtual void Initialize(int width, int height) = 0;
@@ -54,7 +59,8 @@ struct IRenderingEngine {
   virtual Tex CreateTexture(const char* texture) = 0;
   virtual void Clear() = 0;
   virtual ivec2 GetScreenSize() const = 0;
-  virtual IResourceManager* GetResMan() const = 0;
+  virtual IResourceManager* GetResourceManager() const = 0;
+  virtual unsigned int GetRenderTexture() const = 0;
 };
 
 struct IRenderable {
@@ -75,4 +81,5 @@ struct IGame {
     
 }
 
+machete::IRenderingEngine* CreateRenderingEngine(machete::RenderTarget, int, int);
 struct machete::IGame* CreateGame(machete::IRenderingEngine* rm);
