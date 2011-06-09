@@ -33,6 +33,7 @@ namespace machete {
     GLuint BuildProgram(const char* vShader, const char* fShader) const;
     void ApplyOrtho(float maxX, float maxY) const;
     void Initialize(int width, int height);
+    void Setup();
     void Draw(vec2 pos, vec2 size, float rotation, float scale, vertuv* verts, unsigned int texId);
     void Draw();
     GLuint CreateBuffer(vertuv* verts) const;
@@ -45,6 +46,8 @@ namespace machete {
     
     IResourceManager* GetResourceManager() const { return resMan; }
     GLuint GetRenderTexture() const { return tex; }
+    
+    void Finish();
     
   private:
     RenderTarget target;

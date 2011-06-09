@@ -61,6 +61,7 @@ struct IRenderingEngine {
   virtual ivec2 GetScreenSize() const = 0;
   virtual IResourceManager* GetResourceManager() const = 0;
   virtual unsigned int GetRenderTexture() const = 0;
+  virtual void Finish() = 0;
 };
 
 struct IRenderable {

@@ -15,46 +15,60 @@ namespace machete {
   RenderingEngineiOS2::RenderingEngineiOS2(RenderTarget t, IResourceManager *rm) {
     target = t;
     resMan = rm;
+    lastBind = 0;
+    
+    if (target == TargetScreen) {
+      glGenRenderbuffers(1, &renderbuffer);
+      glBindRenderbuffer(GL_RENDERBUFFER, renderbuffer);
+    }
   }
   
   ivec2 RenderingEngineiOS2::GetScreenSize() const { return size; }
   
   void RenderingEngineiOS2::Initialize(int width, int height) {
-    if (target == TargetTexture) {
-      glGenFramebuffers(1, &framebuffer);
-      glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
+    size.x = width;
+    size.y = height;
+    
+    GLenum e = glGetError();
+    
+    glGenFramebuffers(1, &framebuffer);
+    e = glGetError();
 
+    glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
+    e = glGetError();
+
+    if (target == TargetTexture) {
       glGenTextures(1, &tex);
+
       glBindTexture(GL_TEXTURE_2D, tex);
+
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
+                      GL_NEAREST);
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,
+                      GL_LINEAR);
       
-      glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8_OES, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S,
+                      GL_CLAMP_TO_EDGE);
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T,
+                      GL_CLAMP_TO_EDGE);
+
+      glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, size.x, size.y, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
       glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, tex, 0);
     } else {
-      glGenRenderbuffers(1, &renderbuffer);
-      glBindRenderbuffer(GL_RENDERBUFFER, renderbuffer);
-
-      glGenFramebuffers(1, &framebuffer);
-      glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
-      
       glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, renderbuffer);
+    }
+    
+    GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+    while (status != GL_FRAMEBUFFER_COMPLETE) {
+      status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
     }
     
     vtxBind = -1;
     lastBind = -1;
-    size.x = width;
-    size.y = height;
-    
-    glDisable(GL_DITHER);
-    glDisable(GL_DEPTH_TEST);
-    glEnable(GL_TEXTURE_2D);
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-    glViewport(0, 0, width, height);
     
     simpleProgram = BuildProgram(SimpleVertexShader, SimpleFragmentShader);
     glUseProgram(simpleProgram);
-    
+
     positionSlot = glGetAttribLocation(simpleProgram, "Position");
     textureSlot = glGetAttribLocation(simpleProgram, "TextureCoord");
     colorSlot = glGetAttribLocation(simpleProgram, "SourceColor");
@@ -70,30 +84,44 @@ namespace machete {
     
     glUniform1f(samplerSlot, 0);
     
-    ApplyOrtho(width, height);
+    CreateBuffers();
+
+    glDisable(GL_DITHER);
+    glDisable(GL_DEPTH_TEST);
+    glEnable(GL_TEXTURE_2D);
+    glEnable(GL_BLEND);
     
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
     base = mat4();
     base = base.Translate(-this->size.x / 2, this->size.y / 2, 0);
+    
+    glBindFramebuffer(1, 0);
+    glBindRenderbuffer(1, 0);
+    glBindTexture(1, 0);
+  }
+  
+  void RenderingEngineiOS2::Setup() {
+    glBindFramebuffer(1, framebuffer);
+    if (target == TargetScreen) {
+      glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, renderbuffer);
+    }
+
+    glViewport(0, 0, size.x, size.y);
+    
+    ApplyOrtho(size.x, size.y);
+    
     glUniformMatrix4fv(modelviewSlot, 1, 0, base.Pointer());
     
-    glClearColor(0.5f, 0.5f, 0.5f, 1);
-    
-    CreateBuffers();
+    if (target == TargetScreen) {
+      glClearColor(0.5f, 0.5f, 0.5f, 1);
+    } else {
+      glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+    }
   }
   
   void RenderingEngineiOS2::Clear() {
-    glBindFramebuffer(1, framebuffer);
-    if (target == TargetTexture) {
-      glBindTexture(GL_TEXTURE_2D, tex);
-      
-      glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8_OES, size.x, size.y, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
-      glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, tex, 0);
-    } else {
-      glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, renderbuffer);
-    }
-    
-    glBindTexture(GL_TEXTURE_2D, lastBind);
-    glActiveTexture(GL_TEXTURE0);
+    Setup();
     
     glClear(GL_COLOR_BUFFER_BIT);
     primCount = 0;
@@ -144,6 +172,15 @@ namespace machete {
     }
     vertexes = vertexesRing[ringIdx];
     vertexBuffer = vertexBufferRing[ringIdx];
+  }
+  
+  void RenderingEngineiOS2::Finish() {
+    Draw();
+    
+    lastBind = 0;
+    glBindFramebuffer(1, 0);
+    glBindRenderbuffer(1, 0);
+    glBindTexture(1, 0);
   }
   
   GLuint RenderingEngineiOS2::CreateBuffer(vertuv* verts) const {

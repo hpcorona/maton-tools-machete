@@ -38,6 +38,7 @@ namespace machete {
     
     IResourceManager* GetResourceManager() const { return resMan; }
     GLuint GetRenderTexture() const { return tex; }
+    void Finish() { Draw(); }
     
   private:
     RenderTarget target;

@@ -17,13 +17,10 @@
   if (self) {
     resMan = new machete::ResourceManager();
     
-    CAEAGLLayer* eaglLayer = (CAEAGLLayer*)super.layer;
-    
+    eaglLayer = (CAEAGLLayer*)super.layer;
     eaglLayer.opaque = YES;
     
     renEngine = CreateRenderingEngine(machete::TargetScreen, CGRectGetWidth(frame), CGRectGetHeight(frame));
-    
-    [context renderbufferStorage:GL_RENDERBUFFER fromDrawable:eaglLayer];
     
     game = CreateGame(renEngine);
     game->OnStart();
@@ -104,8 +101,12 @@ machete::IRenderingEngine* CreateRenderingEngine(machete::RenderTarget target, i
     NSLog(@"Using OpenGL ES 2.0");
     renEngine = CreateRendereriOS2(target, resMan);
   }
-  
+
+  if (target == machete::TargetScreen) {
+    [context renderbufferStorage:GL_RENDERBUFFER fromDrawable:eaglLayer];
+  }
+
   renEngine->Initialize(width, height);
-  
+
   return renEngine;
 }

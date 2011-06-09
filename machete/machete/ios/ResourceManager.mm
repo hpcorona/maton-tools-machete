@@ -4,25 +4,25 @@
 #include "../engine.h"
 
 namespace machete {
-    
-class ResourceManager : public IResourceManager {
-public:
+  
+  class ResourceManager : public IResourceManager {
+  public:
     const char* GetResourcePath() const {
-        NSString* bundlePath = [[NSBundle mainBundle] resourcePath];
-        return [bundlePath UTF8String];
+      NSString* bundlePath = [[NSBundle mainBundle] resourcePath];
+      return [bundlePath UTF8String];
     }
     
     void LoadImage(const char* name) {
-        NSString* basePath = [NSString stringWithUTF8String:name];
-        NSString* resourcePath = [[NSBundle mainBundle] resourcePath];
-        NSString* fullPath = [resourcePath stringByAppendingPathComponent:basePath];
-        UIImage* uiImage = [UIImage imageWithContentsOfFile:fullPath];
-        CGImageRef cgImage = uiImage.CGImage;
-        imageSize.x = CGImageGetWidth(cgImage);
-        imageSize.y = CGImageGetHeight(cgImage);
-        imageData = CGDataProviderCopyData(CGImageGetDataProvider(cgImage));
+      NSString* basePath = [NSString stringWithUTF8String:name];
+      NSString* resourcePath = [[NSBundle mainBundle] resourcePath];
+      NSString* fullPath = [resourcePath stringByAppendingPathComponent:basePath];
+      UIImage* uiImage = [UIImage imageWithContentsOfFile:fullPath];
+      CGImageRef cgImage = uiImage.CGImage;
+      imageSize.x = CGImageGetWidth(cgImage);
+      imageSize.y = CGImageGetHeight(cgImage);
+      imageData = CGDataProviderCopyData(CGImageGetDataProvider(cgImage));
     }
-  
+    
     unsigned int LoadFile(const char* name, char** data) {
       NSString* basePath = [NSString stringWithUTF8String:name];
       NSString* resourcePath = [[NSBundle mainBundle] resourcePath];
@@ -45,20 +45,20 @@ public:
     }
     
     void* GetImageData() {
-        return (void*)CFDataGetBytePtr(imageData);
+      return (void*)CFDataGetBytePtr(imageData);
     }
     
     ivec2 GetImageSize() {
-        return imageSize;
+      return imageSize;
     }
     
     void UnloadImage() {
-        CFRelease(imageData);
+      CFRelease(imageData);
     }
     
-private:
+  private:
     CFDataRef imageData;
     ivec2 imageSize;
-};
-
+  };
+  
 }

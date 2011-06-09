@@ -19,6 +19,7 @@
 
 static EAGLContext *context = NULL;
 static machete::ResourceManager *resMan = NULL;
+static CAEAGLLayer *eaglLayer = NULL;
 
 @interface MacheteGLView : UIView {
   machete::IRenderingEngine* renEngine;
