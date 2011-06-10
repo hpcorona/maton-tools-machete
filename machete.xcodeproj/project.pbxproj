@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		A801E0DA13A06120002FA9E8 /* shader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A801E0D813A06120002FA9E8 /* shader.cpp */; };
+		A801E0DB13A06120002FA9E8 /* shader.h in Headers */ = {isa = PBXBuildFile; fileRef = A801E0D913A06120002FA9E8 /* shader.h */; };
+		A801E0DF13A068B3002FA9E8 /* log.h in Headers */ = {isa = PBXBuildFile; fileRef = A801E0DE13A068B3002FA9E8 /* log.h */; };
 		A816243B1399D14D00CE8ED5 /* mbd.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A816243A1399D14D00CE8ED5 /* mbd.cpp */; };
 		A85B7EE71398909A008776AB /* mbd.h in Headers */ = {isa = PBXBuildFile; fileRef = A85B7EE61398909A008776AB /* mbd.h */; };
 		A8885811135CB02F00F7732C /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A8885810135CB02F00F7732C /* Foundation.framework */; };
@@ -32,6 +35,9 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		A801E0D813A06120002FA9E8 /* shader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = shader.cpp; path = common/shader.cpp; sourceTree = "<group>"; };
+		A801E0D913A06120002FA9E8 /* shader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = shader.h; path = common/shader.h; sourceTree = "<group>"; };
+		A801E0DE13A068B3002FA9E8 /* log.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = log.h; path = common/log.h; sourceTree = "<group>"; };
 		A816243A1399D14D00CE8ED5 /* mbd.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = mbd.cpp; sourceTree = "<group>"; };
 		A85B7EE61398909A008776AB /* mbd.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mbd.h; sourceTree = "<group>"; };
 		A888580D135CB02F00F7732C /* libmachete.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libmachete.a; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -76,6 +82,16 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		A801E0DD13A06127002FA9E8 /* common */ = {
+			isa = PBXGroup;
+			children = (
+				A801E0D813A06120002FA9E8 /* shader.cpp */,
+				A801E0D913A06120002FA9E8 /* shader.h */,
+				A801E0DE13A068B3002FA9E8 /* log.h */,
+			);
+			name = common;
+			sourceTree = "<group>";
+		};
 		A8885802135CB02F00F7732C = {
 			isa = PBXGroup;
 			children = (
@@ -127,6 +143,7 @@
 		A888581A135CB1FC00F7732C /* machete */ = {
 			isa = PBXGroup;
 			children = (
+				A801E0DD13A06127002FA9E8 /* common */,
 				A89365521375ACA900B0B46C /* tree.h */,
 				A8885850135CB76300F7732C /* simple.frag */,
 				A8885851135CB76300F7732C /* simple.vert */,
@@ -175,6 +192,8 @@
 				A89365571375B62300B0B46C /* str.h in Headers */,
 				A8F90985139606F80029D78E /* lists.h in Headers */,
 				A85B7EE71398909A008776AB /* mbd.h in Headers */,
+				A801E0DB13A06120002FA9E8 /* shader.h in Headers */,
+				A801E0DF13A068B3002FA9E8 /* log.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -230,6 +249,7 @@
 				A8885865135CBB9800F7732C /* MacheteGLView.mm in Sources */,
 				A8885867135CBBEA00F7732C /* ResourceManager.mm in Sources */,
 				A816243B1399D14D00CE8ED5 /* mbd.cpp in Sources */,
+				A801E0DA13A06120002FA9E8 /* shader.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

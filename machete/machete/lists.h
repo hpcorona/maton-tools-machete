@@ -8,6 +8,10 @@
 
 #pragma once
 
+#ifndef NULL
+#define NULL 0
+#endif
+
 namespace machete { namespace data {
     
   template<class T>
