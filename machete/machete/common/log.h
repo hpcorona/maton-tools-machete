@@ -8,13 +8,13 @@
 
 #pragma once
 
-#include "../str.h"
+#include "../data/str.h"
 #include <iostream>
 
 namespace machete {
   namespace common {
     
-    void Log(const machete::data::Str & msg) {
+    static void Log(const machete::data::Str & msg) {
       int c = 0;
       
       while (c < msg.Size()) {

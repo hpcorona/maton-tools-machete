@@ -15,14 +15,12 @@
 #import <OpenGLES/ES1/glext.h>
 #import <OpenGLES/ES2/gl.h>
 #import "machete/engine.h"
-#import "machete/ios/ResourceManager.mm"
 
-static EAGLContext *context = NULL;
-static machete::ResourceManager *resMan = NULL;
-static CAEAGLLayer *eaglLayer = NULL;
+extern EAGLContext *context;
+extern CAEAGLLayer *eaglLayer;
 
 @interface MacheteGLView : UIView {
-  machete::IRenderingEngine* renEngine;
+  machete::graphics::DrawContext* renEngine;
   float timestamp;
     
   machete::IGame *game;

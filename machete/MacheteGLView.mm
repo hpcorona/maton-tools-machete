@@ -7,7 +7,10 @@
 //
 
 #import "MacheteGLView.h"
+#import "iOSPlatform.mm"
 
+EAGLContext *context = NULL;
+CAEAGLLayer *eaglLayer = NULL;
 
 @implementation MacheteGLView
 
@@ -15,17 +18,17 @@
 {
   self = [super initWithFrame:frame];
   if (self) {
-    resMan = new machete::ResourceManager();
+    machete::Start(new PlatformiOS());
     
     eaglLayer = (CAEAGLLayer*)super.layer;
     eaglLayer.opaque = YES;
     
-    renEngine = CreateRenderingEngine(machete::TargetScreen, CGRectGetWidth(frame), CGRectGetHeight(frame));
+    renEngine = CreateDrawContext(machete::graphics::TargetScreen, CGRectGetWidth(frame), CGRectGetHeight(frame));
     
-    game = CreateGame(renEngine);
+    game = CreateGame();
     game->OnStart();
     game->OnResume();
-    game->Initialize(CGRectGetWidth(frame), CGRectGetHeight(frame), machete::DeviceOrientationPortrait);
+    game->Initialize(renEngine, CGRectGetWidth(frame), CGRectGetHeight(frame), machete::DeviceOrientationPortrait);
     
     [self drawView:nil];
     timestamp = CACurrentMediaTime();
@@ -49,8 +52,6 @@
   
   [context release];
   
-  delete resMan;
-  
   [super dealloc];
 }
 
@@ -73,7 +74,7 @@
 
 @end
 
-machete::IRenderingEngine* CreateRenderingEngine(machete::RenderTarget target, int width, int height) {
+machete::graphics::DrawContext* CreateDrawContext(machete::graphics::RenderTarget target, int width, int height) {
   bool force = false;
   
   if (context == NULL) {
@@ -92,17 +93,17 @@ machete::IRenderingEngine* CreateRenderingEngine(machete::RenderTarget target, i
     }
   }
   
-  machete::IRenderingEngine *renEngine;
+  machete::graphics::DrawContext *renEngine = new machete::graphics::DrawContext(target);
   
   if (context.API == kEAGLRenderingAPIOpenGLES1) {
     NSLog(@"Using OpenGL ES 1.1");
-    renEngine = CreateRendereriOS1(target, resMan);
+    //renEngine = CreateRendereriOS1(target);
   } else {
     NSLog(@"Using OpenGL ES 2.0");
-    renEngine = CreateRendereriOS2(target, resMan);
+    //renEngine = CreateRendereriOS2(target);
   }
 
-  if (target == machete::TargetScreen) {
+  if (target == machete::graphics::TargetScreen) {
     [context renderbufferStorage:GL_RENDERBUFFER fromDrawable:eaglLayer];
   }
 

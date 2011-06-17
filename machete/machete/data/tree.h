@@ -19,7 +19,6 @@ namespace machete {
     class Tree {
     public:
       Tree() {
-        // LVM 2.0 se awita si uso :this(NULL,key,value)
         this->parent = NULL;
         empty = true;
         left = NULL;
@@ -43,7 +42,6 @@ namespace machete {
       }
       
       Tree(K key, T value) {
-        // LVM 2.0 se awita si uso :this(NULL,key,value)
         this->parent = NULL;
         this->key = key;
         this->value = value;

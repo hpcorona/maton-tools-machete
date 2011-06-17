@@ -11,13 +11,10 @@
 		A801E0DB13A06120002FA9E8 /* shader.h in Headers */ = {isa = PBXBuildFile; fileRef = A801E0D913A06120002FA9E8 /* shader.h */; };
 		A801E0DF13A068B3002FA9E8 /* log.h in Headers */ = {isa = PBXBuildFile; fileRef = A801E0DE13A068B3002FA9E8 /* log.h */; };
 		A816243B1399D14D00CE8ED5 /* mbd.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A816243A1399D14D00CE8ED5 /* mbd.cpp */; };
+		A839E21313AB3E65004A1CA5 /* platform.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A839E21213AB3E65004A1CA5 /* platform.cpp */; };
 		A85B7EE71398909A008776AB /* mbd.h in Headers */ = {isa = PBXBuildFile; fileRef = A85B7EE61398909A008776AB /* mbd.h */; };
 		A8885811135CB02F00F7732C /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A8885810135CB02F00F7732C /* Foundation.framework */; };
 		A8885841135CB1FC00F7732C /* engine.h in Headers */ = {isa = PBXBuildFile; fileRef = A8885829135CB1FC00F7732C /* engine.h */; };
-		A8885842135CB1FC00F7732C /* RenderingEngineiOS1.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A888582B135CB1FC00F7732C /* RenderingEngineiOS1.cpp */; };
-		A8885843135CB1FC00F7732C /* RenderingEngineiOS1.h in Headers */ = {isa = PBXBuildFile; fileRef = A888582C135CB1FC00F7732C /* RenderingEngineiOS1.h */; };
-		A8885844135CB1FC00F7732C /* RenderingEngineiOS2.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A888582D135CB1FC00F7732C /* RenderingEngineiOS2.cpp */; };
-		A8885845135CB1FC00F7732C /* RenderingEngineiOS2.h in Headers */ = {isa = PBXBuildFile; fileRef = A888582E135CB1FC00F7732C /* RenderingEngineiOS2.h */; };
 		A8885846135CB1FC00F7732C /* matrix.h in Headers */ = {isa = PBXBuildFile; fileRef = A888582F135CB1FC00F7732C /* matrix.h */; };
 		A8885847135CB1FC00F7732C /* module.h in Headers */ = {isa = PBXBuildFile; fileRef = A8885830135CB1FC00F7732C /* module.h */; };
 		A8885848135CB1FC00F7732C /* quaternion.h in Headers */ = {isa = PBXBuildFile; fileRef = A8885831135CB1FC00F7732C /* quaternion.h */; };
@@ -28,41 +25,44 @@
 		A8885861135CBB8200F7732C /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A8885860135CBB8200F7732C /* CoreGraphics.framework */; };
 		A8885864135CBB9800F7732C /* MacheteGLView.h in Headers */ = {isa = PBXBuildFile; fileRef = A8885862135CBB9800F7732C /* MacheteGLView.h */; };
 		A8885865135CBB9800F7732C /* MacheteGLView.mm in Sources */ = {isa = PBXBuildFile; fileRef = A8885863135CBB9800F7732C /* MacheteGLView.mm */; };
-		A8885867135CBBEA00F7732C /* ResourceManager.mm in Sources */ = {isa = PBXBuildFile; fileRef = A8885866135CBBEA00F7732C /* ResourceManager.mm */; };
 		A89365531375ACA900B0B46C /* tree.h in Headers */ = {isa = PBXBuildFile; fileRef = A89365521375ACA900B0B46C /* tree.h */; };
 		A89365571375B62300B0B46C /* str.h in Headers */ = {isa = PBXBuildFile; fileRef = A89365551375B62200B0B46C /* str.h */; };
+		A8DF994213A9E05F008A27CA /* iOSPlatform.mm in Sources */ = {isa = PBXBuildFile; fileRef = A84955ED13A89014002BB310 /* iOSPlatform.mm */; };
+		A8E4DD8413A93A5B00A27214 /* platform.h in Headers */ = {isa = PBXBuildFile; fileRef = A8E4DD8313A93A5B00A27214 /* platform.h */; };
+		A8E4DD8713A93BB300A27214 /* draw.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A8E4DD8513A93BB300A27214 /* draw.cpp */; };
+		A8E4DD8813A93BB300A27214 /* draw.h in Headers */ = {isa = PBXBuildFile; fileRef = A8E4DD8613A93BB300A27214 /* draw.h */; };
 		A8F90985139606F80029D78E /* lists.h in Headers */ = {isa = PBXBuildFile; fileRef = A8F90984139606F80029D78E /* lists.h */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		A801E0D813A06120002FA9E8 /* shader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = shader.cpp; path = common/shader.cpp; sourceTree = "<group>"; };
-		A801E0D913A06120002FA9E8 /* shader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = shader.h; path = common/shader.h; sourceTree = "<group>"; };
-		A801E0DE13A068B3002FA9E8 /* log.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = log.h; path = common/log.h; sourceTree = "<group>"; };
+		A801E0D813A06120002FA9E8 /* shader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = shader.cpp; sourceTree = "<group>"; };
+		A801E0D913A06120002FA9E8 /* shader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = shader.h; sourceTree = "<group>"; };
+		A801E0DE13A068B3002FA9E8 /* log.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = log.h; sourceTree = "<group>"; };
 		A816243A1399D14D00CE8ED5 /* mbd.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = mbd.cpp; sourceTree = "<group>"; };
+		A839E21213AB3E65004A1CA5 /* platform.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = platform.cpp; sourceTree = "<group>"; };
+		A84955ED13A89014002BB310 /* iOSPlatform.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = iOSPlatform.mm; sourceTree = "<group>"; };
+		A85130FF13A7357E00084BD5 /* vtx.vert */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = vtx.vert; sourceTree = "<group>"; };
+		A851310213A7359400084BD5 /* vtx.frag */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = vtx.frag; sourceTree = "<group>"; };
 		A85B7EE61398909A008776AB /* mbd.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mbd.h; sourceTree = "<group>"; };
 		A888580D135CB02F00F7732C /* libmachete.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libmachete.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		A8885810135CB02F00F7732C /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		A8885814135CB02F00F7732C /* machete-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "machete-Prefix.pch"; sourceTree = "<group>"; };
 		A8885829135CB1FC00F7732C /* engine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = engine.h; sourceTree = "<group>"; };
-		A888582B135CB1FC00F7732C /* RenderingEngineiOS1.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RenderingEngineiOS1.cpp; sourceTree = "<group>"; };
-		A888582C135CB1FC00F7732C /* RenderingEngineiOS1.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RenderingEngineiOS1.h; sourceTree = "<group>"; };
-		A888582D135CB1FC00F7732C /* RenderingEngineiOS2.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RenderingEngineiOS2.cpp; sourceTree = "<group>"; };
-		A888582E135CB1FC00F7732C /* RenderingEngineiOS2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RenderingEngineiOS2.h; sourceTree = "<group>"; };
 		A888582F135CB1FC00F7732C /* matrix.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = matrix.h; sourceTree = "<group>"; };
 		A8885830135CB1FC00F7732C /* module.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = module.h; sourceTree = "<group>"; };
 		A8885831135CB1FC00F7732C /* quaternion.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = quaternion.h; sourceTree = "<group>"; };
 		A8885834135CB1FC00F7732C /* vector.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = vector.h; sourceTree = "<group>"; };
-		A8885850135CB76300F7732C /* simple.frag */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = simple.frag; sourceTree = "<group>"; };
-		A8885851135CB76300F7732C /* simple.vert */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = simple.vert; sourceTree = "<group>"; };
 		A8885852135CB84B00F7732C /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
 		A8885854135CB85100F7732C /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		A888585E135CBB7D00F7732C /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		A8885860135CBB8200F7732C /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		A8885862135CBB9800F7732C /* MacheteGLView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MacheteGLView.h; sourceTree = "<group>"; };
 		A8885863135CBB9800F7732C /* MacheteGLView.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = MacheteGLView.mm; sourceTree = "<group>"; };
-		A8885866135CBBEA00F7732C /* ResourceManager.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = ResourceManager.mm; sourceTree = "<group>"; };
 		A89365521375ACA900B0B46C /* tree.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tree.h; sourceTree = "<group>"; };
 		A89365551375B62200B0B46C /* str.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = str.h; sourceTree = "<group>"; };
+		A8E4DD8313A93A5B00A27214 /* platform.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = platform.h; sourceTree = "<group>"; };
+		A8E4DD8513A93BB300A27214 /* draw.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = draw.cpp; sourceTree = "<group>"; };
+		A8E4DD8613A93BB300A27214 /* draw.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = draw.h; sourceTree = "<group>"; };
 		A8F90984139606F80029D78E /* lists.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = lists.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -85,12 +85,11 @@
 		A801E0DD13A06127002FA9E8 /* common */ = {
 			isa = PBXGroup;
 			children = (
-				A801E0D813A06120002FA9E8 /* shader.cpp */,
-				A801E0D913A06120002FA9E8 /* shader.h */,
 				A801E0DE13A068B3002FA9E8 /* log.h */,
 			);
 			name = common;
-			sourceTree = "<group>";
+			path = machete/machete/common;
+			sourceTree = SOURCE_ROOT;
 		};
 		A8885802135CB02F00F7732C = {
 			isa = PBXGroup;
@@ -127,6 +126,7 @@
 				A888581A135CB1FC00F7732C /* machete */,
 				A8885813135CB02F00F7732C /* Supporting Files */,
 				A8885862135CBB9800F7732C /* MacheteGLView.h */,
+				A84955ED13A89014002BB310 /* iOSPlatform.mm */,
 				A8885863135CBB9800F7732C /* MacheteGLView.mm */,
 			);
 			path = machete;
@@ -143,35 +143,64 @@
 		A888581A135CB1FC00F7732C /* machete */ = {
 			isa = PBXGroup;
 			children = (
+				A8E4DD7F13A9374500A27214 /* graphics */,
+				A8E4DD7E13A9363C00A27214 /* math */,
+				A8E4DD7D13A9360F00A27214 /* data */,
+				A8E4DD7A13A91C5C00A27214 /* platform */,
 				A801E0DD13A06127002FA9E8 /* common */,
-				A89365521375ACA900B0B46C /* tree.h */,
-				A8885850135CB76300F7732C /* simple.frag */,
-				A8885851135CB76300F7732C /* simple.vert */,
-				A8885829135CB1FC00F7732C /* engine.h */,
-				A888582A135CB1FC00F7732C /* ios */,
-				A888582F135CB1FC00F7732C /* matrix.h */,
 				A8885830135CB1FC00F7732C /* module.h */,
-				A8885831135CB1FC00F7732C /* quaternion.h */,
-				A8885834135CB1FC00F7732C /* vector.h */,
+				A8885829135CB1FC00F7732C /* engine.h */,
+			);
+			path = machete;
+			sourceTree = "<group>";
+		};
+		A8E4DD7A13A91C5C00A27214 /* platform */ = {
+			isa = PBXGroup;
+			children = (
+				A8E4DD8313A93A5B00A27214 /* platform.h */,
+				A839E21213AB3E65004A1CA5 /* platform.cpp */,
+			);
+			name = platform;
+			path = machete/machete/platform;
+			sourceTree = SOURCE_ROOT;
+		};
+		A8E4DD7D13A9360F00A27214 /* data */ = {
+			isa = PBXGroup;
+			children = (
+				A89365521375ACA900B0B46C /* tree.h */,
 				A89365551375B62200B0B46C /* str.h */,
 				A8F90984139606F80029D78E /* lists.h */,
 				A85B7EE61398909A008776AB /* mbd.h */,
 				A816243A1399D14D00CE8ED5 /* mbd.cpp */,
 			);
-			path = machete;
-			sourceTree = "<group>";
+			name = data;
+			path = machete/machete/data;
+			sourceTree = SOURCE_ROOT;
 		};
-		A888582A135CB1FC00F7732C /* ios */ = {
+		A8E4DD7E13A9363C00A27214 /* math */ = {
 			isa = PBXGroup;
 			children = (
-				A888582B135CB1FC00F7732C /* RenderingEngineiOS1.cpp */,
-				A888582C135CB1FC00F7732C /* RenderingEngineiOS1.h */,
-				A888582D135CB1FC00F7732C /* RenderingEngineiOS2.cpp */,
-				A888582E135CB1FC00F7732C /* RenderingEngineiOS2.h */,
-				A8885866135CBBEA00F7732C /* ResourceManager.mm */,
+				A888582F135CB1FC00F7732C /* matrix.h */,
+				A8885831135CB1FC00F7732C /* quaternion.h */,
+				A8885834135CB1FC00F7732C /* vector.h */,
 			);
-			path = ios;
-			sourceTree = "<group>";
+			name = math;
+			path = machete/machete/math;
+			sourceTree = SOURCE_ROOT;
+		};
+		A8E4DD7F13A9374500A27214 /* graphics */ = {
+			isa = PBXGroup;
+			children = (
+				A801E0D813A06120002FA9E8 /* shader.cpp */,
+				A801E0D913A06120002FA9E8 /* shader.h */,
+				A85130FF13A7357E00084BD5 /* vtx.vert */,
+				A851310213A7359400084BD5 /* vtx.frag */,
+				A8E4DD8513A93BB300A27214 /* draw.cpp */,
+				A8E4DD8613A93BB300A27214 /* draw.h */,
+			);
+			name = graphics;
+			path = machete/machete/graphics;
+			sourceTree = SOURCE_ROOT;
 		};
 /* End PBXGroup section */
 
@@ -181,8 +210,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				A8885841135CB1FC00F7732C /* engine.h in Headers */,
-				A8885843135CB1FC00F7732C /* RenderingEngineiOS1.h in Headers */,
-				A8885845135CB1FC00F7732C /* RenderingEngineiOS2.h in Headers */,
 				A8885846135CB1FC00F7732C /* matrix.h in Headers */,
 				A8885847135CB1FC00F7732C /* module.h in Headers */,
 				A8885848135CB1FC00F7732C /* quaternion.h in Headers */,
@@ -194,6 +221,8 @@
 				A85B7EE71398909A008776AB /* mbd.h in Headers */,
 				A801E0DB13A06120002FA9E8 /* shader.h in Headers */,
 				A801E0DF13A068B3002FA9E8 /* log.h in Headers */,
+				A8E4DD8413A93A5B00A27214 /* platform.h in Headers */,
+				A8E4DD8813A93BB300A27214 /* draw.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -244,12 +273,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A8885842135CB1FC00F7732C /* RenderingEngineiOS1.cpp in Sources */,
-				A8885844135CB1FC00F7732C /* RenderingEngineiOS2.cpp in Sources */,
+				A8DF994213A9E05F008A27CA /* iOSPlatform.mm in Sources */,
 				A8885865135CBB9800F7732C /* MacheteGLView.mm in Sources */,
-				A8885867135CBBEA00F7732C /* ResourceManager.mm in Sources */,
 				A816243B1399D14D00CE8ED5 /* mbd.cpp in Sources */,
 				A801E0DA13A06120002FA9E8 /* shader.cpp in Sources */,
+				A8E4DD8713A93BB300A27214 /* draw.cpp in Sources */,
+				A839E21313AB3E65004A1CA5 /* platform.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -292,7 +321,11 @@
 				DSTROOT = /tmp/machete.dst;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "machete/machete-Prefix.pch";
-				"GCC_PREPROCESSOR_DEFINITIONS[arch=*]" = TARGET_IOS;
+				"GCC_PREPROCESSOR_DEFINITIONS[arch=*]" = (
+					DEBUG,
+					TARGET_IOS,
+					ENGINE,
+				);
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -305,7 +338,10 @@
 				DSTROOT = /tmp/machete.dst;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "machete/machete-Prefix.pch";
-				"GCC_PREPROCESSOR_DEFINITIONS[arch=*]" = TARGET_IOS;
+				"GCC_PREPROCESSOR_DEFINITIONS[arch=*]" = (
+					TARGET_IOS,
+					ENGINE,
+				);
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};

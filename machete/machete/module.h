@@ -5,6 +5,9 @@
 //  Created by Hilario Perez Corona on 4/10/11.
 //  Copyright 2011 Matón Supergames. All rights reserved.
 //
+
+#pragma once
+
 #include "vector.h"
 #include "engine.h"
 
@@ -45,7 +48,7 @@ struct Module : public IRenderable {
         texId = tid;
     }
     
-    void Draw(vec2 pos, float rotation, float scale, vec4 color, IRenderingEngine* engine) {
+    void Draw(vec2 pos, float rotation, float scale, vec4 color, IRenderCtxt* engine) {
         verts[0].color = color;
         verts[1].color = color;
         verts[2].color = color;
