@@ -93,7 +93,7 @@ namespace machete {
       renderer.SetModelView(mv);
     }
     
-    void DrawContext::Draw(machete::math::Vec2 offset, Vtx *verts, int vcount, unsigned short* elems, int ecount, GLuint texId) {
+    void DrawContext::Draw(Vtx *verts, int vcount, unsigned short* elems, int ecount, GLuint texId) {
       
       if (texId != lastTexBind) {
         Draw();

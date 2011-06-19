@@ -184,12 +184,13 @@ namespace machete {
     }
     
     VtxRender::VtxRender() {
-      Shader *vtx = TheShaderMgr->LoadShader(GL_VERTEX_SHADER, "vtxVertex", VtxVertexShader);
-      Shader *frg = TheShaderMgr->LoadShader(GL_FRAGMENT_SHADER, "vtxFragment", VtxFragmentShader);
+      Shader *vtx = CreateVtxShader();
+      Shader *frg = CreateFrgShader();
       
       CreateProgram(vtx, frg);
       
       pivotSlot = glGetAttribLocation(program, "Pivot");
+      offsetSlot = glGetAttribLocation(program, "Offset");
       positionSlot = glGetAttribLocation(program, "Position");
       textureSlot = glGetAttribLocation(program, "TextureCoord");
       colorSlot = glGetAttribLocation(program, "SourceColor");
@@ -202,6 +203,7 @@ namespace machete {
       samplerSlot = glGetAttribLocation(program, "Sampler");
       
       glEnableVertexAttribArray(pivotSlot);
+      glEnableVertexAttribArray(offsetSlot);
       glEnableVertexAttribArray(positionSlot);
       glEnableVertexAttribArray(textureSlot);
       glEnableVertexAttribArray(colorSlot);
@@ -211,6 +213,14 @@ namespace machete {
       glUniform1f(samplerSlot, 0);
     }
     
+    Shader *VtxRender::CreateVtxShader() {
+      return TheShaderMgr->LoadShader(GL_VERTEX_SHADER, "vtxVertex", VtxVertexShader);
+    }
+    
+    Shader *VtxRender::CreateFrgShader() {
+      return TheShaderMgr->LoadShader(GL_FRAGMENT_SHADER, "vtxFragment", VtxFragmentShader);
+    }
+
     VtxRender::~VtxRender() {
       
     }
@@ -223,6 +233,7 @@ namespace machete {
       glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, sizeof(GLushort) * ecount, elems);
       
       glVertexAttribPointer(pivotSlot, 2, GL_FLOAT, GL_FALSE, sizeof(Vtx), &POSITION[0].pivot);
+      glVertexAttribPointer(offsetSlot, 2, GL_FLOAT, GL_FALSE, sizeof(Vtx), &POSITION[0].offset);
       glVertexAttribPointer(positionSlot, 3, GL_FLOAT, GL_FALSE, sizeof(Vtx), POSITION);
       glVertexAttribPointer(textureSlot, 2, GL_FLOAT, GL_FALSE, sizeof(Vtx), &POSITION[0].uv);
       glVertexAttribPointer(scaleSlot, 2, GL_FLOAT, GL_FALSE, sizeof(Vtx), &POSITION[0].scale);

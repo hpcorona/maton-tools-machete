@@ -80,6 +80,7 @@ namespace machete {
     };
     
     struct Vtx {
+      machete::math::Vec2 offset;
       machete::math::Vec4 pivot;
       machete::math::Vec4 vert;
       machete::math::Vec2 uv;
@@ -92,6 +93,9 @@ namespace machete {
     public:
       VtxRender();
       ~VtxRender();
+      Shader *CreateVtxShader();
+      Shader *CreateFrgShader();
+      
       void Upload(Vtx *verts, int vcount, unsigned short* elems, int ecount);
       
       void SetBase(const machete::math::Mat4 & base) { this->base = base; glUniformMatrix4fv(baseSlot, 1, 0, base.Pointer()); }
@@ -100,6 +104,7 @@ namespace machete {
       
     protected:
       GLuint pivotSlot;
+      GLuint offsetSlot;
       GLuint positionSlot;
       GLuint textureSlot;
       GLuint colorSlot;

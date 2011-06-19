@@ -36,7 +36,7 @@ namespace machete {
       void EndFrame();
 
       void ChangeModelView(const machete::math::Mat4 & mv);
-      void Draw(machete::math::Vec2 offset, Vtx *verts, int vcount, unsigned short* elems, int ecount, GLuint texId);
+      void Draw(Vtx *verts, int vcount, unsigned short* elems, int ecount, GLuint texId);
       void Draw();
       
       machete::math::IVec2 GetSize() const;
@@ -83,7 +83,7 @@ namespace machete {
     
     class IDrawable {
     public:
-      virtual void Draw(machete::math::Vec2 pos, float rotation, float scale, machete::math::Vec4 color, DrawContext* context) = 0;
+      virtual void Draw(const machete::math::Vec2 & pos, float rotation, const machete::math::Vec2 & scale, const machete::math::Vec4 & color, DrawContext* context) = 0;
       virtual machete::math::Rect2D GetBounds() = 0;
     };
 

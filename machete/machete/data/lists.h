@@ -33,15 +33,11 @@ namespace machete {
         delete next;
       }
       
-      void Remove() {
-        if (next == NULL) {
-          empty = true;
-        } else {
-          LinkedList<T> *pnext = next;
-          
-          next = pnext->next;
-          delete pnext;
-        }
+      void Clear() {
+        if (next != NULL) return;
+        
+        value = NULL;
+        empty = true;
       }
       
       void Append(const T &v) {
@@ -62,8 +58,17 @@ namespace machete {
         return value;
       }
       
+      void SetValue(const T &v) {
+        value = v;
+        empty = false;
+      }
+      
       LinkedList<T> *GetNext() {
         return next;
+      }
+      
+      void SetNext(LinkedList<T> *next) {
+        this->next = next;
       }
       
       bool IsEmpty() {
@@ -81,6 +86,11 @@ namespace machete {
     public:
       Iterator() {
         root = new LinkedList<T>();
+        current = NULL;
+      }
+      
+      Iterator(LinkedList<T> *root) {
+        this->root = root;
         current = NULL;
       }
       
@@ -124,6 +134,26 @@ namespace machete {
       
       void Reset() {
         current = NULL;
+      }
+      
+      void RemoveRoot() {
+        if (root->IsEmpty()) return;
+        
+        LinkedList<T> *next = root->GetNext();
+        
+        if (next == NULL) {
+          root->Clear();
+        } else {
+          root->SetNext(NULL);
+          
+          if (current == root) {
+            current = NULL;
+          }
+          
+          delete root;
+          
+          root = next;
+        }
       }
       
     private:

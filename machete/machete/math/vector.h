@@ -317,21 +317,30 @@ namespace machete {
         size.x = x1 - x0;
         size.y = y1 - y0;
       }
+
+      Rect2D operator+(const Vec2& p) const {
+        return Rect2D(pos.x + p.x, pos.y + p.y, size.x, size.y);
+      }
       
-      Rect2D operator*(float scale) const {
-        float x0 = pos.x * scale;
-        float y0 = pos.y * scale;
-        float x1 = (pos.x + size.x) * scale;
-        float y1 = (pos.y + size.y) * scale;
+      void operator+=(const Vec2& p) {
+        pos.x += p.x;
+        pos.y += p.y;
+      }
+
+      Rect2D operator*(const Vec2 & scale) const {
+        float x0 = pos.x * scale.x;
+        float y0 = pos.y * scale.y;
+        float x1 = (pos.x + size.x) * scale.x;
+        float y1 = (pos.y + size.y) * scale.y;
         
         return Rect2D(x0, y0, x1 - x0, y1 - y0);
       }
       
-      void operator*=(float scale) {
-        float x0 = pos.x * scale;
-        float y0 = pos.y * scale;
-        float x1 = (pos.x + size.x) * scale;
-        float y1 = (pos.y + size.y) * scale;
+      void operator*=(const Vec2 & scale) {
+        float x0 = pos.x * scale.x;
+        float y0 = pos.y * scale.y;
+        float x1 = (pos.x + size.x) * scale.x;
+        float y1 = (pos.y + size.y) * scale.y;
         
         pos.x = x0;
         pos.y = y0;
@@ -339,7 +348,7 @@ namespace machete {
         size.y = y1 - y0;
       }
       
-      bool Contains(Vec2 point) const {
+      bool Contains(Vec2 & point) const {
         return (point.x >= pos.x && point.y >= pos.y &&
                 pos.x <= pos.x + size.x - 1 &&
                 pos.y <= pos.y + size.y - 1);

@@ -10,13 +10,14 @@
 		A801E0DA13A06120002FA9E8 /* shader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A801E0D813A06120002FA9E8 /* shader.cpp */; };
 		A801E0DB13A06120002FA9E8 /* shader.h in Headers */ = {isa = PBXBuildFile; fileRef = A801E0D913A06120002FA9E8 /* shader.h */; };
 		A801E0DF13A068B3002FA9E8 /* log.h in Headers */ = {isa = PBXBuildFile; fileRef = A801E0DE13A068B3002FA9E8 /* log.h */; };
+		A8114FD613ABA09F00103559 /* element.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A8114FD413ABA09F00103559 /* element.cpp */; };
+		A8114FD713ABA09F00103559 /* element.h in Headers */ = {isa = PBXBuildFile; fileRef = A8114FD513ABA09F00103559 /* element.h */; };
 		A816243B1399D14D00CE8ED5 /* mbd.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A816243A1399D14D00CE8ED5 /* mbd.cpp */; };
 		A839E21313AB3E65004A1CA5 /* platform.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A839E21213AB3E65004A1CA5 /* platform.cpp */; };
 		A85B7EE71398909A008776AB /* mbd.h in Headers */ = {isa = PBXBuildFile; fileRef = A85B7EE61398909A008776AB /* mbd.h */; };
 		A8885811135CB02F00F7732C /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A8885810135CB02F00F7732C /* Foundation.framework */; };
 		A8885841135CB1FC00F7732C /* engine.h in Headers */ = {isa = PBXBuildFile; fileRef = A8885829135CB1FC00F7732C /* engine.h */; };
 		A8885846135CB1FC00F7732C /* matrix.h in Headers */ = {isa = PBXBuildFile; fileRef = A888582F135CB1FC00F7732C /* matrix.h */; };
-		A8885847135CB1FC00F7732C /* module.h in Headers */ = {isa = PBXBuildFile; fileRef = A8885830135CB1FC00F7732C /* module.h */; };
 		A8885848135CB1FC00F7732C /* quaternion.h in Headers */ = {isa = PBXBuildFile; fileRef = A8885831135CB1FC00F7732C /* quaternion.h */; };
 		A888584B135CB1FC00F7732C /* vector.h in Headers */ = {isa = PBXBuildFile; fileRef = A8885834135CB1FC00F7732C /* vector.h */; };
 		A8885853135CB84B00F7732C /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A8885852135CB84B00F7732C /* OpenGLES.framework */; };
@@ -38,6 +39,8 @@
 		A801E0D813A06120002FA9E8 /* shader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = shader.cpp; sourceTree = "<group>"; };
 		A801E0D913A06120002FA9E8 /* shader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = shader.h; sourceTree = "<group>"; };
 		A801E0DE13A068B3002FA9E8 /* log.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = log.h; sourceTree = "<group>"; };
+		A8114FD413ABA09F00103559 /* element.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = element.cpp; sourceTree = "<group>"; };
+		A8114FD513ABA09F00103559 /* element.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = element.h; sourceTree = "<group>"; };
 		A816243A1399D14D00CE8ED5 /* mbd.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = mbd.cpp; sourceTree = "<group>"; };
 		A839E21213AB3E65004A1CA5 /* platform.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = platform.cpp; sourceTree = "<group>"; };
 		A84955ED13A89014002BB310 /* iOSPlatform.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = iOSPlatform.mm; sourceTree = "<group>"; };
@@ -49,7 +52,6 @@
 		A8885814135CB02F00F7732C /* machete-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "machete-Prefix.pch"; sourceTree = "<group>"; };
 		A8885829135CB1FC00F7732C /* engine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = engine.h; sourceTree = "<group>"; };
 		A888582F135CB1FC00F7732C /* matrix.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = matrix.h; sourceTree = "<group>"; };
-		A8885830135CB1FC00F7732C /* module.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = module.h; sourceTree = "<group>"; };
 		A8885831135CB1FC00F7732C /* quaternion.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = quaternion.h; sourceTree = "<group>"; };
 		A8885834135CB1FC00F7732C /* vector.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = vector.h; sourceTree = "<group>"; };
 		A8885852135CB84B00F7732C /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
@@ -89,6 +91,16 @@
 			);
 			name = common;
 			path = machete/machete/common;
+			sourceTree = SOURCE_ROOT;
+		};
+		A8114FD213AB9FA400103559 /* draw */ = {
+			isa = PBXGroup;
+			children = (
+				A8114FD413ABA09F00103559 /* element.cpp */,
+				A8114FD513ABA09F00103559 /* element.h */,
+			);
+			name = draw;
+			path = machete/machete/draw;
 			sourceTree = SOURCE_ROOT;
 		};
 		A8885802135CB02F00F7732C = {
@@ -143,12 +155,12 @@
 		A888581A135CB1FC00F7732C /* machete */ = {
 			isa = PBXGroup;
 			children = (
+				A8114FD213AB9FA400103559 /* draw */,
 				A8E4DD7F13A9374500A27214 /* graphics */,
 				A8E4DD7E13A9363C00A27214 /* math */,
 				A8E4DD7D13A9360F00A27214 /* data */,
 				A8E4DD7A13A91C5C00A27214 /* platform */,
 				A801E0DD13A06127002FA9E8 /* common */,
-				A8885830135CB1FC00F7732C /* module.h */,
 				A8885829135CB1FC00F7732C /* engine.h */,
 			);
 			path = machete;
@@ -211,7 +223,6 @@
 			files = (
 				A8885841135CB1FC00F7732C /* engine.h in Headers */,
 				A8885846135CB1FC00F7732C /* matrix.h in Headers */,
-				A8885847135CB1FC00F7732C /* module.h in Headers */,
 				A8885848135CB1FC00F7732C /* quaternion.h in Headers */,
 				A888584B135CB1FC00F7732C /* vector.h in Headers */,
 				A8885864135CBB9800F7732C /* MacheteGLView.h in Headers */,
@@ -223,6 +234,7 @@
 				A801E0DF13A068B3002FA9E8 /* log.h in Headers */,
 				A8E4DD8413A93A5B00A27214 /* platform.h in Headers */,
 				A8E4DD8813A93BB300A27214 /* draw.h in Headers */,
+				A8114FD713ABA09F00103559 /* element.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -279,6 +291,7 @@
 				A801E0DA13A06120002FA9E8 /* shader.cpp in Sources */,
 				A8E4DD8713A93BB300A27214 /* draw.cpp in Sources */,
 				A839E21313AB3E65004A1CA5 /* platform.cpp in Sources */,
+				A8114FD613ABA09F00103559 /* element.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
