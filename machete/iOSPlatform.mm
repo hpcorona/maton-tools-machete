@@ -34,6 +34,16 @@ public:
   
   unsigned int LoadFile(const char* name, char** data) {
     NSString* basePath = [NSString stringWithUTF8String:name];
+    if ([basePath hasSuffix:@".xml"]) {
+      basePath = [NSString stringWithFormat:@"%@.mbd", [basePath substringToIndex:[basePath length] - 4]];
+    } else if ([basePath hasSuffix:@".lang"]) {
+      basePath = [NSString stringWithFormat:@"%@.mbd", [basePath substringToIndex:[basePath length] - 5]];
+    } else if ([basePath hasSuffix:@".fnt"]) {
+      basePath = [NSString stringWithFormat:@"%@.mbd", [basePath substringToIndex:[basePath length] - 4]];
+    } else if ([basePath hasSuffix:@".pos"]) {
+      basePath = [NSString stringWithFormat:@"%@.mbd", [basePath substringToIndex:[basePath length] - 4]];
+    }
+    
     NSString* resourcePath = [[NSBundle mainBundle] resourcePath];
     NSString* fullPath = [resourcePath stringByAppendingPathComponent:basePath];
     

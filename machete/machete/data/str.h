@@ -324,6 +324,18 @@ namespace machete {
         return diff;
       }
       
+      void GetChars(char *chars, int len) const {
+        if (this->len > len) {
+          len = this->len;
+        }
+        len -= 1;
+        
+        for (int i = 0; i < len; i++) {
+          chars[i] = this->chars[i];
+        }
+        chars[len] = 0;
+      }
+      
       bool operator == (const Str &ostr) const {
         return CompareTo(ostr) == 0;
       }

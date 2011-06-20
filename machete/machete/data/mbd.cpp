@@ -86,7 +86,73 @@ namespace machete {
       
       return "";
     }
-    
+
+    int Mbd::IntValue(const Str & qry, ...) {
+      StrTpl tpl(qry);
+      
+      int count = tpl.GetNumParams();
+      
+      StrParam p;
+      
+      va_list li;
+      va_start(li, qry);
+      Str xs(2);
+      
+      for (int i = 0; i < count; i++) {
+        int x = va_arg(li, int);
+        xs = x;
+        p.Append(xs);
+      }
+      
+      va_end(li);
+      
+      Str base(qry.Size() + count * 2);
+      
+      tpl.Build(base, &p);
+      
+      
+      Tree<Str, Str> *v = dict.Seek(base);
+      
+      if (v != NULL) {
+        return v->GetValue().ToInt();
+      }
+      
+      return 0;
+    }
+
+    float Mbd::FloatValue(const Str & qry, ...) {
+      StrTpl tpl(qry);
+      
+      int count = tpl.GetNumParams();
+      
+      StrParam p;
+      
+      va_list li;
+      va_start(li, qry);
+      Str xs(2);
+      
+      for (int i = 0; i < count; i++) {
+        int x = va_arg(li, int);
+        xs = x;
+        p.Append(xs);
+      }
+      
+      va_end(li);
+      
+      Str base(qry.Size() + count * 2);
+      
+      tpl.Build(base, &p);
+      
+      
+      Tree<Str, Str> *v = dict.Seek(base);
+      
+      if (v != NULL) {
+        return v->GetValue().ToFloat();
+      }
+      
+      return 0;
+    }
+
     void Mbd::ParseFile(const char *all) {
       char *addr;
       char *dictionary;

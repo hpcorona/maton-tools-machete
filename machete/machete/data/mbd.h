@@ -21,6 +21,8 @@ namespace machete {
       
       int Count(const Str & qry, ...);
       const Str Value(const Str & qry, ...);
+      int IntValue(const Str & qry, ...);
+      float FloatValue(const Str & qry, ...);
       
       void ParseFile(const char *d);
       unsigned int ReadString(const char* data, Str **v) const;
