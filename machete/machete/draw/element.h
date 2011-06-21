@@ -71,6 +71,7 @@ namespace machete {
     };
     
     class Animation : public Element {
+    public:
       Animation();
       void Add(float time, Element *child);
 

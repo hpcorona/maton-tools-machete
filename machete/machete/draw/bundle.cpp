@@ -25,6 +25,110 @@ namespace machete {
       bundle = NULL;
     }
     
+    MetaSprite* Bundle::GetImage(const char* name) const {
+      Tree<Str, MetaSprite*> *node = images.Seek(name);
+      if (node == NULL) {
+        return NULL;
+      }
+      
+      return node->GetValue();
+    }
+    
+    Drawing* Bundle::NewImage(const char* name) const {
+      MetaSprite* spr = GetImage(name);
+      
+      if (spr == NULL) {
+        return NULL;
+      }
+      
+      Drawing *drw = new Drawing(spr);
+      
+      return drw;
+    }
+    
+    Drawing* Bundle::NewDrawing(struct BdlImage* bimg) const {
+      Drawing *drw = new Drawing(bimg->image);
+      drw->SetPosition(bimg->position);
+      drw->SetColor(1, 1, 1, bimg->alpha);
+      drw->SetRotation(bimg->rotation);
+      drw->SetFlipX(bimg->flipX);
+      drw->SetFlipY(bimg->flipY);
+      
+      return drw;
+    }
+    
+    Element* Bundle::NewSprite(const char* name) const {
+      Tree<Str, struct BdlSprite*> *node = sprites.Seek(name);
+      
+      if (node == NULL) {
+        return NULL;
+      }
+      
+      struct BdlSprite *mspr = node->GetValue();
+      if (mspr == NULL) {
+        return NULL;
+      }
+      
+      return NewSprite(mspr);
+    }
+    
+    Element* Bundle::NewSprite(struct BdlSprite* mspr) const {
+      if (mspr->imageCount == 1) {
+        mspr->images->Reset();
+        mspr->images->Next();
+        
+        struct BdlImage* bimg = mspr->images->GetCurrent()->GetValue();
+        
+        return NewDrawing(bimg);
+      } else {
+        mspr->images->Reset();
+        
+        Container *sprite = new Container();
+        
+        while (mspr->images->Next()) {
+          struct BdlImage* bimg = mspr->images->GetCurrent()->GetValue();
+          
+          sprite->Add(NewDrawing(bimg));
+        }
+        
+        return sprite;
+      }
+    }
+    
+    Animation *Bundle::NewAnimation(const char* name) const {
+      Tree<Str, struct BdlAnimation*> *node = animations.Seek(name);
+      
+      if (node == NULL) {
+        return NULL;
+      }
+      
+      struct BdlAnimation *banim = node->GetValue();
+      
+      if (banim == NULL) {
+        return NULL;
+      }
+      
+      banim->frames->Reset();
+      
+      Animation *animation = new Animation();
+      while (banim->frames->Next()) {
+        struct BdlTimed *mframe = banim->frames->GetCurrent()->GetValue();
+        
+        animation->Add(mframe->time, NewSprite(mframe->sprite));
+      }
+      
+      return animation;
+    }
+    
+    Font *Bundle::GetFont(const char* name) const {
+      Tree<Str, Font*> *node = fonts.Seek(name);
+      if (node == NULL) {
+        return NULL;
+      }
+      
+      return node->GetValue();
+    }
+    
     void Bundle::LoadAtlas() {
       Str name = bundle->Value("/Bundle/@atlasPath", &name);
       char nameChar[100];
@@ -80,6 +184,8 @@ namespace machete {
           
           sprite->images->Append(img);
         }
+        
+        sprite->imageCount = iCount;
         
         sprites.Add(bundle->Value("/Bundle/Sprite[%1]/@name", sIdx), sprite);
       }

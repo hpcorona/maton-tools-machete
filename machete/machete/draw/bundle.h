@@ -27,6 +27,7 @@ namespace machete {
     };
     
     struct BdlSprite {
+      int imageCount;
       machete::data::Iterator<struct BdlImage*> *images;
     };
     
@@ -52,6 +53,13 @@ namespace machete {
     public:
       Bundle(const char* name);
 
+      MetaSprite* GetImage(const char* name) const;
+      Drawing* NewImage(const char* name) const;
+      Drawing* NewDrawing(struct BdlImage* bimg) const;
+      Element* NewSprite(const char* name) const;
+      Element* NewSprite(struct BdlSprite* spr) const;
+      Animation* NewAnimation(const char* name) const;
+      Font* GetFont(const char* name) const;
       
     protected:
       void LoadAtlas();
