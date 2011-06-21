@@ -17,6 +17,7 @@ namespace machete {
    
     void Container::Add(Element *child) {
       childs.Append(child);
+      child->SetParent(this);
       count++;
     }
     

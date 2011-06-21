@@ -10,6 +10,7 @@
 
 #include "element.h"
 #include "../data/mbd.h"
+#include "font.h"
 
 using namespace machete::data;
 using namespace machete::graphics;
@@ -35,7 +36,7 @@ namespace machete {
     };
     
     struct BdlAnimation {
-      machete::data::Iterator<struct BdlTimed*> *sprites;
+      machete::data::Iterator<struct BdlTimed*> *frames;
     };
     
     struct BdlAction {
@@ -45,10 +46,6 @@ namespace machete {
     
     struct BdlActor {
       machete::data::Iterator<struct BdlAction*> *actions;
-    };
-    
-    struct BdlFont {
-      Hash<int, MetaSprite*> *chars;
     };
     
     class Bundle {
@@ -65,13 +62,13 @@ namespace machete {
       
       Mbd *bundle;
       Mbd *atlas;
-      unsigned int texture;
+      Tex tex;
       
       Hash<Str, MetaSprite*> images;
       Hash<Str, struct BdlSprite*> sprites;
       Hash<Str, struct BdlAnimation*> animations;
       Hash<Str, struct BdlActor*> actors;
-      Hash<Str, struct BdlFont*> fonts;
+      Hash<Str, Font*> fonts;
     };
     
   }
