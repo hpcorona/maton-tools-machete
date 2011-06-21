@@ -102,8 +102,10 @@ namespace machete {
         return NULL;
       }
       
-      struct BdlAnimation *banim = node->GetValue();
-      
+      return NewAnimation(node->GetValue());
+    }
+    
+    Animation *Bundle::NewAnimation(struct BdlAnimation *banim) const {
       if (banim == NULL) {
         return NULL;
       }
@@ -118,6 +120,33 @@ namespace machete {
       }
       
       return animation;
+    }
+    
+    Actor *Bundle::NewActor(const char *name) const {
+      Tree<Str, struct BdlActor*> *node = actors.Seek(name);
+      
+      if (node == NULL) {
+        return NULL;
+      }
+      
+      return NewActor(node->GetValue());
+    }
+    
+    Actor *Bundle::NewActor(struct BdlActor *bact) const {
+      if (bact == NULL) {
+        return NULL;
+      }
+      
+      bact->actions->Reset();
+      
+      Actor *actor = new Actor();
+      while (bact->actions->Next()) {
+        struct BdlAction *maction = bact->actions->GetCurrent()->GetValue();
+        
+        actor->Add(maction->action, NewAnimation(maction->animation));
+      }
+      
+      return actor;
     }
     
     Font *Bundle::GetFont(const char* name) const {

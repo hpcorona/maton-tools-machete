@@ -63,9 +63,10 @@ namespace machete {
       void* GetData() { return data; }
       void Remove(Element *child) { /* Nada */ }
       void RemoveFromParent() { if (parent != NULL) { parent->Remove(this); } parent = NULL; }
-      
       void SetParent(Element *parent) { this->parent = parent; }
       Element* GetParent() { return parent; }
+      void Disable() { active = false; visible = false; }
+      void Enable() { active = true; visible = true; }
       
       virtual void Invalidate() = 0;
       virtual void Update(float time) = 0;

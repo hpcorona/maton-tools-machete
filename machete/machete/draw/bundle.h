@@ -59,6 +59,9 @@ namespace machete {
       Element* NewSprite(const char* name) const;
       Element* NewSprite(struct BdlSprite* spr) const;
       Animation* NewAnimation(const char* name) const;
+      Animation* NewAnimation(struct BdlAnimation* banim) const;
+      Actor* NewActor(const char* name) const;
+      Actor* NewActor(struct BdlActor *bact) const;
       Font* GetFont(const char* name) const;
       
     protected:

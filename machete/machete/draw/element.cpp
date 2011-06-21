@@ -257,5 +257,77 @@ namespace machete {
       frames.Reset();
     }
     
+    Actor::Actor() {
+      fallback = NULL;
+      current = NULL;
+    }
+    
+    inline bool Actor::IsFinished() const {
+      if (current == NULL) return true;
+      
+      return current->IsFinished();
+    }
+    
+    inline bool Actor::IsLoop() const {
+      if (current == NULL) return false;
+      
+      return current->IsLoop();
+    }
+    
+    void Actor::SetFallback(const char* name) {
+      Tree<Str, Animation*> *node = actions.Seek(name);
+      if (node == NULL) {
+        fallback = NULL;
+      }
+      
+      fallback = node->GetValue();
+    }
+    
+    bool Actor::Play(const char* name) {
+      Tree<Str, Animation*> *node = actions.Seek(name);
+      if (node == NULL) {
+        return false;
+      }
+      
+      current = node->GetValue();
+      
+      if (current == NULL) {
+        return false;
+      }
+      
+      current->Restart();
+      
+      return true;
+    }
+    
+    void Actor::Invalidate() {
+      // TODO: Falta revisar esto
+    }
+    
+    void Actor::Update(float time) {
+      if (current == NULL) return;
+      
+      if (current->IsFinished() && !current->IsLoop() && fallback != NULL) {
+        current = fallback;
+        current->Restart();
+      }
+      
+      if (current != NULL) {
+        current->Update(time);
+      }
+    }
+    
+    void Actor::Draw(const Mat4 & matrix, DrawContext *ctx) {
+      if (current != NULL) {
+        current->Draw(matrix, ctx);
+      }
+    }
+    
+    void Actor::Restart() {
+      if (current != NULL) {
+        current->Restart();
+      }
+    }
+
   }
 }

@@ -75,11 +75,13 @@ namespace machete {
       Animation();
       void Add(float time, Element *child);
 
-      void SetLoop(bool loop);
+      void SetLoop(bool loop) { this->loop = loop; }
+      inline bool IsLoop() const { return loop; }
       void Invalidate();
       void Update(float time);
       void Draw(const Mat4 & matrix, DrawContext *ctx);
       void Restart();
+      inline bool IsFinished() const { return finished; }
       
     protected:
       bool loop;
@@ -89,6 +91,30 @@ namespace machete {
       float totalTime;
       LinkedList<TimedElement*> *current;
       machete::data::Iterator<TimedElement*> frames;
+    };
+    
+    class Actor : public Element {
+    public:
+      Actor();
+      void Add(const Str & action, Animation *anim);
+      inline Animation *GetFallback() const { return fallback; }
+      inline Animation *GetCurrent() const { return current; }
+      void ClearFallback() { fallback = NULL; }
+      
+      inline bool IsFinished() const;
+      inline bool IsLoop() const;
+      void SetFallback(const char* name);
+      
+      bool Play(const char* name);
+      void Invalidate();
+      void Update(float time);
+      void Draw(const Mat4 & matrix, DrawContext *ctx);
+      void Restart();
+      
+    protected:
+      Animation *fallback;
+      Animation *current;
+      Hash<Str, Animation*> actions;
     };
     
   }
