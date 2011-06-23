@@ -48,12 +48,16 @@ namespace machete {
       // Nada
     }
     
-    void Text::Draw(const Mat4 & matrix, DrawContext *ctx) {
-      float bx = 0;
+    void Text::Draw(const Mat4 & matrix, Vec2 & pos, Vec4 & color, DrawContext *ctx) {
+      
+      Vec4 Color = this->color * color;
+      
+      float bx = pos.x + position.x;
+      float by = pos.y + position.y;
       for (int i = 0; i < len; i++) {
         if (chars[i] == NULL) continue;
         
-        chars[i]->Draw(ctx, chars[i]->GetPivot(), Vec2(bx, 0), scale, color, rotation, false, false);
+        chars[i]->Draw(ctx, chars[i]->GetPivot(), Vec2(bx, by), scale, Color, rotation, false, false);
         
         bx += chars[i]->GetXAdvance();
       }

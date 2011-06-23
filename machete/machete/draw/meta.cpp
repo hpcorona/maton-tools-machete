@@ -104,6 +104,8 @@ namespace machete {
       
       ctx->Draw(verts, 4, elems, 6, texture);
     }
+    
+    Vec2 Element::ZERO2(0, 0);
 
     Element::Element() : color(1, 1, 1, 1), scale(1, 1) {
       rotation = 0;

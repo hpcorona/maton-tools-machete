@@ -14,7 +14,7 @@ namespace machete {
     Container::Container() {
       count = 0;
     }
-   
+    
     void Container::Add(Element *child) {
       childs.Append(child);
       child->SetParent(this);
@@ -45,7 +45,7 @@ namespace machete {
         prev = current;
       }
     }
-
+    
     void Container::Switch(Element *child, Element *elem) {
       childs.Reset();
       
@@ -65,7 +65,7 @@ namespace machete {
         prev = current;
       }
     }
-
+    
     void Container::Invalidate() {
       bounds.Clear();
       
@@ -98,27 +98,34 @@ namespace machete {
       }
     }
     
-    void Container::Draw(const Mat4 & matrix, DrawContext *ctx) {
+    void Container::Draw(const Mat4 & matrix, Vec2 & pos, Vec4 & color, DrawContext *ctx) {
       if (count == 0) return;
       
       Mat4 mat = matrix;
       bool changed = false;
       
-      if (position.x != 0 || position.y != 0 || scale.x != 1 || scale.y != 1 || rotation != 0) {
+      if (scale.x != 1 || scale.y != 1 || rotation != 0) {
         
         ctx->Draw();
         
-        ctx->ChangeModelView(Mat4().Translate(position.x, position.y, 0).Scale(scale.x, scale.y, 0).Rotate(rotation).Pointer());
+        ctx->ChangeModelView(Mat4().Translate(position.x + pos.x, position.y + pos.y, 0).Scale(scale.x, scale.y, 0).Rotate(rotation).Pointer());
         changed = true;
       }
       
       childs.Reset();
       
+      Vec4 NewColor = this->color * color;
+      Vec2 Position = position + pos;
+      
       while (childs.Next()) {
         Element *current = childs.GetCurrent()->GetValue();
         
         if (current->IsVisible()) {
-          current->Draw(mat, ctx);
+          if (changed) {
+            current->Draw(mat, ZERO2, NewColor, ctx);
+          } else {
+            current->Draw(mat, Position, NewColor, ctx);
+          }
         }
       }
       
@@ -146,7 +153,7 @@ namespace machete {
       context->StartFrame();
       
       context->ChangeModelView(matrix);
-      Container::Draw(matrix, context);
+      Container::Draw(matrix, position, color, context);
       
       context->EndFrame();
       context->Unuse();
@@ -173,10 +180,13 @@ namespace machete {
       // Nada que hacer
     }
     
-    void Drawing::Draw(const Mat4 & matrix, DrawContext *ctx) {
-      element->Draw(ctx, pivot, position, scale, color, rotation, flipX, flipY);
+    void Drawing::Draw(const Mat4 & matrix, Vec2 & pos, Vec4 & color, DrawContext *ctx) {
+      Vec2 Position = position + pos;
+      Vec4 Color = this->color * color;
+      
+      element->Draw(ctx, pivot, Position, scale, Color, rotation, flipX, flipY);
     }
-
+    
     Animation::Animation() {
       loop = true;
       finished = false;
@@ -250,10 +260,13 @@ namespace machete {
       }
     }
     
-    void Animation::Draw(const Mat4 & matrix, DrawContext *ctx) {
+    void Animation::Draw(const Mat4 & matrix, Vec2 & pos, Vec4 & color, DrawContext *ctx) {
       if (visible == false || current == NULL) return;
       
-      current->GetValue()->GetElement()->Draw(matrix, ctx);
+      Vec2 Position = position + pos;
+      Vec4 Color = this->color * color;
+      
+      current->GetValue()->GetElement()->Draw(matrix, Position, Color, ctx);
     }
     
     void Animation::Restart() {
@@ -328,9 +341,12 @@ namespace machete {
       }
     }
     
-    void Actor::Draw(const Mat4 & matrix, DrawContext *ctx) {
+    void Actor::Draw(const Mat4 & matrix, Vec2 & pos, Vec4 & color, DrawContext *ctx) {
       if (current != NULL) {
-        current->Draw(matrix, ctx);
+        Vec2 Position = position + pos;
+        Vec4 Color = this->color * color;
+        
+        current->Draw(matrix, Position, Color, ctx);
       }
     }
     
@@ -339,6 +355,6 @@ namespace machete {
         current->Restart();
       }
     }
-
+    
   }
 }

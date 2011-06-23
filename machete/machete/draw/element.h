@@ -35,7 +35,7 @@ namespace machete {
       
       void Invalidate();
       void Update(float time);
-      void Draw(const Mat4 & matrix, DrawContext *ctx);
+      void Draw(const Mat4 & matrix, Vec2 & pos, Vec4 & color, DrawContext *ctx);
       Iterator<Element*> *Iterator();
       
     protected:
@@ -59,7 +59,7 @@ namespace machete {
       Drawing(MetaElement *e);
       void Invalidate();
       void Update(float time);
-      void Draw(const Mat4 & matrix, DrawContext *ctx);
+      void Draw(const Mat4 & matrix, Vec2 & pos, Vec4 & color, DrawContext *ctx);
       void SetFlipX(bool flipX) { this->flipX = flipX; }
       void SetFlipY(bool flipY) { this->flipY = flipY; }
       bool IsFlipX() const { return flipX; }
@@ -80,7 +80,7 @@ namespace machete {
       inline bool IsLoop() const { return loop; }
       void Invalidate();
       void Update(float time);
-      void Draw(const Mat4 & matrix, DrawContext *ctx);
+      void Draw(const Mat4 & matrix, Vec2 & pos, Vec4 & color, DrawContext *ctx);
       void Restart();
       inline bool IsFinished() const { return finished; }
       
@@ -109,7 +109,7 @@ namespace machete {
       bool Play(const char* name);
       void Invalidate();
       void Update(float time);
-      void Draw(const Mat4 & matrix, DrawContext *ctx);
+      void Draw(const Mat4 & matrix, Vec2 & pos, Vec4 & color, DrawContext *ctx);
       void Restart();
       
     protected:

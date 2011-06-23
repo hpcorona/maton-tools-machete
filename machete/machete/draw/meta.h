@@ -73,7 +73,7 @@ namespace machete {
       
       virtual void Invalidate() = 0;
       virtual void Update(float time) = 0;
-      virtual void Draw(const Mat4 & matrix, DrawContext *ctx) = 0;
+      virtual void Draw(const Mat4 & matrix, Vec2 & pos, Vec4 & color, DrawContext *ctx) = 0;
       
     protected:
       bool active;
@@ -86,6 +86,8 @@ namespace machete {
       Element *parent;
       Rect2D bounds;
       void *data;
+      
+      static Vec2 ZERO2;
     };
 
   }

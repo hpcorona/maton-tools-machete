@@ -43,7 +43,7 @@ namespace machete {
       
       void Invalidate();
       void Update(float time);
-      void Draw(const Mat4 & matrix, DrawContext *ctx);
+      void Draw(const Mat4 & matrix, Vec2 & pos, Vec4 & color, DrawContext *ctx);
       
     protected:
       FontChar **chars;
