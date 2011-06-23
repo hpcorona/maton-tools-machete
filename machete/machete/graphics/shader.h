@@ -21,7 +21,7 @@
 namespace machete {
   namespace graphics {
     
-    static void CheckGLError1() {
+    static void CheckGLError() {
       GLenum status = glGetError();
       
       switch (status) {
@@ -107,9 +107,9 @@ namespace machete {
     struct Vtx {
       Vtx() : color(1, 1, 1, 1), scale(1, 1) { rotation = 0; }
       
-      machete::math::Vec4 vert;
-      machete::math::Vec4 offset;
-      machete::math::Vec4 pivot;
+      machete::math::Vec3 vert;
+      machete::math::Vec2 offset;
+      machete::math::Vec2 pivot;
       machete::math::Vec2 uv;
       machete::math::Vec2 scale;
       machete::math::Vec4 color;

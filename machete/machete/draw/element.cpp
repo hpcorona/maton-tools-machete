@@ -105,12 +105,11 @@ namespace machete {
       bool changed = false;
       
       if (position.x != 0 || position.y != 0 || scale.x != 1 || scale.y != 1 || rotation != 0) {
-        mat.Translate(position.x, position.y, 0);
-        mat.Scale(scale.x, scale.y, 0);
-        mat.Rotate(rotation);
-        changed = true;
         
-        ctx->ChangeModelView(mat);
+        ctx->Draw();
+        
+        ctx->ChangeModelView(Mat4().Translate(position.x, position.y, 0).Scale(scale.x, scale.y, 0).Rotate(rotation).Pointer());
+        changed = true;
       }
       
       childs.Reset();
@@ -124,6 +123,7 @@ namespace machete {
       }
       
       if (changed) {
+        ctx->Draw();
         ctx->ChangeModelView(matrix);
       }
     }
@@ -174,7 +174,7 @@ namespace machete {
     }
     
     void Drawing::Draw(const Mat4 & matrix, DrawContext *ctx) {
-      element->Draw(ctx, position, scale, color, rotation, flipX, flipY);
+      element->Draw(ctx, pivot, position, scale, color, rotation, flipX, flipY);
     }
 
     Animation::Animation() {

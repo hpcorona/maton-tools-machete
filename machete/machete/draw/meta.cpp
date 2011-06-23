@@ -11,19 +11,14 @@
 namespace machete {
   namespace draw {
     
-    MetaSprite::MetaSprite(const Vec2 & pivot, const Vec2 & size, const Vec2 & uv0, const Vec2 & uv1, unsigned int texture) {
+    MetaSprite::MetaSprite(const Vec2 & size, const Vec2 & uv0, const Vec2 & uv1, unsigned int texture) {
       
       this->size = size;
       
-      verts[0].pivot.x = pivot.x; verts[0].pivot.y = pivot.y;
-      verts[1].pivot.x = pivot.x; verts[1].pivot.y = pivot.y;
-      verts[2].pivot.x = pivot.x; verts[2].pivot.y = pivot.y;
-      verts[3].pivot.x = pivot.x; verts[3].pivot.y = pivot.y;
-      
-      verts[0].vert.x = 0; verts[0].vert.y = 0; verts[0].vert.z = 0; verts[0].vert.w = 0;
-      verts[1].vert.x = 0; verts[1].vert.y = -size.x; verts[1].vert.z = 0; verts[1].vert.w = 0;
-      verts[2].vert.x = size.x; verts[2].vert.y = 0; verts[2].vert.z = 0; verts[2].vert.w = 0;
-      verts[3].vert.x = size.x; verts[3].vert.y = -size.x; verts[3].vert.z = 0; verts[3].vert.w = 0;
+      verts[0].vert.x = 0; verts[0].vert.y = 0; verts[0].vert.z = 0;
+      verts[1].vert.x = 0; verts[1].vert.y = -size.x; verts[1].vert.z = 0;
+      verts[2].vert.x = size.x; verts[2].vert.y = 0; verts[2].vert.z = 0;
+      verts[3].vert.x = size.x; verts[3].vert.y = -size.x; verts[3].vert.z = 0;
       
       verts[0].uv.x = uv0.x; verts[0].uv.y = uv1.y;
       verts[1].uv.x = uv0.x; verts[1].uv.y = uv0.y;
@@ -71,7 +66,7 @@ namespace machete {
       
     }
     
-    void MetaSprite::Draw(DrawContext *ctx, const Vec2 & pos, const Vec2 & scale, const Vec4 & color, float rotation, bool flipX, bool flipY) {
+    void MetaSprite::Draw(DrawContext *ctx, const Vec2 & pivot, const Vec2 & pos, const Vec2 & scale, const Vec4 & color, float rotation, bool flipX, bool flipY) {
       
       Vtx *verts = this->verts;
       if (flipX && flipY) {
@@ -81,7 +76,12 @@ namespace machete {
       } else if (flipY) {
         verts = vertsV;
       }
-      
+
+      verts[0].pivot.x = pivot.x; verts[0].pivot.y = pivot.y;
+      verts[1].pivot.x = pivot.x; verts[1].pivot.y = pivot.y;
+      verts[2].pivot.x = pivot.x; verts[2].pivot.y = pivot.y;
+      verts[3].pivot.x = pivot.x; verts[3].pivot.y = pivot.y;
+
       verts[0].offset.x = pos.x; verts[0].offset.y = pos.y;
       verts[1].offset.x = pos.x; verts[1].offset.y = pos.y;
       verts[2].offset.x = pos.x; verts[2].offset.y = pos.y;
@@ -103,7 +103,6 @@ namespace machete {
       verts[3].rotation = rotation;
       
       ctx->Draw(verts, 4, elems, 6, texture);
-      
     }
 
     Element::Element() : color(1, 1, 1, 1), scale(1, 1) {

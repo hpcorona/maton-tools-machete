@@ -53,7 +53,7 @@ namespace machete {
     
     Drawing* Bundle::NewDrawing(struct BdlImage* bimg) const {
       Drawing *drw = new Drawing(bimg->image);
-      drw->SetPosition(bimg->position);
+      drw->SetPivot(bimg->position);
       drw->SetColor(1, 1, 1, bimg->alpha);
       drw->SetRotation(bimg->rotation);
       drw->SetFlipX(bimg->flipX);
@@ -183,10 +183,10 @@ namespace machete {
         float y = atlas->FloatValue("/TextureAtlas/SubTexture[%1]/@y", i+1);
         float w = atlas->FloatValue("/TextureAtlas/SubTexture[%1]/@width", i+1);
         float h = atlas->FloatValue("/TextureAtlas/SubTexture[%1]/@height", i+1);
-        float x1 = x + w;
-        float y1 = y + h;
+        float x1 = x + w - 1;
+        float y1 = y + h - 1;
         
-        MetaSprite *ms = new MetaSprite(Vec2(0, 0), Vec2(w, h), Vec2(x / tex->width, y / tex->height), Vec2(x1 / tex->width, y1 / tex->height), tex->id);
+        MetaSprite *ms = new MetaSprite(Vec2(w, h), Vec2((x+1) / tex->width, (y+1) / tex->height), Vec2(x1 / tex->width, y1 / tex->height), tex->id);
         
         images.Add(stName, ms);
         

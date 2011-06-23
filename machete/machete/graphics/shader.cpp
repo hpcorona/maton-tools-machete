@@ -185,9 +185,9 @@ namespace machete {
                       GL_LINEAR);
       
       glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S,
-                      GL_CLAMP_TO_EDGE);
+                      GL_REPEAT);
       glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T,
-                      GL_CLAMP_TO_EDGE);
+                      GL_REPEAT);
 
       glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
       
@@ -266,8 +266,8 @@ namespace machete {
       glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(struct Vtx) * vcount, verts);
       glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, sizeof(unsigned short) * ecount, elems);
       
-      glVertexAttribPointer(pivotSlot, 3, GL_FLOAT, GL_FALSE, sizeof(struct Vtx), &POSITION[0].pivot);
-      glVertexAttribPointer(offsetSlot, 3, GL_FLOAT, GL_FALSE, sizeof(struct Vtx), &POSITION[0].offset);
+      glVertexAttribPointer(pivotSlot, 2, GL_FLOAT, GL_FALSE, sizeof(struct Vtx), &POSITION[0].pivot);
+      glVertexAttribPointer(offsetSlot, 2, GL_FLOAT, GL_FALSE, sizeof(struct Vtx), &POSITION[0].offset);
       glVertexAttribPointer(positionSlot, 3, GL_FLOAT, GL_FALSE, sizeof(struct Vtx), POSITION);
       glVertexAttribPointer(textureSlot, 2, GL_FLOAT, GL_FALSE, sizeof(struct Vtx), &POSITION[0].uv);
       glVertexAttribPointer(scaleSlot, 2, GL_FLOAT, GL_FALSE, sizeof(struct Vtx), &POSITION[0].scale);

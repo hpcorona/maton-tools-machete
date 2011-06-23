@@ -25,10 +25,12 @@ namespace machete {
       inline float GetXAdvance() { return advance.x; }
       inline float GetYAdvance() { return advance.y; }
       void SetAdvance(const Vec2 & adv) { advance = adv; }
-      const Vec2 & GetAdvance() { return advance; }
+      inline const Vec2 & GetAdvance() { return advance; }
+      inline const Vec2 & GetPivot() { return pivot; }
       
     protected:
       Vec2 advance;
+      Vec2 pivot;
     };
     
     class Text : public Element {
