@@ -21,6 +21,31 @@
 namespace machete {
   namespace graphics {
     
+    static void CheckGLError1() {
+      GLenum status = glGetError();
+      
+      switch (status) {
+        case 1280:
+          machete::common::Log("1280 GL_INVALID_ENUM");
+          break;
+        case 1281:
+          machete::common::Log("1281 GL_INVALID_VALUE");
+          break;
+        case 1282:
+          machete::common::Log("1282 GL_INVALID_OPERATION");
+          break;
+        case 1283:
+          machete::common::Log("1283 GL_STACK_OVERFLOW");
+          break;
+        case 1284:
+          machete::common::Log("1284 GL_STACK_UNDERFLOW");
+          break;
+        case 1285:
+          machete::common::Log("1285 GL_OUT_OF_MEMORY");
+          break;
+      }
+    }
+    
     class Shader {
     public:
       Shader() { shader = 0; }
@@ -35,7 +60,7 @@ namespace machete {
     
     class Program {
     public:
-      Program() { program = 0; projectionUni = 0; }
+      Program() { program = 0; projectionSlot = 0; }
       ~Program();
       
       void Use() { glUseProgram(program); };
@@ -47,7 +72,7 @@ namespace machete {
       bool CreateProgram(Shader *vtx, Shader *frag);
       
       GLuint program;
-      GLuint projectionUni;
+      GLuint projectionSlot;
       
       Shader *vertexShader;
       Shader *fragmentShader;
@@ -64,30 +89,33 @@ namespace machete {
     };
     
     struct Tex {
-      GLuint id;
-      GLuint width;
-      GLuint height;
+      unsigned int id;
+      float width;
+      float height;
     };
     
     class TextureMgr {
     public:
       ~TextureMgr();
-      Tex LoadTexture(const char *name);
-      Tex CreateTexture(int width, int height);
+      struct Tex* LoadTexture(const char *name);
+      struct Tex* CreateTexture(int width, int height);
       
     protected:
-      machete::data::Hash<machete::data::Str, Tex> textures;
+      machete::data::Hash<machete::data::Str, struct Tex*> textures;
     };
     
     struct Vtx {
-      machete::math::Vec2 offset;
-      machete::math::Vec4 pivot;
+      Vtx() : color(1, 1, 1, 1), scale(1, 1) { rotation = 0; }
+      
       machete::math::Vec4 vert;
+      machete::math::Vec4 offset;
+      machete::math::Vec4 pivot;
       machete::math::Vec2 uv;
       machete::math::Vec2 scale;
       machete::math::Vec4 color;
       float rotation;
     };
+    
     
     class VtxRender : public Program {
     public:
@@ -95,6 +123,9 @@ namespace machete {
       ~VtxRender();
       Shader *CreateVtxShader();
       Shader *CreateFrgShader();
+      
+      void Use();
+      void Unuse();
       
       void Upload(Vtx *verts, int vcount, unsigned short* elems, int ecount);
       

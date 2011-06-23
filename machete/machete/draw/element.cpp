@@ -142,7 +142,14 @@ namespace machete {
     }
     
     void Root::Draw() {
+      context->Use();
+      context->StartFrame();
+      
+      context->ChangeModelView(matrix);
       Container::Draw(matrix, context);
+      
+      context->EndFrame();
+      context->Unuse();
     }
     
     Drawing::Drawing(MetaElement *e) {
@@ -260,6 +267,10 @@ namespace machete {
     Actor::Actor() {
       fallback = NULL;
       current = NULL;
+    }
+    
+    void Actor::Add(const Str & action, Animation *anim) {
+      actions.Add(action, anim);
     }
     
     inline bool Actor::IsFinished() const {

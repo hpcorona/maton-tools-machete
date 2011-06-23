@@ -101,6 +101,11 @@ namespace machete {
       }
       
       void AppendInt(int i) {
+        if (i == 0) {
+          Append("0");
+          return;
+        }
+        
         char str[20] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
         
         bool sign = false;
@@ -325,10 +330,9 @@ namespace machete {
       }
       
       void GetChars(char *chars, int len) const {
-        if (this->len > len) {
+        if (len > this->len) {
           len = this->len;
         }
-        len -= 1;
         
         for (int i = 0; i < len; i++) {
           chars[i] = this->chars[i];

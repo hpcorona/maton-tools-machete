@@ -70,9 +70,19 @@ namespace machete {
         
         return false;
       }
+      
+      glUseProgram(program);
 
-      projectionUni = glGetUniformLocation(program, "Projection");
+      projectionSlot = glGetUniformLocation(program, "Projection");
+      
+      glDisable(GL_DITHER);
+      glDisable(GL_DEPTH_TEST);
+      glEnable(GL_TEXTURE_2D);
+      glEnable(GL_BLEND);
+      glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+      glUseProgram(0);
+      
       return true;
     }
     
@@ -84,15 +94,11 @@ namespace machete {
         0, 0, 0, 1
       };
       
-      glUniformMatrix4fv(projectionUni, 1, 0, &ortho[0]);
+      glUniformMatrix4fv(projectionSlot, 1, 0, &ortho[0]);
     }
     
     ShaderMgr::ShaderMgr() {
-      glDisable(GL_DITHER);
-      glDisable(GL_DEPTH_TEST);
-      glEnable(GL_TEXTURE_2D);
-      glEnable(GL_BLEND);
-      glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+      
     }
     
     ShaderMgr::~ShaderMgr() {
@@ -121,14 +127,15 @@ namespace machete {
       // TODO: Destruir Texturas
     }
     
-    Tex TextureMgr::LoadTexture(const char *name) {
-      machete::data::Tree<machete::data::Str, Tex> *txNode = textures.Seek(name);
+    struct Tex* TextureMgr::LoadTexture(const char *name) {
+      machete::data::Tree<machete::data::Str, struct Tex*> *txNode = textures.Seek(name);
       
-      Tex tex;
+      struct Tex *tex = new struct Tex();
+      GLuint texId;
       
       if (txNode == NULL) {
-        glGenTextures(1, &tex.id);
-        glBindTexture(GL_TEXTURE_2D, tex.id);
+        glGenTextures(1, &texId);
+        glBindTexture(GL_TEXTURE_2D, texId);
         
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
                         GL_NEAREST);
@@ -140,16 +147,17 @@ namespace machete {
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T,
                         GL_CLAMP_TO_EDGE);
         
-        char* pixels = NULL;
+        void* pixels = NULL;
         machete::math::IVec2 size;
         
         machete::platform::ThePlatform->LoadImage(name, &pixels, size);
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, size.x, size.y, 0, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
         
-        delete pixels;
+        machete::platform::ThePlatform->UnloadImage();
         
-        tex.width = size.x;
-        tex.height = size.y;
+        tex->id = texId;
+        tex->width = size.x;
+        tex->height = size.y;
         
         textures.Add(name, tex);
       } else {
@@ -159,15 +167,18 @@ namespace machete {
       return tex;
     }
     
-    Tex TextureMgr::CreateTexture(int width, int height) {
-      Tex t;
-      t.width = width;
-      t.height = height;
+    struct Tex* TextureMgr::CreateTexture(int width, int height) {
+      struct Tex *t = new struct Tex();
+      t->width = width;
+      t->height = height;
       
-      glGenTextures(1, &t.id);
+      GLuint texId;
       
-      glBindTexture(GL_TEXTURE_2D, t.id);
+      glGenTextures(1, &texId);
       
+      glActiveTexture(GL_TEXTURE0);
+      glBindTexture(GL_TEXTURE_2D, texId);
+
       glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
                       GL_NEAREST);
       glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,
@@ -177,8 +188,10 @@ namespace machete {
                       GL_CLAMP_TO_EDGE);
       glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T,
                       GL_CLAMP_TO_EDGE);
-      
+
       glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+      
+      t->id = texId;
       
       return t;
     }
@@ -195,22 +208,14 @@ namespace machete {
       textureSlot = glGetAttribLocation(program, "TextureCoord");
       colorSlot = glGetAttribLocation(program, "SourceColor");
       scaleSlot = glGetAttribLocation(program, "Scale");
-      rotationSlot = glGetAttribLocation(program, "Sampler");
+      rotationSlot = glGetAttribLocation(program, "Rotation");
       
-      baseSlot = glGetAttribLocation(program, "Base");
-      modelviewSlot = glGetAttribLocation(program, "Modelview");
+      baseSlot = glGetUniformLocation(program, "Base");
+      modelviewSlot = glGetUniformLocation(program, "Modelview");
       
-      samplerSlot = glGetAttribLocation(program, "Sampler");
+      samplerSlot = glGetUniformLocation(program, "Sampler");
       
-      glEnableVertexAttribArray(pivotSlot);
-      glEnableVertexAttribArray(offsetSlot);
-      glEnableVertexAttribArray(positionSlot);
-      glEnableVertexAttribArray(textureSlot);
-      glEnableVertexAttribArray(colorSlot);
-      glEnableVertexAttribArray(scaleSlot);
-      glEnableVertexAttribArray(rotationSlot);
-      
-      glUniform1f(samplerSlot, 0);
+      glUniform1i(samplerSlot, 0);
     }
     
     Shader *VtxRender::CreateVtxShader() {
@@ -225,22 +230,51 @@ namespace machete {
       
     }
     
+    void VtxRender::Use() {
+      Program::Use();
+      
+      glEnableVertexAttribArray(pivotSlot);
+      glEnableVertexAttribArray(offsetSlot);
+      glEnableVertexAttribArray(positionSlot);
+      glEnableVertexAttribArray(textureSlot);
+      glEnableVertexAttribArray(colorSlot);
+      glEnableVertexAttribArray(scaleSlot);
+      glEnableVertexAttribArray(rotationSlot);
+      glEnableVertexAttribArray(projectionSlot);
+    }
+    
+    void VtxRender::Unuse() {
+      glDisableVertexAttribArray(pivotSlot);
+      glDisableVertexAttribArray(offsetSlot);
+      glDisableVertexAttribArray(positionSlot);
+      glDisableVertexAttribArray(textureSlot);
+      glDisableVertexAttribArray(colorSlot);
+      glDisableVertexAttribArray(scaleSlot);
+      glDisableVertexAttribArray(rotationSlot);
+
+      Program::Unuse();
+    }
+    
     void VtxRender::Upload(Vtx *verts, int vcount, unsigned short *elems, int ecount) {
+      
+      using namespace machete::data;
+      
+      glUniform1i(samplerSlot, 0);
       
       Vtx* POSITION = NULL;
       
-      glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(Vtx) * vcount, verts);
-      glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, sizeof(GLushort) * ecount, elems);
+      glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(struct Vtx) * vcount, verts);
+      glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, sizeof(unsigned short) * ecount, elems);
       
-      glVertexAttribPointer(pivotSlot, 2, GL_FLOAT, GL_FALSE, sizeof(Vtx), &POSITION[0].pivot);
-      glVertexAttribPointer(offsetSlot, 2, GL_FLOAT, GL_FALSE, sizeof(Vtx), &POSITION[0].offset);
-      glVertexAttribPointer(positionSlot, 3, GL_FLOAT, GL_FALSE, sizeof(Vtx), POSITION);
-      glVertexAttribPointer(textureSlot, 2, GL_FLOAT, GL_FALSE, sizeof(Vtx), &POSITION[0].uv);
-      glVertexAttribPointer(scaleSlot, 2, GL_FLOAT, GL_FALSE, sizeof(Vtx), &POSITION[0].scale);
-      glVertexAttribPointer(colorSlot, 4, GL_FLOAT, GL_FALSE, sizeof(Vtx), &POSITION[0].color);
-      glVertexAttribPointer(rotationSlot, 1, GL_FLOAT, GL_FALSE, sizeof(Vtx), &POSITION[0].rotation);
+      glVertexAttribPointer(pivotSlot, 3, GL_FLOAT, GL_FALSE, sizeof(struct Vtx), &POSITION[0].pivot);
+      glVertexAttribPointer(offsetSlot, 3, GL_FLOAT, GL_FALSE, sizeof(struct Vtx), &POSITION[0].offset);
+      glVertexAttribPointer(positionSlot, 3, GL_FLOAT, GL_FALSE, sizeof(struct Vtx), POSITION);
+      glVertexAttribPointer(textureSlot, 2, GL_FLOAT, GL_FALSE, sizeof(struct Vtx), &POSITION[0].uv);
+      glVertexAttribPointer(scaleSlot, 2, GL_FLOAT, GL_FALSE, sizeof(struct Vtx), &POSITION[0].scale);
+      glVertexAttribPointer(colorSlot, 4, GL_FLOAT, GL_FALSE, sizeof(struct Vtx), &POSITION[0].color);
+      glVertexAttribPointer(rotationSlot, 1, GL_FLOAT, GL_FALSE, sizeof(struct Vtx), &POSITION[0].rotation);
       
-      glDrawElements(GL_TRIANGLES, vcount, GL_UNSIGNED_SHORT, POSITION);
+      glDrawElements(GL_TRIANGLES, ecount, GL_UNSIGNED_SHORT, POSITION);
     }
     
     ShaderMgr* TheShaderMgr = NULL;

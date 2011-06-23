@@ -15,8 +15,12 @@ namespace machete {
       return platf->GetResourcePath();
     }
     
-    void Platform::LoadImage(const char* name, char **data, machete::math::IVec2 & size) {
+    void Platform::LoadImage(const char* name, void **data, machete::math::IVec2 & size) {
       platf->LoadImage(name, data, size);
+    }
+    
+    void Platform::UnloadImage() {
+      platf->UnloadImage();
     }
     
     unsigned int Platform::LoadFile(const char* name, char** data) {

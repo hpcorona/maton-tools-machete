@@ -106,9 +106,10 @@ namespace machete {
       
     }
 
-    Element::Element() {
+    Element::Element() : color(1, 1, 1, 1), scale(1, 1) {
       rotation = 0;
       parent = NULL;
+      data = NULL;
       visible = true;
       active = true;
     }

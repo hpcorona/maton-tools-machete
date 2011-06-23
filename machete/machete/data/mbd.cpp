@@ -9,11 +9,19 @@
 #include "mbd.h"
 #include <stdarg.h>
 
+using namespace machete::platform;
+
 namespace machete { 
   namespace data {
     
-    Mbd::Mbd(const char *data) {
+    Mbd::Mbd(const char *file) {
+      char *data = NULL;
+      
+      ThePlatform->LoadFile(file, &data);
+      
       ParseFile(data);
+      
+      delete data;
     }
     
     Mbd::~Mbd() {

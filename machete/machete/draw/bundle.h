@@ -18,6 +18,8 @@ using namespace machete::graphics;
 namespace machete {
   namespace draw {
     struct BdlImage {
+      BdlImage() { image = NULL; alpha = 1; rotation = 0; flipX = false; flipY = false; }
+      
       MetaSprite *image;
       Vec2 position;
       float alpha;
@@ -27,25 +29,35 @@ namespace machete {
     };
     
     struct BdlSprite {
+      BdlSprite() { imageCount = 0; images = NULL; }
+      
       int imageCount;
       machete::data::Iterator<struct BdlImage*> *images;
     };
     
     struct BdlTimed {
+      BdlTimed() { time = 0; sprite = NULL; }
+      
       float time;
       struct BdlSprite *sprite;
     };
     
     struct BdlAnimation {
+      BdlAnimation() { frames = NULL; }
+      
       machete::data::Iterator<struct BdlTimed*> *frames;
     };
     
     struct BdlAction {
+      BdlAction() { animation = NULL; }
+      
       Str action;
       struct BdlAnimation *animation;
     };
     
     struct BdlActor {
+      BdlActor() { actions = NULL; }
+      
       machete::data::Iterator<struct BdlAction*> *actions;
     };
     
@@ -73,7 +85,7 @@ namespace machete {
       
       Mbd *bundle;
       Mbd *atlas;
-      Tex tex;
+      struct Tex *tex;
       
       Hash<Str, MetaSprite*> images;
       Hash<Str, struct BdlSprite*> sprites;

@@ -8,11 +8,16 @@
 
 #include "bundle.h"
 
+#include "../common/log.h"
+
+using namespace machete::common;
+
 namespace machete {
   namespace draw {
     
     Bundle::Bundle(const char* name) {
       bundle = new Mbd(name);
+      tex = NULL;
       
       LoadAtlas();
       LoadSprites();
@@ -181,9 +186,11 @@ namespace machete {
         float x1 = x + w;
         float y1 = y + h;
         
-        MetaSprite *ms = new MetaSprite(Vec2(0, 0), Vec2(w, h), Vec2(x / tex.width, y / tex.height), Vec2(x1 / tex.width, y1 / tex.height), tex.id);
+        MetaSprite *ms = new MetaSprite(Vec2(0, 0), Vec2(w, h), Vec2(x / tex->width, y / tex->height), Vec2(x1 / tex->width, y1 / tex->height), tex->id);
         
         images.Add(stName, ms);
+        
+        Log(Str("Loaded Image: ") + stName);
       }
     }
     
@@ -216,7 +223,10 @@ namespace machete {
         
         sprite->imageCount = iCount;
         
-        sprites.Add(bundle->Value("/Bundle/Sprite[%1]/@name", sIdx), sprite);
+        Str spriteName = bundle->Value("/Bundle/Sprite[%1]/@name", sIdx);
+        sprites.Add(spriteName, sprite);
+        
+        Log(Str("Loaded Sprite: ") + spriteName);
       }
     }
     
@@ -243,8 +253,10 @@ namespace machete {
           animation->frames->Append(frame);
         }
 
-        animations.Add(bundle->Value("/Bundle/Animation[%1]/@name", aIdx), animation);
+        Str animName = bundle->Value("/Bundle/Animation[%1]/@name", aIdx);
+        animations.Add(animName, animation);
 
+        Log(Str("Loaded Animation: ") + animName);
       }
     }
     
@@ -270,8 +282,10 @@ namespace machete {
           actor->actions->Append(action);
         }
         
-        actors.Add(bundle->Value("/Bundle/Actor[%1]/@name", xIdx), actor);
+        Str actorName = bundle->Value("/Bundle/Actor[%1]/@name", xIdx);
+        actors.Add(actorName, actor);
         
+        Log(Str("Loaded Actor: ") + actorName);
       }
     }
     
@@ -288,6 +302,8 @@ namespace machete {
         Font *face = new Font(fPath, tex);
         
         fonts.Add(faceName, face);
+        
+        Log(Str("Loaded Font: ") + faceName);
       }
     }
     

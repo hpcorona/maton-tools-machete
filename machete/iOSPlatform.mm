@@ -6,12 +6,18 @@
 class PlatformiOS : public machete::IPlatform {
 public:
   
+  PlatformiOS() {
+    imageData = NULL;
+  }
+  
   const char* GetResourcePath() const {
     NSString* bundlePath = [[NSBundle mainBundle] resourcePath];
     return [bundlePath UTF8String];
   }
   
-  void LoadImage(const char* name, char **data, machete::math::IVec2 & size) {
+  void LoadImage(const char* name, void **data, machete::math::IVec2 & size) {
+    UnloadImage();
+    
     NSString* basePath = [NSString stringWithUTF8String:name];
     NSString* resourcePath = [[NSBundle mainBundle] resourcePath];
     NSString* fullPath = [resourcePath stringByAppendingPathComponent:basePath];
@@ -19,17 +25,16 @@ public:
     CGImageRef cgImage = uiImage.CGImage;
     size.x = CGImageGetWidth(cgImage);
     size.y = CGImageGetHeight(cgImage);
-    CFDataRef imageData = CGDataProviderCopyData(CGImageGetDataProvider(cgImage));
-    CFIndex dlen = CFDataGetLength(imageData);
+    imageData = CGDataProviderCopyData(CGImageGetDataProvider(cgImage));
     
-    *data = new char[dlen];
-    char *v = (char*)CFDataGetBytePtr(imageData);
-    
-    for (CFIndex i = 0; i < dlen; i++) {
-      *data[i] = v[i];
+    *data = (void*)CFDataGetBytePtr(imageData);
+  }
+  
+  void UnloadImage() {
+    if (imageData != NULL) {
+      CFRelease(imageData);
     }
-    
-    CFRelease(imageData);
+    imageData = NULL;
   }
   
   unsigned int LoadFile(const char* name, char** data) {
@@ -62,5 +67,8 @@ public:
     
     return total;
   }
+  
+protected:
+  CFDataRef imageData;
   
 };

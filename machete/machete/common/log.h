@@ -15,19 +15,10 @@ namespace machete {
   namespace common {
     
     static void Log(const machete::data::Str & msg) {
-      int c = 0;
+      char c[200];
+      msg.GetChars(c, 200);
       
-      while (c < msg.Size()) {
-        int w = msg.CharSizeAt(c);
-        
-        wchar_t wc = msg.CharAt(c);
-        
-        std::cout << wc;
-        
-        c += w;
-      }
-      
-      std::cout << std::endl;
+      std::cout << c << std::endl;
     }
     
   }

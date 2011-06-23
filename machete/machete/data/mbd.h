@@ -10,13 +10,14 @@
 
 #include "tree.h"
 #include "str.h"
+#include "../platform/platform.h"
 
 namespace machete { 
   namespace data {
     
     class Mbd {
     public:
-      Mbd(const char *data);
+      Mbd(const char *file);
       ~Mbd();
       
       int Count(const Str & qry, ...);

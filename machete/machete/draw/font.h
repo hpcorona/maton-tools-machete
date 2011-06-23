@@ -51,7 +51,7 @@ namespace machete {
     
     class Font {
     public:
-      Font(const char* name, Tex & t);
+      Font(const char* name, struct Tex * t);
       ~Font();
       
       FontChar* Get(int c);
@@ -64,7 +64,7 @@ namespace machete {
       
       Mbd *font;
       Hash<int, FontChar*> chars;
-      Tex texture;
+      struct Tex *texture;
     };
     
   }

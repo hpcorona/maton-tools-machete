@@ -44,6 +44,7 @@ namespace machete {
     };
     
     class Root : public Container {
+    public:
       Root(DrawContext *ctx);
       
       void Draw();

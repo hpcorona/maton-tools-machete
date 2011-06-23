@@ -57,7 +57,7 @@ namespace machete {
       }
     }
     
-    Font::Font(const char *name, Tex & t) {
+    Font::Font(const char *name, struct Tex * t) {
       texture = t;
       
       font = new Mbd(name);
@@ -110,7 +110,7 @@ namespace machete {
         float y1 = y + h;
         float xa = font->FloatValue("/font/chars[1]/char[%1]/@xadvance", cIdx);
         
-        FontChar *fchar = new FontChar(Vec2(px, py), Vec2(w, h), Vec2(x / texture.width, y / texture.height), Vec2(x1 / texture.width, y1 / texture.height), texture.id);
+        FontChar *fchar = new FontChar(Vec2(px, py), Vec2(w, h), Vec2(x / texture->width, y / texture->height), Vec2(x1 / texture->width, y1 / texture->height), texture->id);
         
         fchar->SetXAdvance(xa);
         fchar->SetYAdvance(height);

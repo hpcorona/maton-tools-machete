@@ -34,7 +34,7 @@ namespace machete {
     
     template <typename T>
     struct Vector2 {
-      Vector2() {}
+      Vector2() { x = 0; y = 0;}
       Vector2(T x, T y) : x(x), y(y) {}
       T Dot(const Vector2& v) const
       {
@@ -122,7 +122,7 @@ namespace machete {
     
     template <typename T>
     struct Vector3 {
-      Vector3() {}
+      Vector3() { x = 0; y = 0; z = 0; }
       Vector3(T x, T y, T z) : x(x), y(y), z(z) {}
       T Length()
       {
@@ -217,7 +217,7 @@ namespace machete {
     
     template <typename T>
     struct Vector4 {
-      Vector4() {}
+      Vector4() { x = 0; y = 0; z = 0; w = 0; }
       Vector4(T x, T y, T z, T w) : x(x), y(y), z(z), w(w) {}
       Vector4(const Vector3<T>& v, T w) : x(v.x), y(v.y), z(v.z), w(w) {}
       T Dot(const Vector4& v) const
