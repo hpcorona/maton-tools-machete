@@ -307,6 +307,12 @@ namespace machete {
       fallback = node->GetValue();
     }
     
+    void Actor::SetLoop(bool loop) {
+      if (current == NULL) return;
+      
+      current->SetLoop(loop);
+    }
+    
     bool Actor::Play(const char* name) {
       Tree<Str, Animation*> *node = actions.Seek(name);
       if (node == NULL) {
@@ -320,6 +326,27 @@ namespace machete {
       }
       
       current->Restart();
+      
+      return true;
+    }
+    
+    bool Actor::Play(const char* name, const char* fallback) {
+      if (Play(name) == false) {
+        return false;
+      }
+      
+      SetLoop(false);
+      SetFallback(fallback);
+      
+      return true;
+    }
+    
+    bool Actor::Play(const char *name, bool loop) {
+      if (Play(name) == false) {
+        return false;
+      }
+      
+      SetLoop(loop);
       
       return true;
     }

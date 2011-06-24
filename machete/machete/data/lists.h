@@ -161,5 +161,54 @@ namespace machete {
       LinkedList<T> *root;
     };
     
+    template <class T>
+    class List {
+    public:
+      List(int cap) {
+        array = new T[cap];
+        this->cap = cap;
+        size = 0;
+      }
+      
+      ~List() {
+        delete array;
+      }
+      
+      int Add(T & v) {
+        if (size >= cap) {
+          return -1;
+        }
+        
+        array[size++] = v;
+        
+        return size - 1;
+      }
+      
+      T Get(int idx) {
+        return array[idx];
+      }
+      
+      void Set(int idx, T & v) {
+        array[idx] = v;
+      }
+      
+      void Remove(int idx) {
+        for (int i = idx; i < size - 1; i++) {
+          array[i] = array[i + 1];
+        }
+        
+        size--;
+      }
+      
+      inline int GetSize() const {
+        return size;
+      }
+      
+    protected:
+      T *array;
+      int cap;
+      int size;
+    };
+    
   }
 }

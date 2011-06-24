@@ -329,7 +329,7 @@ namespace machete {
         return diff;
       }
       
-      void GetChars(char *chars, int len) const {
+      int GetChars(char *chars, int len) const {
         if (len > this->len) {
           len = this->len;
         }
@@ -338,6 +338,8 @@ namespace machete {
           chars[i] = this->chars[i];
         }
         chars[len] = 0;
+        
+        return len;
       }
       
       bool operator == (const Str &ostr) const {

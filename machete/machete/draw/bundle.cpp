@@ -78,6 +78,10 @@ namespace machete {
     }
     
     Element* Bundle::NewSprite(struct BdlSprite* mspr) const {
+      if (mspr == NULL) {
+        return NULL;
+      }
+      
       if (mspr->imageCount == 1) {
         mspr->images->Reset();
         mspr->images->Next();

@@ -105,8 +105,11 @@ namespace machete {
       inline bool IsFinished() const;
       inline bool IsLoop() const;
       void SetFallback(const char* name);
+      void SetLoop(bool loop);
       
       bool Play(const char* name);
+      bool Play(const char* name, const char* fallback);
+      bool Play(const char* name, bool loop);
       void Invalidate();
       void Update(float time);
       void Draw(const Mat4 & matrix, Vec2 & pos, Vec4 & color, DrawContext *ctx);
