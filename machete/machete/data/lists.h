@@ -111,8 +111,8 @@ namespace machete {
       }
       
       bool HasNext() {
-        if (current == NULL && root->IsEmpty() == false) {
-          return true;
+        if (current == NULL) {
+          return root->IsEmpty() == false;
         }
         
         return current->GetNext() != NULL;

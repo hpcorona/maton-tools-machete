@@ -8,10 +8,19 @@
 
 #pragma once
 
+#include "draw/bundle.h"
 #include "platform/platform.h"
 #include "graphics/shader.h"
 #include "graphics/draw.h"
-#include "vector.h"
+#include "math/vector.h"
+#include "math/matrix.h"
+#include "math/quaternion.h"
+#include "data/str.h"
+#include "data/tree.h"
+#include "data/lists.h"
+#include "data/mbd.h"
+#include "common/log.h"
+#include "input/touch.h"
 
 namespace machete {
   

@@ -71,11 +71,18 @@ namespace machete {
       void Disable() { active = false; visible = false; }
       void Enable() { active = true; visible = true; }
       
+      inline unsigned long GetType() { return type; }
+      inline unsigned long GetObjId() { return objId; }
+      void SetType(unsigned long t) { type = t; }
+      void SetObjId(unsigned long o) { objId = o; }
+      
       virtual void Invalidate() = 0;
       virtual void Update(float time) = 0;
       virtual void Draw(const Mat4 & matrix, Vec2 & pos, Vec4 & color, DrawContext *ctx) = 0;
       
     protected:
+      unsigned long type;
+      unsigned long objId;
       bool active;
       bool visible;
       Vec2 position;
@@ -88,6 +95,7 @@ namespace machete {
       void *data;
       
       static Vec2 ZERO2;
+      static unsigned long NEXT_ID;
     };
 
   }

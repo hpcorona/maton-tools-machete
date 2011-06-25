@@ -16,6 +16,8 @@
 #import <OpenGLES/ES2/gl.h>
 #import "machete/engine.h"
 
+using namespace machete::input;
+
 extern EAGLContext *context;
 extern CAEAGLLayer *eaglLayer;
 
@@ -27,5 +29,11 @@ extern CAEAGLLayer *eaglLayer;
 }
 
 - (void)drawView:(CADisplayLink*)displayLink;
+
+- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event;
+- (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event;
+- (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event;
+- (void)touchesCancelled:(NSSet *)touches withEvent:(UIEvent *)event;
+- (void)sendTouches:(NSSet *)touches withType:(TouchPhase) state;
 
 @end

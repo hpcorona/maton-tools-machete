@@ -106,6 +106,7 @@ namespace machete {
     }
     
     Vec2 Element::ZERO2(0, 0);
+    unsigned long Element::NEXT_ID = 0;
 
     Element::Element() : color(1, 1, 1, 1), scale(1, 1) {
       rotation = 0;
@@ -113,6 +114,8 @@ namespace machete {
       data = NULL;
       visible = true;
       active = true;
+      type = 0;
+      objId = ++Element::NEXT_ID;
     }
 
   }

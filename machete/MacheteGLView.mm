@@ -37,6 +37,9 @@ CAEAGLLayer *eaglLayer = NULL;
     displayLink = [CADisplayLink displayLinkWithTarget:self selector:@selector(drawView:)];
     
     [displayLink addToRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
+    
+    [self setUserInteractionEnabled:YES];
+    [self setMultipleTouchEnabled:YES];
   }
   return self;
 }
@@ -70,6 +73,30 @@ CAEAGLLayer *eaglLayer = NULL;
   game->Render();
   
   [context presentRenderbuffer:GL_RENDERBUFFER];
+}
+
+- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
+  [self sendTouches:touches withType:TouchStart];
+}
+
+- (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event {
+  [self sendTouches:touches withType:TouchMove];
+}
+
+- (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event {
+  [self sendTouches:touches withType:TouchEnd];
+}
+
+- (void)touchesCancelled:(NSSet *)touches withEvent:(UIEvent *)event {
+  [self sendTouches:touches withType:TouchCancelled];
+}
+
+- (void)sendTouches:(NSSet *)touches withType:(TouchPhase) state {
+  
+  for (UITouch *touch in touches) {
+    
+    NSLog(@"   Touch %d", (int)touch);
+  }
 }
 
 @end
