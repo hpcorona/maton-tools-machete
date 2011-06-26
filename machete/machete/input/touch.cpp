@@ -18,6 +18,8 @@ namespace machete {
       for (int i = 0; i < 10; i++) {
         touches[i] = new Touch();
       }
+      
+      invalid = true;
     }
     
     TouchInput::~TouchInput() {

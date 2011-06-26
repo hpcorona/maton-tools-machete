@@ -162,6 +162,8 @@ namespace machete {
     Drawing::Drawing(MetaElement *e) {
       element = e;
       bounds.size = element->GetSize();
+      flipX = false;
+      flipY = false;
     }
     
     void Drawing::Invalidate() {

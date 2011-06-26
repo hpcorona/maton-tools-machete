@@ -39,7 +39,7 @@ CAEAGLLayer *eaglLayer = NULL;
     [displayLink addToRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
     
     [self setUserInteractionEnabled:YES];
-    [self setMultipleTouchEnabled:YES];
+    [self setMultipleTouchEnabled:NO]; // Solo un touch de momento
   }
   return self;
 }
@@ -94,9 +94,25 @@ CAEAGLLayer *eaglLayer = NULL;
 - (void)sendTouches:(NSSet *)touches withType:(TouchPhase) state {
   
   for (UITouch *touch in touches) {
+    Touch *t = TheTouchInput->GetTouch(0);
+    CGPoint pos = [touch locationInView:self];
+    CGPoint prev = [touch previousLocationInView:self];
     
-    NSLog(@"   Touch %d", (int)touch);
+    if (state == TouchStart) {
+      t->start.x = pos.x;
+      t->start.y = pos.y;
+    }
+    t->phase = state;
+    t->finger = 1;
+    t->previous.x = prev.x;
+    t->previous.y = prev.y;
+    t->current.x = pos.x;
+    t->current.y = pos.y;
+    t->tapCount = touch.tapCount;
+    t->offset = t->current - t->previous;
   }
+  
+  TheTouchInput->MarkAvailable();
 }
 
 @end

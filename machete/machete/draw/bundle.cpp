@@ -193,8 +193,6 @@ namespace machete {
         MetaSprite *ms = new MetaSprite(Vec2(w, h), Vec2((x+1) / tex->width, (y+1) / tex->height), Vec2(x1 / tex->width, y1 / tex->height), tex->id);
         
         images.Add(stName, ms);
-        
-        Log(Str("Loaded Image: ") + stName);
       }
     }
     
@@ -219,8 +217,11 @@ namespace machete {
           img->position.y = bundle->FloatValue("/Bundle/Sprite[%1]/Image[%2]/@y", sIdx, iIdx);
           img->alpha = bundle->FloatValue("/Bundle/Sprite[%1]/Image[%2]/@alpha", sIdx, iIdx) / 255.0f;
           img->rotation = bundle->FloatValue("/Bundle/Sprite[%1]/Image[%2]/@rotation", sIdx, iIdx);
-          img->flipX = bundle->Value("/Bundle/Sprite[%1]/Image[%2]/@flipX", sIdx, iIdx) == "true";
-          img->flipY = bundle->Value("/Bundle/Sprite[%1]/Image[%2]/@flipY", sIdx, iIdx) == "true";
+          
+          Str flipX = bundle->Value("/Bundle/Sprite[%1]/Image[%2]/@flipX", sIdx, iIdx);
+          Str flipY = bundle->Value("/Bundle/Sprite[%1]/Image[%2]/@flipY", sIdx, iIdx);
+          img->flipX = flipX == "true";
+          img->flipY = flipY == "true";
           
           sprite->images->Append(img);
         }
@@ -229,8 +230,6 @@ namespace machete {
         
         Str spriteName = bundle->Value("/Bundle/Sprite[%1]/@name", sIdx);
         sprites.Add(spriteName, sprite);
-        
-        Log(Str("Loaded Sprite: ") + spriteName);
       }
     }
     
@@ -259,8 +258,6 @@ namespace machete {
 
         Str animName = bundle->Value("/Bundle/Animation[%1]/@name", aIdx);
         animations.Add(animName, animation);
-
-        Log(Str("Loaded Animation: ") + animName);
       }
     }
     
@@ -288,8 +285,6 @@ namespace machete {
         
         Str actorName = bundle->Value("/Bundle/Actor[%1]/@name", xIdx);
         actors.Add(actorName, actor);
-        
-        Log(Str("Loaded Actor: ") + actorName);
       }
     }
     
@@ -306,8 +301,6 @@ namespace machete {
         Font *face = new Font(fPath, tex);
         
         fonts.Add(faceName, face);
-        
-        Log(Str("Loaded Font: ") + faceName);
       }
     }
     

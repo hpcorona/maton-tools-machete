@@ -53,9 +53,14 @@ namespace machete {
         return touches[idx];
       }
       
+      void MarkAvailable() { invalid = false; }
+      void Invalidate() { invalid = true; }
+      inline bool IsAvailable() const { return !invalid; }
+      
     protected:
       Touch **touches;
       int touchCount;
+      bool invalid;
     };
     
     extern TouchInput *TheTouchInput;

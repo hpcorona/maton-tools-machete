@@ -16,14 +16,14 @@ namespace machete {
       this->size = size;
       
       verts[0].vert.x = 0; verts[0].vert.y = 0; verts[0].vert.z = 0;
-      verts[1].vert.x = 0; verts[1].vert.y = -size.x; verts[1].vert.z = 0;
+      verts[1].vert.x = 0; verts[1].vert.y = -size.y; verts[1].vert.z = 0;
       verts[2].vert.x = size.x; verts[2].vert.y = 0; verts[2].vert.z = 0;
-      verts[3].vert.x = size.x; verts[3].vert.y = -size.x; verts[3].vert.z = 0;
+      verts[3].vert.x = size.x; verts[3].vert.y = -size.y; verts[3].vert.z = 0;
       
-      verts[0].uv.x = uv0.x; verts[0].uv.y = uv1.y;
-      verts[1].uv.x = uv0.x; verts[1].uv.y = uv0.y;
-      verts[2].uv.x = uv1.x; verts[2].uv.y = uv1.y;
-      verts[3].uv.x = uv1.x; verts[3].uv.y = uv0.y;
+      verts[0].uv.x = uv0.x; verts[0].uv.y = uv0.y;
+      verts[1].uv.x = uv0.x; verts[1].uv.y = uv1.y;
+      verts[2].uv.x = uv1.x; verts[2].uv.y = uv0.y;
+      verts[3].uv.x = uv1.x; verts[3].uv.y = uv1.y;
       
       vertsH[0] = verts[0];
       vertsH[1] = verts[1];
