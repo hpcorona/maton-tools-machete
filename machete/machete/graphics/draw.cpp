@@ -16,6 +16,18 @@ namespace machete {
     
     DrawContext::DrawContext(RenderTarget t) {
       target = t;
+      framebuffer = 0;
+      renderbuffer = 0;
+      texture = 0;
+      indices = indicesRing[0];
+      vertexes = vertexesRing[0];
+      indexBuffer = 0;
+      vertexBuffer = 0;
+      ringIdx = 0;
+      idxCount = 0;
+      vtxCount = 0;
+      lastTexBind = 0;
+      
       
       glGenFramebuffers(1, &framebuffer);
       glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
@@ -108,7 +120,7 @@ namespace machete {
     
     void DrawContext::Draw(Vtx *verts, int vcount, unsigned short* elems, int ecount, GLuint texId) {
       
-      if (texId != lastTexBind) {
+      if (texId != lastTexBind || vtxCount + vcount > MAX_VTX || idxCount + ecount > MAX_IDX) {
         lastTexBind = texId;
         
         Draw();
