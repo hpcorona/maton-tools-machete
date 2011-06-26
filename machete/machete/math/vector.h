@@ -354,8 +354,8 @@ namespace machete {
       
       bool Contains(Vec2 & point) const {
         return (point.x >= pos.x && point.y >= pos.y &&
-                pos.x <= pos.x + size.x - 1 &&
-                pos.y <= pos.y + size.y - 1);
+                point.x <= pos.x + size.x - 1 &&
+                point.y <= pos.y + size.y - 1);
       }
       
       Vec2 Center() const {
