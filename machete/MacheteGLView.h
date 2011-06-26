@@ -3,7 +3,7 @@
 //  machete
 //
 //  Created by Hilario Perez Corona on 4/18/11.
-//  Copyright 2011 __MyCompanyName__. All rights reserved.
+//  Copyright 2011 Matón Supergames. All rights reserved.
 //
 
 #import <Foundation/Foundation.h>
