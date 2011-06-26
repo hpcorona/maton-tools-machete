@@ -57,6 +57,7 @@ namespace machete {
       Vec2 & GetPivot() { return pivot; }
       Vec2 & GetScale() { return scale; }
       Vec4 & GetColor() { return color; }
+      Rect2D GetGlobalBounds();
       Rect2D & GetBounds() { return bounds; }
       void SetActive(bool active) { this->active = active; }
       bool IsActive() { return active; }

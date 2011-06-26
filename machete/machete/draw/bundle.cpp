@@ -58,6 +58,7 @@ namespace machete {
       drw->SetRotation(bimg->rotation);
       drw->SetFlipX(bimg->flipX);
       drw->SetFlipY(bimg->flipY);
+      drw->Invalidate();
       
       return drw;
     }
@@ -251,7 +252,7 @@ namespace machete {
             frame->sprite = node->GetValue();
           }
           
-          frame->time = bundle->FloatValue("/Bundle/Animation[%1]/Frame[%2]/@time", aIdx, fIdx) / 100.0f;
+          frame->time = bundle->FloatValue("/Bundle/Animation[%1]/Frame[%2]/@time", aIdx, fIdx) / 1000.0f;
           
           animation->frames->Append(frame);
         }

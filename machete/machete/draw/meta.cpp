@@ -117,6 +117,20 @@ namespace machete {
       type = 0;
       objId = ++Element::NEXT_ID;
     }
+    
+    Rect2D Element::GetGlobalBounds() {
+      Rect2D global = GetBounds();
+      
+      Element *par = parent;
+      
+      while (par != NULL) {
+        global += par->position;
+        
+        par = par->parent;
+      }
+      
+      return global;
+    }
 
   }
 }

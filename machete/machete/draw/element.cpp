@@ -80,10 +80,6 @@ namespace machete {
       // TODO: Aplicar Posicion, Rotación, Escala
       bounds += position;
       bounds *= scale;
-      
-      if (parent != NULL) {
-        parent->Invalidate();
-      }
     }
     
     void Container::Update(float time) {
@@ -161,6 +157,7 @@ namespace machete {
     
     Drawing::Drawing(MetaElement *e) {
       element = e;
+      bounds.pos = position + pivot;
       bounds.size = element->GetSize();
       flipX = false;
       flipY = false;
@@ -170,12 +167,8 @@ namespace machete {
       bounds.Clear();
       
       bounds.size = element->GetSize();
-      bounds += position;
+      bounds.pos += position + pivot;
       bounds *= scale;
-      
-      if (parent != NULL) {
-        parent->Invalidate();
-      }
     }
     
     void Drawing::Update(float time) {
@@ -219,10 +212,6 @@ namespace machete {
       
       bounds += position;
       bounds *= scale;
-      
-      if (parent != NULL) {
-        parent->Invalidate();
-      }
     }
     
     void Animation::Update(float time) {
