@@ -112,11 +112,11 @@ namespace machete {
         float h = font->FloatValue("/font/chars[1]/char[%1]/@height", cIdx);
         float px = font->FloatValue("/font/chars[1]/char[%1]/@xoffset", cIdx);
         float py = font->FloatValue("/font/chars[1]/char[%1]/@yoffset", cIdx);
-        float x1 = x + w - 1;
-        float y1 = y + h - 1;
+        float x1 = x + w;
+        float y1 = y + h;
         float xa = font->FloatValue("/font/chars[1]/char[%1]/@xadvance", cIdx);
         
-        FontChar *fchar = new FontChar(Vec2(px, py), Vec2(w, h), Vec2((x+1) / texture->width, (y+1) / texture->height), Vec2(x1 / texture->width, y1 / texture->height), texture->id);
+        FontChar *fchar = new FontChar(Vec2(px, py), Vec2(w, h), Vec2(x / texture->width, y / texture->height), Vec2(x1 / texture->width, y1 / texture->height), texture->id);
         
         fchar->SetXAdvance(xa);
         fchar->SetYAdvance(height);
