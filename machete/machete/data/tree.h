@@ -1,5 +1,5 @@
 //
-//  hash.h
+//  tree.h
 //  machete
 //
 //  Created by Hilario Perez Corona on 4/19/11.
