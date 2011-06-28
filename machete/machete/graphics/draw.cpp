@@ -168,14 +168,6 @@ namespace machete {
       lastTexBind = 0;
       
       glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
-      //CheckGLError();
-
-      //glBindFramebuffer(1, framebuffer);
-      /*
-       if (target == TargetScreen) {
-       glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, renderbuffer);
-       }
-       */
 
       glViewport(0, 0, size.x, size.y);
 
@@ -192,7 +184,6 @@ namespace machete {
     void DrawContext::Unuse() {
       renderer.Unuse();
       glBindFramebuffer(GL_FRAMEBUFFER, 0);
-      //CheckGLError();
     }
     
     void DrawContext::StartFrame() {

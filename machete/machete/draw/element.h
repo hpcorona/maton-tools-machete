@@ -131,6 +131,7 @@ namespace machete {
       inline bool IsUsingTexture() const { return usingTexture; }
       void Draw();
       void Draw(const Mat4 & matrix, Vec2 & pos, Vec4 & color, DrawContext *ctx);
+      MetaSprite *GetMetaSprite() { return texture; };
       
     protected:
       bool usingTexture;

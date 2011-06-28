@@ -377,7 +377,7 @@ namespace machete {
     Dynamic::Dynamic(int texWidth, int texHeight, Vec2 & size) : Root(NULL) {
       usingTexture = false;
       context = CreateDrawContext(machete::graphics::TargetTexture, texWidth, texHeight);
-      texture = new MetaSprite(size, Vec2(0, 0), Vec2(1, 1), context->GetRenderTexture());
+      texture = new MetaSprite(size, Vec2(0, 1), Vec2(1, 0), context->GetRenderTexture());
     }
     
     Dynamic::~Dynamic() {
@@ -388,7 +388,17 @@ namespace machete {
     }
     
     void Dynamic::Draw() {
-      Root::Draw();
+      context->Use();
+      context->StartFrame();
+      
+      context->ChangeModelView(matrix);
+      
+      Vec2 negative(-position.x, -position.y);
+      
+      Container::Draw(matrix, negative, color, context);
+      
+      context->EndFrame();
+      context->Unuse();
     }
     
     void Dynamic::Draw(const Mat4 & matrix, Vec2 & pos, Vec4 & color, DrawContext *ctx) {
