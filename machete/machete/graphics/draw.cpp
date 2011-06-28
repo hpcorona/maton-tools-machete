@@ -209,11 +209,11 @@ namespace machete {
     void DrawContext::Draw(Vtx *verts, int vcount, unsigned short* elems, int ecount, GLuint texId) {
       
       if (texId != lastTexBind || vtxCount + vcount > MAX_VTX || idxCount + ecount > MAX_IDX) {
-        lastTexBind = texId;
-        
         Draw();
       }
-      
+
+      lastTexBind = texId;
+
       unsigned int vtxBase = vtxCount;
       
       for (int i = 0; i < vcount; i++) {
