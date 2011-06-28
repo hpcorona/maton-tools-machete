@@ -374,5 +374,36 @@ namespace machete {
       }
     }
     
+    Dynamic::Dynamic(int texWidth, int texHeight, Vec2 & size) : Root(NULL) {
+      usingTexture = false;
+      context = CreateDrawContext(machete::graphics::TargetTexture, texWidth, texHeight);
+      texture = new MetaSprite(size, Vec2(0, 0), Vec2(1, 1), context->GetRenderTexture());
+    }
+    
+    Dynamic::~Dynamic() {
+      delete texture;
+      delete context;
+      
+      context = NULL;
+    }
+    
+    void Dynamic::Draw() {
+      Root::Draw();
+    }
+    
+    void Dynamic::Draw(const Mat4 & matrix, Vec2 & pos, Vec4 & color, DrawContext *ctx) {
+      
+      if (usingTexture) {
+        if (texture != NULL) {
+          Vec4 NewColor = this->color * color;
+          Vec2 Position = position + pos;
+          
+          texture->Draw(ctx, pivot, Position, scale, NewColor, rotation, false, false);
+        }
+      } else {
+        Container::Draw(matrix, pos, color, ctx);
+      }
+    }
+    
   }
 }

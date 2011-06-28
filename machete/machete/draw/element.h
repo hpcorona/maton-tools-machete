@@ -8,6 +8,7 @@
 
 #pragma once
 
+#include "../graphics/draw.h"
 #include "meta.h"
 
 namespace machete {
@@ -119,6 +120,22 @@ namespace machete {
       Animation *fallback;
       Animation *current;
       Hash<Str, Animation*> actions;
+    };
+    
+    class Dynamic : public Root {
+    public:
+      Dynamic(int texWidth, int texHeight, Vec2 & size);
+      ~Dynamic();
+      
+      void SetUsingTexture(bool use) { usingTexture = use; }
+      inline bool IsUsingTexture() const { return usingTexture; }
+      void Draw();
+      void Draw(const Mat4 & matrix, Vec2 & pos, Vec4 & color, DrawContext *ctx);
+      
+    protected:
+      bool usingTexture;
+      MetaSprite *texture;
+      
     };
     
   }

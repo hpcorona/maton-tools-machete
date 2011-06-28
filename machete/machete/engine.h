@@ -54,5 +54,4 @@ namespace machete {
   
 }
 
-machete::graphics::DrawContext* CreateDrawContext(machete::graphics::RenderTarget, int, int);
 machete::IGame* CreateGame();

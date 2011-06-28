@@ -14,16 +14,109 @@ using namespace machete::math;
 namespace machete {
   namespace graphics {
     
+    BufferMgr::BufferMgr() {
+      ringIdx = -1;
+      indices = NULL;
+      vertexes = NULL;
+      indexBuffer = 0;
+      vertexBuffer = 0;
+      
+      CreateBuffers();
+    }
+    
+    BufferMgr::~BufferMgr() {
+      DestroyBuffers();
+    }
+    
+    void BufferMgr::Next() {
+      ringIdx++;
+      
+      if (ringIdx >= MAX_RING) {
+        ringIdx = 0;
+      }
+      
+      indices = indicesRing[ringIdx];
+      vertexes = vertexesRing[ringIdx];
+      indexBuffer = indexBufferRing[ringIdx];
+      vertexBuffer = vertexBufferRing[ringIdx];
+    }
+    
+    Vtx* BufferMgr::GetVtxArrayBuffer() {
+      return vertexes;
+    }
+    
+    GLushort* BufferMgr::GetIdxArrayBuffer() {
+      return indices;
+    }
+    
+    GLuint BufferMgr::GetVtxBuffer() {
+      return vertexBuffer;
+    }
+    
+    GLuint BufferMgr::GetIdxBuffer() {
+      return indexBuffer;
+    }
+
+    GLuint BufferMgr::CreateVtxBuffer(Vtx* verts) const {
+      GLuint buff;
+      
+      glGenBuffers(1, &buff);
+      glBindBuffer(GL_ARRAY_BUFFER, buff);
+      glBufferData(GL_ARRAY_BUFFER, sizeof(Vtx) * MAX_VTX, NULL, GL_DYNAMIC_DRAW);
+      
+      return buff;
+    }
+    
+    GLuint BufferMgr::CreateIdxBuffer(unsigned short* idxs) const {
+      GLuint buff;
+      
+      glGenBuffers(1, &buff);
+      glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, buff);
+      glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned short) * MAX_IDX, NULL, GL_DYNAMIC_DRAW);
+      
+      return buff;
+    }
+    
+    void BufferMgr::DeleteBuffer(GLuint buffer) const {
+      glDeleteBuffers(1, &buffer);
+    }
+    
+    void BufferMgr::CreateBuffers() {
+      for (unsigned int i = 0; i < MAX_RING; i++) {
+        vertexBufferRing[i] = CreateVtxBuffer(vertexesRing[i]);
+        indexBufferRing[i] = CreateIdxBuffer(indicesRing[i]);
+      }
+      
+      ringIdx = 0;
+      vertexes = vertexesRing[ringIdx];
+      vertexBuffer = vertexBufferRing[ringIdx];
+      
+      indices = indicesRing[ringIdx];
+      indexBuffer = indexBufferRing[ringIdx];
+    }
+    
+    void BufferMgr::DestroyBuffers() {
+      for (unsigned int i = 0; i < MAX_RING; i++) {
+        DeleteBuffer(vertexBufferRing[i]);
+        DeleteBuffer(indexBufferRing[i]);
+      }
+    }
+
+    BufferMgr *TheBufferMgr = NULL;
+    
     DrawContext::DrawContext(RenderTarget t) {
+      if (TheBufferMgr == NULL) {
+        TheBufferMgr = new BufferMgr();
+      }
+      
       target = t;
       framebuffer = 0;
       renderbuffer = 0;
       texture = 0;
-      indices = indicesRing[0];
-      vertexes = vertexesRing[0];
+      indices = NULL;
+      vertexes = NULL;
       indexBuffer = 0;
       vertexBuffer = 0;
-      ringIdx = 0;
       idxCount = 0;
       vtxCount = 0;
       lastTexBind = 0;
@@ -47,6 +140,8 @@ namespace machete {
       if (target == TargetTexture) {
         struct Tex *tex = TheTextureMgr->CreateTexture(width, height);
         
+        texture = tex->id;
+        
         glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, tex->id, 0);
       } else {
         glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, renderbuffer);
@@ -58,9 +153,6 @@ namespace machete {
         exit(1);
       }
       
-      
-      CreateBuffers();
-
       base = Mat4();
       base = base.Translate(-this->size.x / 2, this->size.y / 2, 0);
       
@@ -76,7 +168,6 @@ namespace machete {
       lastTexBind = 0;
       
       glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
-      //glBindRenderbuffer(GL_RENDERBUFFER, renderbuffer);
       //CheckGLError();
 
       //glBindFramebuffer(1, framebuffer);
@@ -101,17 +192,14 @@ namespace machete {
     void DrawContext::Unuse() {
       renderer.Unuse();
       glBindFramebuffer(GL_FRAMEBUFFER, 0);
-      //glBindRenderbuffer(GL_RENDERBUFFER, 0);
       //CheckGLError();
     }
     
     void DrawContext::StartFrame() {
       glClear(GL_COLOR_BUFFER_BIT);
       lastTexBind = 0;
-      idxCount = 0;
-      vtxCount = 0;
-      vertexBuffer = vertexBufferRing[ringIdx];
-      indexBuffer = indexBufferRing[ringIdx];
+      
+      NextBuffers();
     }
     
     void DrawContext::ChangeModelView(const machete::math::Mat4 & mv) {
@@ -148,19 +236,7 @@ namespace machete {
       
       renderer.Upload(vertexes, vtxCount, indices, idxCount);
       
-      vtxCount = 0;
-      idxCount = 0;
-      
-      ringIdx++;
-      if (ringIdx >= MAX_RING) {
-        ringIdx = 0;
-      }
-      
-      vertexes = vertexesRing[ringIdx];
-      vertexBuffer = vertexBufferRing[ringIdx];
-      
-      indices = indicesRing[ringIdx];
-      indexBuffer = indexBufferRing[ringIdx];
+      NextBuffers();
     }
     
     void DrawContext::EndFrame() {
@@ -172,46 +248,19 @@ namespace machete {
       glBindBuffer(GL_ARRAY_BUFFER, 0);
     }
     
-    GLuint DrawContext::CreateVtxBuffer(Vtx* verts) const {
-      GLuint buff;
-      
-      glGenBuffers(1, &buff);
-      glBindBuffer(GL_ARRAY_BUFFER, buff);
-      glBufferData(GL_ARRAY_BUFFER, sizeof(Vtx) * MAX_VTX, NULL, GL_DYNAMIC_DRAW);
-      
-      return buff;
-    }
-
-    GLuint DrawContext::CreateIdxBuffer(unsigned short* idxs) const {
-      GLuint buff;
-      
-      glGenBuffers(1, &buff);
-      glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, buff);
-      glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned short) * MAX_IDX, NULL, GL_DYNAMIC_DRAW);
-      
-      return buff;
-    }
-
-    void DrawContext::DeleteBuffer(GLuint buffer) const {
-      glDeleteBuffers(1, &buffer);
-    }
-    
-    void DrawContext::CreateBuffers() {
-      for (unsigned int i = 0; i < MAX_RING; i++) {
-        vertexBufferRing[i] = CreateVtxBuffer(vertexesRing[i]);
-        indexBufferRing[i] = CreateIdxBuffer(indicesRing[i]);
-      }
-      
-      ringIdx = 0;
-      vertexes = vertexesRing[ringIdx];
-      vertexBuffer = vertexBufferRing[ringIdx];
-      
-      indices = indicesRing[ringIdx];
-      indexBuffer = indexBufferRing[ringIdx];
-      
+    void DrawContext::NextBuffers() {
       vtxCount = 0;
       idxCount = 0;
+      
+      TheBufferMgr->Next();
+      
+      vertexes = TheBufferMgr->GetVtxArrayBuffer();
+      vertexBuffer = TheBufferMgr->GetVtxBuffer();
+      
+      indices = TheBufferMgr->GetIdxArrayBuffer();
+      indexBuffer = TheBufferMgr->GetIdxBuffer();
     }
     
   }
 }
+
