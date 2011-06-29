@@ -6,6 +6,9 @@
 //  Copyright 2011 Matón Supergames. All rights reserved.
 //
 
+//! \file element.h
+//! \brief High Level scene elements most commonly used.
+
 #pragma once
 
 #include "../graphics/draw.h"
