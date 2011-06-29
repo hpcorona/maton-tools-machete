@@ -50,7 +50,7 @@ namespace machete {
       machete::data::Str base(newSize);
       
       tpl.Build(base, &p);
-
+      
       char c[200];
       base.GetChars(c, 200);
       

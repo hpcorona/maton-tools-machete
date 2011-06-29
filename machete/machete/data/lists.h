@@ -24,7 +24,7 @@ namespace machete {
     template<class T>
     class LinkedList {
     public:
-	
+      
 			//! Create an empty LinkedList.
       LinkedList() {
         empty = true;
@@ -47,7 +47,7 @@ namespace machete {
 			/*!
 			 This does not deletes anything, just sets the next node to
 			 NULL and puts everything as if this is empty.
-			
+       
 			 After running this method, this node wil become a tail.
 			 */
       void Clear() {
@@ -60,9 +60,9 @@ namespace machete {
 			//! Append an element at the end of the last element in the LinkedList.
 			/*!
 			 This method will not check if the element to be added is already in the list.
-			
+       
 			 This method is slow if you are using big lists.
-			
+       
 			 \param v Element to append at the end.
 			 */
       void Append(const T &v) {
@@ -86,7 +86,7 @@ namespace machete {
       T & GetValue() {
         return value;
       }
-
+      
       //! Changes the value of this node.
 			/*!
 			 \param v The new value for this node.
@@ -111,7 +111,7 @@ namespace machete {
       void SetNext(LinkedList<T> *next) {
         this->next = next;
       }
-
+      
       //! Checks if this node is empty.
 			/*!
 			 \return true if this node is empty. false otherwise.
@@ -123,10 +123,10 @@ namespace machete {
     private:
 			//! The value of this node.
       T value;
-
+      
 			//! Status, true if it's empty.
       bool empty;
-
+      
 			//! Pointer to the next node.
       LinkedList<T> *next;
     };
@@ -194,7 +194,7 @@ namespace machete {
         
         return current->GetNext() != NULL;
       }
-
+      
       //! Move on to the next node of the LinkedList.
 			/*!
 			 \return true if the move was performed. false if there was no more elements in the list.
@@ -212,7 +212,7 @@ namespace machete {
         
         return true;
       }
-
+      
       //! Reset the current node to the root node.
 			/*!
 			 We should call this method each time we want to start a
@@ -250,7 +250,7 @@ namespace machete {
     private:
 			//! Current node
       LinkedList<T> *current;
-
+      
 			//! The root node
       LinkedList<T> *root;
     };
@@ -258,7 +258,7 @@ namespace machete {
 		//! A simple array list.
 		/*!
 		 This is an "unsafe" list.
-		
+     
 		 It won't do any checking of any kind.
 		 */
     template <class T>
@@ -298,7 +298,7 @@ namespace machete {
 			/*!
 			 \param idx The index that we want to retrieve.
 			 \return The item.
-			*/
+       */
       T Get(int idx) {
         return array[idx];
       }
@@ -307,7 +307,7 @@ namespace machete {
 			/*!
 			 \param idx The index that we want to replace.
 			 \param v The new value.
-			*/
+       */
       void Set(int idx, T & v) {
         array[idx] = v;
       }
@@ -326,12 +326,12 @@ namespace machete {
       
 			//! Get the number of items in the list.
 			/*!
-			This won't count items that you manually set above the size index.
-			
-			This will only count items saved using the Add and Remove methods.
-			
-			\return The number of items in the list.
-			*/
+			 This won't count items that you manually set above the size index.
+       
+			 This will only count items saved using the Add and Remove methods.
+       
+			 \return The number of items in the list.
+			 */
       inline int GetSize() const {
         return size;
       }
@@ -339,10 +339,10 @@ namespace machete {
     protected:
 			//! The array to store the items.
       T *array;
-
+      
 			//! The maximum size of the list.
       int cap;
-
+      
 			//! Current number of items in the list.
       int size;
     };

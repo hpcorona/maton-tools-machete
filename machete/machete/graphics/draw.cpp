@@ -57,7 +57,7 @@ namespace machete {
       return indexBuffer;
     }
 
-    GLuint BufferMgr::CreateVtxBuffer(Vtx* verts) const {
+    GLuint BufferMgr::CreateVtxBuffer() const {
       GLuint buff;
       
       glGenBuffers(1, &buff);
@@ -67,7 +67,7 @@ namespace machete {
       return buff;
     }
     
-    GLuint BufferMgr::CreateIdxBuffer(unsigned short* idxs) const {
+    GLuint BufferMgr::CreateIdxBuffer() const {
       GLuint buff;
       
       glGenBuffers(1, &buff);
@@ -83,8 +83,8 @@ namespace machete {
     
     void BufferMgr::CreateBuffers() {
       for (unsigned int i = 0; i < MAX_RING; i++) {
-        vertexBufferRing[i] = CreateVtxBuffer(vertexesRing[i]);
-        indexBufferRing[i] = CreateIdxBuffer(indicesRing[i]);
+        vertexBufferRing[i] = CreateVtxBuffer();
+        indexBufferRing[i] = CreateIdxBuffer();
       }
       
       ringIdx = 0;

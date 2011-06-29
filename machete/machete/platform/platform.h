@@ -6,6 +6,9 @@
 //  Copyright 2011 Matón Supergames. All rights reserved.
 //
 
+//! \file platform.h
+//! \brief Platform specific helper classes and data structures.
+
 #pragma once
 
 #include "../math/vector.h"
@@ -13,28 +16,104 @@
 
 namespace machete {
   
+  //! Platform interface.
+  /*!
+   Must implement one class for each platform.
+   */
   class IPlatform {
   public:
+    
+    //! Get the full resource path.
+    /*!
+     All files available for the application must be contained here.
+     
+     Only one resource path is supported.
+     
+     \return A character string (null terminated) containing the resource path.
+     */
     virtual const char* GetResourcePath() const = 0;
+    
+    //! Load an image form the resource path.
+    /*!
+     This method will NOT free up any resources.
+     
+     \param filename The name of the file to load.
+     \param data An address to the data pointer. The implementation will create a new data pointer.
+     \param size The size of the loaded image.
+     */
     virtual void LoadImage(const char* filename, void **data, machete::math::IVec2 & size) = 0;
+    
+    //! Unload the last image and free up resources.
     virtual void UnloadImage() = 0;
+    
+    //! Load a file form the resources path.
+    /*!
+     The entire file will be loaded into memory.
+     
+     The called will need to release the memory requested.
+     
+     \param name File name to load.
+     \param data An address to the data pointer. The entire file will be loaded into memory.
+     \return The number of bytes that was loaded into memory. No additional bytes are added.
+     */
     virtual unsigned int LoadFile(const char* name, char** data) = 0;
   };
 
+  //! Platform specific features.
   namespace platform {
     
+    //! Interface or Bridge between your application and a IPlatform object.
     class Platform {
     public:
+      //! Create a new bridge between the specified platform.
+      /*!
+       \param p The platform specific implementation.
+       */
       Platform(machete::IPlatform* p) { platf = p; };
+      
+      //! Get the full resource path.
+      /*!
+       All files available for the application must be contained here.
+       
+       Only one resource path is supported.
+       
+       \return A character string (null terminated) containing the resource path.
+       */
       const char* GetResourcePath() const;
+      
+      //! Load an image form the resource path.
+      /*!
+       This method will NOT free up any resources. You must manually call UnloadImage.
+       
+       \sa UnloadImage
+       \param filename The name of the file to load.
+       \param data An address to the data pointer. A new data pointer will be created.
+       \param size The size of the loaded image.
+       */
       void LoadImage(const char* filename, void **data, machete::math::IVec2 & size);
+
+      //! Unload the last image and free up resources.
       void UnloadImage();
+
+      //! Load a file form the resources path.
+      /*!
+       The entire file will be loaded into memory.
+       
+       The called will need to release the memory requested.
+       
+       \param name File name to load.
+       \param data An address to the data pointer. The entire file will be loaded into memory.
+       \return The number of bytes that was loaded into memory. No additional bytes are added.
+       */
       unsigned int LoadFile(const char* name, char** data);
       
     private:
+      
+      //! Platform specific implementation.
       machete::IPlatform* platf;
     };
     
+    //! Global Platform manager.
     extern Platform* ThePlatform;
 
   }

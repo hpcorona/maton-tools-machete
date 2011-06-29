@@ -18,16 +18,16 @@ namespace machete {
     
 		//! A string class implementation.
 		/*!
-		Caution: Don't use lots of strings in your program. They are pure evil.
-		
-		Try to use strings only on initialization or things like that.
-		*/
+     Caution: Don't use lots of strings in your program. They are pure evil.
+     
+     Try to use strings only on initialization or things like that.
+     */
     class Str {
     public:
 			//! Creates an empty string with a maximum length.
 			/*!
 			 \param cap Maximum length of this string.
-			*/
+       */
       Str(int cap) {
         capacity = cap;
         chars = new char[capacity];
@@ -44,7 +44,7 @@ namespace machete {
 			//! Creates a string using the contents of a char. The maximum length is equal to the length of the char* excluding the null termination character.
 			/*!
 			 \param v The character string.  Must be null terminated.
-			*/
+       */
       Str(const char *v) {
         int i = 0;
         while (v[i] != 0) { i++; }
@@ -60,7 +60,7 @@ namespace machete {
 			/*!
 			 \param v The character string.  Must be null terminated.
 			 \param cap The maximum size of the string.
-			*/
+       */
       Str(const char *v, int cap) {
         capacity = cap;
         chars = new char[capacity];
@@ -74,7 +74,7 @@ namespace machete {
 			 \param v The character string. Must be null terminated.
 			 \param len Only the first characters will make the new string.
 			 \param cap The maximum size of the string.
-			*/
+       */
       Str(const char *v, int len, int cap) {
         capacity = cap;
         chars = new char[capacity];
@@ -86,7 +86,7 @@ namespace machete {
 			//! Creates a string copying the contents of another string.
 			/*!
 			 \param s The other string to copy the data from.
-			*/
+       */
       Str(const Str &s) {
         capacity = s.len;
         chars = new char[capacity];
@@ -104,15 +104,15 @@ namespace machete {
 			//! Append a section of a character string to the end of the current string.
 			/*!
 			 This method won't check for null characters.
-			
+       
 			 Null characters are allowed in this string class implementation.
-			
+       
 			 The data will be truncated if there is no enought space in the string.
-			
+       
 			 \param v The character string.
 			 \param start The initial index to copy data.
 			 \param len The number of bytes to copy.
-			*/
+       */
       void Append(const char *v, int start, int len) {
         int idx = start;
         
@@ -128,14 +128,14 @@ namespace machete {
 			//! Assign a section of a character string.
 			/*!
 			 The string will be cleared, and the character string will be assigned.
-			
+       
 			 Null characters are allowed in this string class implementation.
-			
+       
 			 The data will be truncated if there is no enought space in the string.
-			
+       
 			 \param v The character string.
 			 \param len The number of bytes to copy.
-			*/
+       */
       void Assign(const char *v, int len) {
         this->len = 0;
         Append(v, 0, len);
@@ -144,12 +144,12 @@ namespace machete {
 			//! Assign a character string that is null terminated.
 			/*!
 			 The string will be cleared, and the character string will be assigned.
-			
+       
 			 The data will be truncated if there is no enought space in the string.
-			
+       
 			 \param v The character string. Must be null terminated.
 			 \param len The number of bytes to copy.
-			*/
+       */
       void Assign(const char *v) {
         int i = 0;
         
@@ -161,9 +161,9 @@ namespace machete {
 			//! Append a character string that is null terminated to the end of the current string.
 			/*!
 			 The data will be truncated if there is no enought space in the string.
-			
+       
 			 \param v The character string. Must be null terminated.
-			*/
+       */
       void Append(const char *v) {
         int i = 0;
         
@@ -176,9 +176,9 @@ namespace machete {
 			/*!
 			 The value of the int will be converted to a character string and then
 			 it will be appended to the string.
-			
+       
 			 \param i The int value to append.
-			*/
+       */
       void AppendInt(int i) {
         if (i == 0) {
           Append("0");
@@ -213,9 +213,9 @@ namespace machete {
 			/*!
 			 The value of the float will be converted to a character string and then
 			 it will be appended to the string.
-			
+       
 			 \param f The float value to append.
-			*/
+       */
       void AppendFloat(float f) {
         AppendInt((int)f);
         
@@ -242,7 +242,7 @@ namespace machete {
 			/*!
 			 \param idx The index.
 			 \return The character at that index.
-			*/
+       */
       char ByteAt(int idx) const {
         return chars[idx];
       }
@@ -251,7 +251,7 @@ namespace machete {
 			/*!
 			 \param idx The index.
 			 \return A 32-bits character that can represent any UTF-8 character.
-			*/
+       */
       wchar_t CharAt(int idx) const {
         wchar_t c;
         
@@ -272,7 +272,7 @@ namespace machete {
 			 \param c The character to find.
 			 \param start The start index.
 			 \return The next index position of c, or -1 if not found.
-			*/
+       */
       int Index(wchar_t c, int start) const {
         for (int i = start; i < len; i++) {
           if (c == chars[i]) {
@@ -287,7 +287,7 @@ namespace machete {
 			/*!
 			 \param c The character to find.
 			 \return The last index position of c, or -1 if not found.
-			*/
+       */
       int LastIndex(wchar_t c) const {
         for (int i = len - 1; i >= 0; i--) {
           if (c == chars[i]) {
@@ -302,14 +302,14 @@ namespace machete {
 			/*!
 			 If idx0 or idx1 are above to the size of the string, it is most
 			 likely that the new string will be made of garbage.
-			
+       
 			 A more "secure" method to avoid garbage is Substr.
-			
+       
 			 \param idx0 Start index of the slice.
 			 \param idx1 End index of the slice (non-inclusive).
 			 \return A new string containing the characters at that slice.
 			 \sa Substr
-			*/
+       */
       const Str Slice(int idx0, int idx1) const {
         Str newStr(idx1 - idx0);
         
@@ -322,13 +322,13 @@ namespace machete {
 			/*!
 			 If idx0 is above the size of the string, then an empty string will
 			 be returned.
-			
+       
 			 The new string will be truncated to the bytes available.
-			
+       
 			 \param idx0 Start index of the substring.
 			 \param len Number of bytes to copy to the new string.
 			 \return A new string containing the characters requested.
-			*/
+       */
       const Str Substr(int idx0, int len) const {
         Str newStr(len);
         
@@ -364,7 +364,7 @@ namespace machete {
         
         return *this;
       }
-
+      
       //! Assign an integer value (string representation) to the current string.
       Str & operator = (int i) {
         len = 0;
@@ -430,7 +430,7 @@ namespace machete {
         
         return newStr;
       }
-
+      
       //! Concatenates a string with a string representation of an integer and returns a new string.
       const Str operator + (int i) {
         Str newStr(this->len + 20);
@@ -455,7 +455,7 @@ namespace machete {
 			/*!
 			 \param ostr The other string to compare.
 			 \return 0 if both strings are equal. Greater than zero if the current string is greater. Less than zero if the current string is lower.
-			*/
+       */
       int CompareTo(const Str &ostr) const {
         int toComp = this->len;
         if (ostr.len < toComp) {
@@ -479,10 +479,10 @@ namespace machete {
 			//! Fill a character string with the contents of the current string's chars.
 			/*!
 			 At the end, chars[len] will be assigned a null character.
-			
+       
 			 \param chars Characters to fill.
 			 \param len Maximum length to fill.
-			*/
+       */
       int GetChars(char *chars, int len) const {
         if (len > this->len) {
           len = this->len;
@@ -529,7 +529,7 @@ namespace machete {
 			//! Get the size of the string.
 			/*!
 			 \return The size of the string. This chould be different than the number of characters.
-			*/
+       */
       int Size() const {
         return len;
       }
@@ -537,7 +537,7 @@ namespace machete {
 			//! Converts the string to an integer.
 			/*!
 			 \return An int representation of the string.
-			*/
+       */
       int ToInt() const {
         return ToInt(0, len);
       }
@@ -547,7 +547,7 @@ namespace machete {
 			 This can be 1, 2 or 3, depending on the character type.
 			 \param idx The index.
 			 \return The size in bytes of the character in UTF-8 format.
-			*/
+       */
       int CharSizeAt(int idx) const {
         if (chars[idx] <= 127) {
           return 1;
@@ -563,7 +563,7 @@ namespace machete {
 			 \param idx0 Initial index of the slice.
 			 \param idx1 Final index of the slice (non inclusive).
 			 \return An int representation of the string.
-			*/
+       */
       int ToInt(int idx0, int idx1) const {
         int n = 0;
         int s = idx0;
@@ -593,7 +593,7 @@ namespace machete {
 			//! Converts the string to a float.
 			/*!
 			 \return A float representation of the string.
-			*/
+       */
       float ToFloat() const {
         int pp = Index('.', 0);
         
@@ -621,10 +621,10 @@ namespace machete {
     private:
 			//! Characters that hold the string.
       char *chars;
-
+      
 			//! Maximum capacity for the string.
       int capacity;
-
+      
 			//! The length of the string.
       int len;
     };
@@ -632,17 +632,17 @@ namespace machete {
 		//! A string parameter.
 		/*!
 		 Contains all the parameters for a string templating class.
-		
+     
 		 Internal use only.
-		*/
+     */
     typedef Iterator<Str> StrParam;
     
 		//! A template section.
 		/*!
 		 This can be a string part, or a placeholder.
-		
+     
 		 Internal use only.
-		*/
+     */
     class TplSection {
     public:
 			//! Create a new empty section.
@@ -659,8 +659,8 @@ namespace machete {
       
 			//! Create a new placeholder section with an index.
 			/*!
-			  \param i The index corresponding to this placeholder.
-			*/
+       \param i The index corresponding to this placeholder.
+       */
       TplSection(int i) {
         value = NULL;
         idx = i;
@@ -677,7 +677,7 @@ namespace machete {
 			/*!
 			 /param sp The iterator containing the information for all placeholders.
 			 /return A string if this was a string part. Else, it will seek thru the parameter for the index related to this section.
-			*/
+       */
       Str & GetValue(StrParam *sp) {
         if (idx == 0) {
           return *value;
@@ -716,7 +716,7 @@ namespace machete {
     private:
 			//! The index corresponding to this placeholder.
       int idx;
-
+      
 			//! The string corresponding to this string part.
       Str *value;
     };
@@ -724,18 +724,18 @@ namespace machete {
 		//! Different string parts
 		/*!
 		 Iterator containing several sections.
-		
+     
 		 Internal use only.
-		*/
+     */
     typedef Iterator<TplSection> TplPart;
     
 		//! Templating functionality.
 		/*!
 		 We can use %1, %2, ... %N to replace a string and create a new one.
-		*/
+     */
     class StrTpl : public TplPart {
     public:
-	
+      
 			//! Create a new empty String Template
       StrTpl() : TplPart() {
 				totalParams = 0;
@@ -744,7 +744,7 @@ namespace machete {
 			//! Create a new String Template based on a Template String
 			/*!
 			 \param tpl Template String (containing %1, %2, etc... in any order)
-			*/
+       */
       StrTpl(const Str &tpl) : TplPart() {
         totalParams = 0;
         
@@ -791,7 +791,7 @@ namespace machete {
 			/*!
 			 \param base The result will be appended to this string.
 			 \param params Parameters to build the String Template with. They must be in order.
-			*/
+       */
       void Build(Str & base, StrParam *params) {
         Reset();
         
@@ -803,11 +803,11 @@ namespace machete {
 			//! Get the number of parameters on the string template
 			/*!
 			 \return The number of parameters.
-			*/
+       */
       int GetNumParams() {
         return totalParams;
       }
-
+      
     private:
 			//! The total number of parameters in this template.
       int totalParams;
