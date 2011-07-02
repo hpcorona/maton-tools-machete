@@ -23,12 +23,19 @@ CAEAGLLayer *eaglLayer = NULL;
     eaglLayer = (CAEAGLLayer*)super.layer;
     eaglLayer.opaque = YES;
     
+    // Apply the Screen scale to the current UIView
+    // If it's on retina then it will use the full resolution
+    self.contentScaleFactor = [[UIScreen mainScreen] scale];
+
     renEngine = CreateDrawContext(machete::graphics::TargetScreen, CGRectGetWidth(frame), CGRectGetHeight(frame));
     
+    // Detect the REAL resolution
+    IVec2 size = renEngine->GetSize();
+
     game = CreateGame();
     game->OnStart();
     game->OnResume();
-    game->Initialize(renEngine, CGRectGetWidth(frame), CGRectGetHeight(frame), machete::DeviceOrientationPortrait);
+    game->Initialize(renEngine, size.x, size.y, machete::DeviceOrientationPortrait);
     
     [self drawView:nil];
     timestamp = CACurrentMediaTime();
@@ -92,11 +99,20 @@ CAEAGLLayer *eaglLayer = NULL;
 }
 
 - (void)sendTouches:(NSSet *)touches withType:(TouchPhase) state {
-  
+  float scale = self.contentScaleFactor;
+
   for (UITouch *touch in touches) {
     Touch *t = TheTouchInput->GetTouch(0);
     CGPoint pos = [touch locationInView:self];
     CGPoint prev = [touch previousLocationInView:self];
+      
+    // Scale the touch's position
+    pos.x *= scale;
+    pos.y *= scale;
+    prev.x *= scale;
+    prev.y *= scale;
+      
+    NSLog(@"Posicion %f, %f", pos.x, pos.y);
     
     if (state == TouchStart) {
       t->start.x = pos.x;
@@ -140,14 +156,16 @@ machete::graphics::DrawContext* CreateDrawContext(machete::graphics::RenderTarge
   
   if (context.API == kEAGLRenderingAPIOpenGLES1) {
     NSLog(@"Using OpenGL ES 1.1");
-    //renEngine = CreateRendereriOS1(target);
   } else {
     NSLog(@"Using OpenGL ES 2.0");
-    //renEngine = CreateRendereriOS2(target);
   }
 
   if (target == machete::graphics::TargetScreen) {
     [context renderbufferStorage:GL_RENDERBUFFER fromDrawable:eaglLayer];
+      
+    // Use the real resolution
+    glGetRenderbufferParameteriv(GL_RENDERBUFFER, GL_RENDERBUFFER_WIDTH, &width);
+    glGetRenderbufferParameteriv(GL_RENDERBUFFER, GL_RENDERBUFFER_HEIGHT, &height);
   }
 
   renEngine->Initialize(width, height);
