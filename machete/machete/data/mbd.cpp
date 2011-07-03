@@ -10,6 +10,7 @@
 #include <stdarg.h>
 
 using namespace machete::platform;
+using namespace machete::math;
 
 namespace machete { 
   namespace data {
@@ -222,6 +223,48 @@ namespace machete {
       (*v)->Append(data, 0, size);
       
       return size + 4;
+    }
+    
+    Layout::Layout(const char* file) : device(20) {
+      dict = new Mbd(file);
+    }
+    
+    Layout::~Layout() {
+      delete dict;
+    }
+    
+    void Layout::SetDevice(const char *_device) {
+      device = _device;
+    }
+    
+    float Layout::GetValue(const char *item) {
+      Str all("", 50);
+      all += item;
+      all += "/@";
+      all += device;
+      
+      return dict->FloatValue(all);
+    }
+    
+    Vec2 Layout::GetVector(const char *item) {
+      Str allX("", 50);
+      allX += item;
+      allX += "/";
+      allX += device;
+      allX += "/@x";
+
+      Str allY("", 50);
+      allY += item;
+      allY += "/";
+      allY += device;
+      allY += "/@y";
+
+      Vec2 val;
+      
+      val.x = dict->FloatValue(allX);
+      val.y = dict->FloatValue(allY);
+      
+      return val;
     }
     
   } 

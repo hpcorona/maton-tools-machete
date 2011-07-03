@@ -100,5 +100,47 @@ namespace machete {
       Hash<Str, Str> dict;
     };
     
+    //! Loads POS files and allow reading float and vector items.
+    class Layout {
+    public:
+      
+      //! Create a layout reader.
+      /*!
+       \param file The .pos file.
+       */
+      Layout(const char* file);
+      
+      //! Destructor.
+      ~Layout();
+      
+      //! Set the current device.
+      /*!
+       \param device The device.
+       */
+      void SetDevice(const char* device);
+      
+      //! Find the item value for a device.
+      /*!
+       \param item The name of the item.
+       \return The float value for the item.
+       */
+      float GetValue(const char* item);
+      
+      //! Find the item value for a device.
+      /*!
+       \param item The name of the item.
+       \return The vector (x & y) value for the item.
+       */
+      machete::math::Vec2 GetVector(const char* item);
+      
+    protected:
+      
+      //! The current device.
+      Str device;
+      
+      //! The mbd dictionary.
+      Mbd *dict;
+    };
+    
   } 
 }

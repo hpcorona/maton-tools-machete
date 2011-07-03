@@ -112,8 +112,6 @@ CAEAGLLayer *eaglLayer = NULL;
     prev.x *= scale;
     prev.y *= scale;
       
-    NSLog(@"Posicion %f, %f", pos.x, pos.y);
-    
     if (state == TouchStart) {
       t->start.x = pos.x;
       t->start.y = pos.y;
