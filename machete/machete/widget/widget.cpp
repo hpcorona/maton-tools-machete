@@ -18,6 +18,7 @@ namespace machete {
       delta = uv1 - uv0;
       
       this->size = size;
+      this->drawSize = size;
       this->topLeft = topLeft;
       this->bottomRight = bottomRight;
       

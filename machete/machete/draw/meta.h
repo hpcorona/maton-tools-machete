@@ -82,6 +82,24 @@ namespace machete {
        */
       Vec2 & GetSize() { return size; }
       
+      //! Get the starting UV position.
+      /*!
+       \return The starting UV position.
+       */
+      Vec2 & GetUV0() { return uv0; }
+
+      //! Get the ending UV position.
+      /*!
+       \return The ending UV position.
+       */
+      Vec2 & GetUV1() { return uv1; }
+      
+      //! Get the texture used for the image.
+      /*!
+       \return The texture used for the image.
+       */
+      unsigned int GetTexture() { return texture; }
+
     protected:
       
       Vtx verts[4],       //!< Vertexes.
@@ -97,6 +115,13 @@ namespace machete {
       
       //! Size of the sprite.
       Vec2 size;
+      
+      //! The starting UV position.
+      Vec2 uv0;
+      
+      //! The ending UV position.
+      Vec2 uv1;
+      
     };
     
     //! Abstract element prividing the basic functionality for scene management.

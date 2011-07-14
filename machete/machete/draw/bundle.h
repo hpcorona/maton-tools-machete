@@ -14,7 +14,9 @@
 #include "element.h"
 #include "../data/mbd.h"
 #include "font.h"
+#include "../widget/widget.h"
 
+using namespace machete::widget;
 using namespace machete::data;
 using namespace machete::graphics;
 
@@ -105,6 +107,30 @@ namespace machete {
       machete::data::Iterator<struct BdlAction*> *actions;
     };
     
+    //! The metadata for a widget state.
+    struct BdlWidgetState {
+      
+      //! Create a new state.
+      BdlWidgetState() { framed = NULL; }
+      
+      //! Name of the state.
+      Str state;
+      
+      //! The framed image linked to the state.
+      MetaWidget *framed;
+    };
+    
+    //! A metadata Widget. A widget can consist of multiple states.
+    struct BdlWidget {
+      
+      //! Create a new widget.
+      BdlWidget() { states = NULL; }
+      
+      //! The states that could be assigned to the widget.
+      machete::data::Iterator<struct BdlWidgetState*> *states;
+    };
+
+    
     //! Stiletto Bundle Loader and Element creator.
     class Bundle {
     public:
@@ -124,6 +150,13 @@ namespace machete {
        \return The image requested. NULL if there is no image with that name.
        */
       MetaSprite* GetImage(const char* name) const;
+
+      //! Get the framed image related to a name.
+      /*!
+       \param name Name of the framed image.
+       \return The framed image requested. NULL if there is no framed image with that name.
+       */
+      MetaWidget* GetFramed(const char* name) const;
       
       //! Create a new Drawing based on an Image.
       /*!
@@ -205,6 +238,12 @@ namespace machete {
       //! Load all the fonts and build them.
       void LoadFonts();
       
+      //! Load all the framed images.
+      void LoadFramed();
+      
+      //! Load all the widgets and build them.
+      void LoadWidgets();
+      
       //! The stiletto bundle dictionary.
       Mbd *bundle;
       
@@ -217,6 +256,9 @@ namespace machete {
       //! Images by name.
       Hash<Str, MetaSprite*> images;
       
+      //! Framed images by name.
+      Hash<Str, MetaWidget*> framed;
+      
       //! Sprite's metadata by name.
       Hash<Str, struct BdlSprite*> sprites;
       
@@ -225,6 +267,9 @@ namespace machete {
       
       //! Actor's metadata by name.
       Hash<Str, struct BdlActor*> actors;
+      
+      //! Widget's metadata by name.
+      Hash<Str, struct BdlWidget*> widgets;
       
       //! Fonts by name.
       Hash<Str, Font*> fonts;

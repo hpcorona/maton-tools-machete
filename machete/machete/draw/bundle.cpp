@@ -24,6 +24,8 @@ namespace machete {
       LoadAnimations();
       LoadActors();
       LoadFonts();
+      LoadFramed();
+      LoadWidgets();
       
       delete bundle;
       
@@ -38,7 +40,16 @@ namespace machete {
       
       return node->GetValue();
     }
-    
+
+    MetaWidget* Bundle::GetFramed(const char* name) const {
+      Tree<Str, MetaWidget*> *node = framed.Seek(name);
+      if (node == NULL) {
+        return NULL;
+      }
+      
+      return node->GetValue();
+    }
+
     Drawing* Bundle::NewImage(const char* name) const {
       MetaSprite* spr = GetImage(name);
       
@@ -302,6 +313,68 @@ namespace machete {
         Font *face = new Font(fPath, tex);
         
         fonts.Add(faceName, face);
+      }
+    }
+    
+    void Bundle::LoadFramed() {
+      int fCount = bundle->Count("/Bundle/Framed");
+      for (int fIdx = 1; fIdx <= fCount; fIdx++) {
+        Str name = bundle->Value("/Bundle/Framed[%1]/@name", fIdx);
+        
+        float top = bundle->FloatValue("/Bundle/Framed[%1]/@top", fIdx);
+        float left = bundle->FloatValue("/Bundle/Framed[%1]/@left", fIdx);
+        float right = bundle->FloatValue("/Bundle/Framed[%1]/@right", fIdx);
+        float bottom = bundle->FloatValue("/Bundle/Framed[%1]/@bottom", fIdx);
+        
+        MetaSprite *image = NULL;
+        
+        Tree<Str, MetaSprite*> *node = images.Seek(name);
+        if (node != NULL) {
+          image = node->GetValue();
+        }
+        
+        if (image == NULL) {
+          return;
+        }
+        
+        Vec2 topLeft(left, top);
+        Vec2 bottomRight(right, bottom);
+        
+        MetaWidget *mw = new MetaWidget(image->GetSize(), image->GetUV0(), image->GetUV1(), topLeft, bottomRight, image->GetTexture());
+        
+        framed.Add(name, mw);
+      }
+    }
+    
+    void Bundle::LoadWidgets() {
+      int xCount = bundle->Count("/Bundle/Widget");
+      for (int xIdx = 1; xIdx <= xCount; xIdx++) {
+        int aCount = bundle->Count("/Bundle/Widget[%1]/State", xIdx);
+        
+        struct BdlWidget* widget = new struct BdlWidget();
+        widget->states = new machete::data::Iterator<struct BdlWidgetState*>();
+        for (int aIdx = 1; aIdx <= aCount; aIdx++) {
+          struct BdlWidgetState *state = new struct BdlWidgetState();
+          
+          MetaWidget *fra = NULL;
+          Tree<Str, MetaWidget*> *node = framed.Seek(bundle->Value("/Bundle/Widget[%1]/State[%2]/@image", xIdx, aIdx));
+          if (node != NULL) {
+            fra = node->GetValue();
+          }
+          
+          if (fra == NULL) {
+            state->framed = NULL;
+          } else {
+            state->framed = fra;
+          }
+          
+          state->state = bundle->Value("/Bundle/Widget[%1]/State[%2]/@name", xIdx, aIdx);
+          
+          widget->states->Append(state);
+        }
+        
+        Str widgetName = bundle->Value("/Bundle/Widget[%1]/@name", xIdx);
+        widgets.Add(widgetName, widget);
       }
     }
     
