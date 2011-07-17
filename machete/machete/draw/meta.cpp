@@ -14,6 +14,8 @@ namespace machete {
     MetaSprite::MetaSprite(const Vec2 & size, const Vec2 & uv0, const Vec2 & uv1, unsigned int texture) {
       
       this->size = size;
+      this->uv0 = uv0;
+      this->uv1 = uv1;
       
       verts[0].vert.x = 0; verts[0].vert.y = 0; verts[0].vert.z = 0;
       verts[1].vert.x = 0; verts[1].vert.y = -size.y; verts[1].vert.z = 0;
@@ -106,6 +108,7 @@ namespace machete {
     }
     
     Vec2 Element::ZERO2(0, 0);
+    Vec2 Element::ONE2(1, 1);
     unsigned long Element::NEXT_ID = 0;
 
     Element::Element() : color(1, 1, 1, 1), scale(1, 1) {

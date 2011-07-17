@@ -34,7 +34,7 @@ namespace machete {
       verts[1].vert.x = 0; verts[1].vert.y = -topLeft.y; verts[1].vert.z = 0;
       verts[2].vert.x = topLeft.x; verts[2].vert.y = 0; verts[2].vert.z = 0;
       verts[3].vert.x = topLeft.x; verts[3].vert.y = -topLeft.y; verts[3].vert.z = 0;
-      
+
       // Top Left UV
       verts[0].uv.x = uv0.x; verts[0].uv.y = uv0.y;
       verts[1].uv.x = uv0.x; verts[1].uv.y = uvi0.y;
@@ -143,25 +143,25 @@ namespace machete {
     void MetaWidget::Draw(DrawContext *ctx, const Vec2 & pivot, const Vec2 & pos, const Vec2 & scale, const Vec4 & color, float rotation, bool flipX, bool flipY) {
       
       // Top Right Box
-      verts[4].vert.x = drawSize.x - bottomRight.x; verts[0].vert.y = 0; verts[0].vert.z = 0;
-      verts[5].vert.x = drawSize.x - bottomRight.x; verts[1].vert.y = -topLeft.y; verts[1].vert.z = 0;
-      verts[6].vert.x = drawSize.x; verts[2].vert.y = 0; verts[2].vert.z = 0;
-      verts[7].vert.x = drawSize.x; verts[3].vert.y = -topLeft.y; verts[3].vert.z = 0;
+      verts[4].vert.x = drawSize.x - bottomRight.x; verts[4].vert.y = 0; verts[4].vert.z = 0;
+      verts[5].vert.x = drawSize.x - bottomRight.x; verts[5].vert.y = -topLeft.y; verts[5].vert.z = 0;
+      verts[6].vert.x = drawSize.x; verts[6].vert.y = 0; verts[6].vert.z = 0;
+      verts[7].vert.x = drawSize.x; verts[7].vert.y = -topLeft.y; verts[7].vert.z = 0;
 
       // Bottom Left Box
-      verts[8].vert.x = 0; verts[0].vert.y = -(drawSize.y - bottomRight.y); verts[0].vert.z = 0;
-      verts[9].vert.x = 0; verts[1].vert.y = -drawSize.y; verts[1].vert.z = 0;
-      verts[10].vert.x = topLeft.x; verts[2].vert.y = -(drawSize.y - bottomRight.y); verts[2].vert.z = 0;
-      verts[11].vert.x = topLeft.x; verts[3].vert.y = -drawSize.y; verts[3].vert.z = 0;
+      verts[8].vert.x = 0; verts[8].vert.y = -(drawSize.y - bottomRight.y); verts[8].vert.z = 0;
+      verts[9].vert.x = 0; verts[9].vert.y = -drawSize.y; verts[9].vert.z = 0;
+      verts[10].vert.x = topLeft.x; verts[10].vert.y = -(drawSize.y - bottomRight.y); verts[10].vert.z = 0;
+      verts[11].vert.x = topLeft.x; verts[11].vert.y = -drawSize.y; verts[11].vert.z = 0;
 
       // Bottom Right Box
-      verts[12].vert.x = drawSize.x - bottomRight.x; verts[0].vert.y = -(drawSize.y - bottomRight.y); verts[0].vert.z = 0;
-      verts[13].vert.x = drawSize.x - bottomRight.x; verts[1].vert.y = -drawSize.y; verts[1].vert.z = 0;
-      verts[14].vert.x = drawSize.x; verts[2].vert.y = -(drawSize.y - bottomRight.y); verts[2].vert.z = 0;
-      verts[15].vert.x = drawSize.x; verts[3].vert.y = -drawSize.y; verts[3].vert.z = 0;
+      verts[12].vert.x = drawSize.x - bottomRight.x; verts[12].vert.y = -(drawSize.y - bottomRight.y); verts[12].vert.z = 0;
+      verts[13].vert.x = drawSize.x - bottomRight.x; verts[13].vert.y = -drawSize.y; verts[13].vert.z = 0;
+      verts[14].vert.x = drawSize.x; verts[14].vert.y = -(drawSize.y - bottomRight.y); verts[14].vert.z = 0;
+      verts[15].vert.x = drawSize.x; verts[15].vert.y = -drawSize.y; verts[15].vert.z = 0;
 
       
-      for (int i = 0; i < 15; i++) {
+      for (int i = 0; i < 16; i++) {
         verts[i].pivot.x = pivot.x; verts[i].pivot.y = pivot.y;
         
         verts[i].offset.x = pos.x; verts[i].offset.y = pos.y;
@@ -191,6 +191,108 @@ namespace machete {
     
     void MetaWidget::Reset() {
       drawSize = size;
+    }
+    
+    Widget::Widget() {
+      size.x = 100;
+      size.y = 100;
+      state = NULL;
+    }
+    
+    Widget::Widget(const Vec2 & size) {
+      this->size = size;
+      state = NULL;
+    }
+    
+    void Widget::Add(const Str & state, MetaWidget *meta) {
+      states.Add(state, meta);
+    }
+    
+    MetaWidget *Widget::GetCurrent() const {
+      return state;
+    }
+    
+    void Widget::Clear() {
+      state = NULL;
+    }
+    
+    void Widget::SetState(const char* name) {
+      Tree<Str, MetaWidget*> *node = states.Seek(name);
+      if (node == NULL) {
+        state = NULL;
+        return;
+      }
+      
+      state = node->GetValue();
+    }
+    
+    void Widget::Invalidate() {
+      bounds.Clear();
+      bounds += size;
+    }
+    
+    void Widget::Update(float time) {
+      Container::Update(time);
+    }
+    
+    void Widget::Draw(const Mat4 & matrix, Vec2 & pos, Vec4 & color, DrawContext *ctx) {
+      if (count == 0 && state == NULL) return;
+      
+      Mat4 mat = matrix;
+      bool changed = false;
+      
+      if (scale.x != 1 || scale.y != 1 || rotation != 0) {
+        
+        ctx->Draw();
+        
+        ctx->ChangeModelView(Mat4().Translate(position.x + pos.x, position.y + pos.y, 0).Scale(scale.x, scale.y, 0).Rotate(rotation).Pointer());
+        changed = true;
+      }
+      
+      childs.Reset();
+      
+      Vec4 NewColor = this->color * color;
+      Vec2 Position = position + pos;
+      
+      if (state != NULL) {
+        state->SetDrawSize(size);
+        
+        if (changed) {
+          state->Draw(ctx, ZERO2, ZERO2, ONE2, NewColor, 0, false, false);
+        } else {
+          state->Draw(ctx, ZERO2, Position, scale, NewColor, rotation, false, false);
+        }
+      }
+      
+      while (childs.Next()) {
+        Element *current = childs.GetCurrent()->GetValue();
+        
+        if (current->IsVisible()) {
+          if (changed) {
+            current->Draw(mat, ZERO2, NewColor, ctx);
+          } else {
+            current->Draw(mat, Position, NewColor, ctx);
+          }
+        }
+      }
+      
+      if (changed) {
+        ctx->Draw();
+        ctx->ChangeModelView(matrix);
+      }
+    }
+    
+    void Widget::SetSize(float width, float height) {
+      size.x = width;
+      size.y = height;
+    }
+    
+    void Widget::SetSize(const Vec2 & size) {
+      this->size = size;
+    }
+    
+    Vec2 & Widget::GetSize() {
+      return size;
     }
     
   }

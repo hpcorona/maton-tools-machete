@@ -398,6 +398,9 @@ namespace machete {
       //! Static zeroe'd vector.
       static Vec2 ZERO2;
       
+      //! Static one'd vector.
+      static Vec2 ONE2;
+      
       //! Current ID to assign to the next object created.
       static unsigned long NEXT_ID;
     };

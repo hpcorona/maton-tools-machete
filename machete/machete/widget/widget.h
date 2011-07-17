@@ -12,6 +12,7 @@
 #pragma once
 
 #include "../draw/meta.h"
+#include "../draw/element.h"
 
 namespace machete {
   namespace widget {
@@ -86,6 +87,90 @@ namespace machete {
       //! Texture.
       unsigned int texture;
 
+    };
+    
+    class Widget : public machete::draw::Container {
+    public:
+      
+      Widget();
+      Widget(const Vec2 & size);
+      
+      //! Add a new state.
+      /*!
+       \param state State name.
+       \param meta Meta widget linked to the state name.
+       */
+      void Add(const Str & state, MetaWidget *meta);
+      
+      //! Get the current meta widget being drawn.
+      /*!
+       \return The current meta widget. NULL if no current meta widget is available.
+       */
+      inline MetaWidget *GetCurrent() const;
+      
+      //! Clears the current meta widget.
+      void Clear();
+      
+      //! Change the current state.
+      /*!
+       \param name The name of the state.
+       */
+      void SetState(const char* name);
+      
+      //! Invalidates the object, updating it's bounds.
+      /*!
+       When you change position of an object, they are not re-calculated. You need to call this function
+       to recalculate the bounds.
+       
+       This is made this way for performance reasons.
+       */
+      void Invalidate();
+      
+      //! Updates this element.
+      /*!
+       \param time The time since the last update, in seconds.
+       */
+      void Update(float time);
+      
+      //! Draw this element to a drawing context.
+      /*!
+       \param matrix The current transformation matrix. If this will be changed, then you must restore it before returning from this method.
+       \param pos Position or Offset to draw elements.
+       \param color Tint to apply to all objects.
+       \param ctx DrawContext to draw the elements.
+       */
+      void Draw(const Mat4 & matrix, Vec2 & pos, Vec4 & color, DrawContext *ctx);
+      
+      //! Change the size of the widget.
+      /*!
+       \param width The new width of the widget.
+       \param height the new height of the widget.
+       */
+      void SetSize(float width, float height);
+      
+      //! Change the size of the widget.
+      /*!
+       \param size The new size of the widget.
+       */
+      void SetSize(const Vec2 & size);
+      
+      //! Get the size of the widget.
+      /*!
+       \return The size of the widget.
+       */
+      inline Vec2 & GetSize();
+      
+    private:
+      
+      //! The states supported by this widget.
+      Hash<Str, MetaWidget*> states;
+      
+      //! The current state of the widget.
+      MetaWidget* state;
+      
+      //! The size of the widget.
+      Vec2 size;
+      
     };
     
   }

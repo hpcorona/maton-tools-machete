@@ -179,6 +179,42 @@ namespace machete {
       return node->GetValue();
     }
     
+    Widget *Bundle::NewWidget(const char *name) const {
+      Tree<Str, struct BdlWidget*> *node = widgets.Seek(name);
+      
+      if (node == NULL) {
+        return NULL;
+      }
+      
+      return NewWidget(node->GetValue());
+    }
+    
+    Widget *Bundle::NewWidget(struct BdlWidget *bwdg) const {
+      if (bwdg == NULL) {
+        return NULL;
+      }
+      
+      bwdg->states->Reset();
+      
+      bool first = true;
+      
+      Widget *widget = new Widget();
+      while (bwdg->states->Next()) {
+        struct BdlWidgetState *mstate = bwdg->states->GetCurrent()->GetValue();
+        
+        widget->Add(mstate->state, mstate->framed);
+        
+        if (first) {
+          first = false;
+          
+          widget->SetSize(mstate->framed->GetSize());
+        }
+      }
+      
+      return widget;
+    }
+
+    
     void Bundle::LoadAtlas() {
       Str name = bundle->Value("/Bundle/@atlasPath", &name);
       char nameChar[100];
@@ -202,7 +238,15 @@ namespace machete {
         float x1 = x + w;
         float y1 = y + h;
         
-        MetaSprite *ms = new MetaSprite(Vec2(w, h), Vec2(x / tex->width, y / tex->height), Vec2(x1 / tex->width, y1 / tex->height), tex->id);
+        Vec2 uv0;
+        uv0.x = x / tex->width;
+        uv0.y = y / tex->height;
+        
+        Vec2 uv1;
+        uv1.x = x1 / tex->width;
+        uv1.y = y1 / tex->height;
+        
+        MetaSprite *ms = new MetaSprite(Vec2(w, h), uv0, uv1, tex->id);
         
         images.Add(stName, ms);
       }

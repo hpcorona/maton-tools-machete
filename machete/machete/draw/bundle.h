@@ -221,6 +221,20 @@ namespace machete {
        */
       Font* GetFont(const char* name) const;
       
+      //! Create a new Widget.
+      /*!
+       \param name Name of the bundle widget.
+       \return A new Widget. NULL if there is no widget with that name in the bundle.
+       */
+      Widget* NewWidget(const char* name) const;
+      
+      //! Create a new Widget based on an Widget's metadata.
+      /*!
+       \param bwdg Widget metadata.
+       \return A new Widget.
+       */
+      Widget* NewWidget(struct BdlWidget *bwdg) const;
+      
     protected:
       
       //! Load all texture atlases and build all the images.
