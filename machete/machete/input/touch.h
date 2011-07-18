@@ -13,6 +13,10 @@
 
 #include "../math/vector.h"
 
+#ifndef NULL
+#define NULL 0
+#endif
+
 namespace machete {
   
   //! Input classes and data structures.
@@ -118,6 +122,64 @@ namespace machete {
       
       //! True if there are no touches to process.
       bool invalid;
+    };
+    
+    //! An event listener. Receives updates about how the user is touching the device on a Widget.
+    class TouchListener {
+    public:
+      
+      //! The user may be making a tap.
+      virtual void TouchTapIntent() = 0;
+      
+      //! The user is definitely not making a tap.
+      virtual void TouchTapCancelled() = 0;
+      
+      //! The user has performed a tap.
+      virtual void TouchTapPerformed() = 0;
+      
+      //! The user is dragging with his finger around the widget.
+      virtual void TouchDrag(machete::math::Vec2 & move) = 0;
+      
+      //! The user has dragged "violently" and released a finger, causing an inertia.
+      virtual void TouchInertia(machete::math::Vec2 & move) = 0;
+      
+    };
+    
+    //! Touch processor detector. Will try to detect simple touch gestures.
+    class TouchProcessor {
+    public:
+      
+      //! Creates a new touch processor.
+      /*!
+       \param listener The event listener.
+       */
+      TouchProcessor(TouchListener *listener);
+      
+      //! Send a touch event to the processor.
+      /*!
+       \param touch The touch event.
+       \param bounds The bounds against wich the processor will check gestures.
+       \return True if the event was processed.
+       */
+      bool Gather(Touch *touch, const machete::math::Rect2D & bounds);
+      
+      //! Update the inertia, if any applies.
+      /*!
+       \param time The time in seconds.
+       */
+      void Update(float time);
+      
+    private:
+      
+      //! The touch event listener.
+      TouchListener *listener;
+      
+      //! Flag to know if there is a tap event.
+      bool withTap;
+      
+      //! Flag to know if we are tracking a touch.
+      bool tracking;
+      
     };
     
     //! The global variable to handle touch events.

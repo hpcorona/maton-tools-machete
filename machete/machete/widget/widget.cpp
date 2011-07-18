@@ -193,15 +193,17 @@ namespace machete {
       drawSize = size;
     }
     
-    Widget::Widget() {
+    Widget::Widget() : touchProc(this) {
       size.x = 100;
       size.y = 100;
       state = NULL;
+      event = NULL;
     }
     
-    Widget::Widget(const Vec2 & size) {
+    Widget::Widget(const Vec2 & size) : touchProc(this) {
       this->size = size;
       state = NULL;
+      event = NULL;
     }
     
     void Widget::Add(const Str & state, MetaWidget *meta) {
@@ -227,11 +229,14 @@ namespace machete {
     }
     
     void Widget::Invalidate() {
-      bounds.Clear();
-      bounds += size;
+      Container::Invalidate();
+      
+      bounds.size += size;
     }
     
     void Widget::Update(float time) {
+      touchProc.Update(time);
+      
       Container::Update(time);
     }
     
@@ -285,14 +290,134 @@ namespace machete {
     void Widget::SetSize(float width, float height) {
       size.x = width;
       size.y = height;
+      
+      Invalidate();
     }
     
     void Widget::SetSize(const Vec2 & size) {
       this->size = size;
+      
+      Invalidate();
     }
     
     Vec2 & Widget::GetSize() {
       return size;
+    }
+    
+    bool Widget::TouchEvent(machete::input::Touch *touch) {
+      childs.Reset();
+      while (childs.Next()) {
+        if (childs.GetCurrent()->GetValue()->TouchEvent(touch)) {
+          return true;
+        }
+      }
+      
+      Rect2D bounds = GetGlobalBounds();
+      
+      return touchProc.Gather(touch, bounds);
+    }
+    
+    void Widget::TouchTapIntent() {
+      
+    }
+    
+    void Widget::TouchTapCancelled() {
+      
+    }
+    
+    void Widget::TouchTapPerformed() {
+      if (event != NULL) {
+        event->WidgetTapped(this);
+      }
+    }
+    
+    void Widget::TouchDrag(Vec2 & move) {
+      if (event != NULL) {
+        event->WidgetDragged(this, move);
+      }
+    }
+    
+    void Widget::TouchInertia(Vec2 & move) {
+      if (event != NULL) {
+        event->WidgetInertia(this, move);
+      }
+    }
+    
+    void Widget::SetEventListener(WidgetEventAdapter *event) {
+      this->event = event;
+    }
+    
+    WidgetEventAdapter *Widget::GetEventListener() {
+      return event;
+    }
+    
+    Button::Button() {
+      font = NULL;
+      
+      label = new Text(30);
+      
+      Container::Add(label);
+    }
+    
+    Button::~Button() {
+      delete label;
+    }
+    
+    void Button::SetLabel(Str & label) {
+      if (font == NULL) {
+        this->label->Clear();
+        return;
+      }
+      
+      font->Change(this->label, label);
+      
+      Invalidate();
+    }
+    
+    void Button::SetLabel(const char* label) {
+      if (font == NULL) {
+        this->label->Clear();
+        return;
+      }
+      
+      Str lblText(label);
+      SetLabel(lblText);
+    }
+    
+    void Button::SetFont(Font *font) {
+      this->font = font;
+    }
+    
+    void Button::TouchTapIntent() {
+      SetState("pressed");
+      
+      Widget::TouchTapIntent();
+    }
+    
+    void Button::TouchTapCancelled() {
+      SetState("normal");
+
+      Widget::TouchTapCancelled();
+    }
+    
+    void Button::TouchTapPerformed() {
+      SetState("normal");
+      
+      Widget::TouchTapPerformed();
+    }
+    
+    void Button::Invalidate() {
+      label->Invalidate();
+      
+      Widget::Invalidate();
+      
+      Vec2 tSize = label->GetTextSize();
+      Vec2 size = GetSize();
+      
+      float x = (size.x - tSize.x) / 2.0f;
+      float y = (size.y - tSize.y) / 2.0f - label->GetMaxPivot();
+      
+      label->SetPosition(x, y);
     }
     
   }

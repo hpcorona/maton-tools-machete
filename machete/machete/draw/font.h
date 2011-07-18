@@ -129,6 +129,12 @@ namespace machete {
        */
       void Draw(const Mat4 & matrix, Vec2 & pos, Vec4 & color, DrawContext *ctx);
       
+      //! Get the maximum pivot of Y.
+      float GetMaxPivot() const;
+      
+      //! Get the total text size.
+      Vec2 & GetTextSize();
+      
     protected:
       
       //! Characters to display.
@@ -139,6 +145,13 @@ namespace machete {
       
       //! Current number of characters to display.
       int len;
+      
+      //! Maximum Y pivot of the text.
+      float maxPivot;
+      
+      //! Text size.
+      Vec2 textSize;
+
     };
     
     //! A font, used to create text.
@@ -188,6 +201,7 @@ namespace machete {
       
       //! The texture associated with this font.
       struct Tex *texture;
+      
     };
     
   }

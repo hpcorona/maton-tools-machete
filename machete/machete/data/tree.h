@@ -46,7 +46,7 @@ namespace machete {
        \param key The key for this node.
        \param value The value for this node.
        */
-      Tree(Tree<K, T> *parent, K key, T value) {
+      Tree(Tree<K, T> *parent, const K & key, T value) {
         this->parent = parent;
         this->key = key;
         this->value = value;
@@ -66,7 +66,7 @@ namespace machete {
        \param key The key for this node.
        \param value The value for this node.
        */
-      Tree(K key, T value) {
+      Tree(const K & key, T value) {
         this->parent = NULL;
         this->key = key;
         this->value = value;
@@ -114,7 +114,7 @@ namespace machete {
        \param key The key to seek.
        \return The node containing the key requested, or NULL if the key was not found.
        */
-      Tree<K, T>* SeekTree(K key) {
+      Tree<K, T>* SeekTree(const K & key) {
         if (key == this->key) {
           return this;
         }
@@ -150,7 +150,7 @@ namespace machete {
        \param value The value to add.
        \return The node that was created for the key-value pair. If the key alreary existed, then the value is replaced and the existing node will be returned. If the tree is empty, then the key-value will be assigned to the root node, and the root node will be returned. If any error happens, then NULL is returned. Up to now, there is no reason for a NULL value to be returned.
        */
-      Tree<K, T>* Insert(K key, T value) {
+      Tree<K, T>* Insert(const K & key, T value) {
         Tree<K, T>* hash = NULL;
         if (empty) {
           this->key = key;
@@ -186,7 +186,7 @@ namespace machete {
       /*!
        \param key The key to seek for and delete.
        */
-      void Delete(K key) {
+      void Delete(const K & key) {
         Tree<K, T> *node = SeekHash(key);
         
         if (node != NULL) {

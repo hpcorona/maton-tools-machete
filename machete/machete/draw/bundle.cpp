@@ -214,6 +214,42 @@ namespace machete {
       return widget;
     }
 
+    Button *Bundle::NewButton(const char *name) const {
+      Tree<Str, struct BdlWidget*> *node = widgets.Seek(name);
+      
+      if (node == NULL) {
+        return NULL;
+      }
+      
+      return NewButton(node->GetValue());
+    }
+    
+    Button *Bundle::NewButton(struct BdlWidget *bwdg) const {
+      if (bwdg == NULL) {
+        return NULL;
+      }
+      
+      bwdg->states->Reset();
+      
+      bool first = true;
+      
+      Button *widget = new Button();
+      while (bwdg->states->Next()) {
+        struct BdlWidgetState *mstate = bwdg->states->GetCurrent()->GetValue();
+        
+        widget->Add(mstate->state, mstate->framed);
+        
+        if (first) {
+          first = false;
+          
+          widget->SetSize(mstate->framed->GetSize());
+        }
+      }
+      
+      widget->SetState("normal");
+      
+      return widget;
+    }
     
     void Bundle::LoadAtlas() {
       Str name = bundle->Value("/Bundle/@atlasPath", &name);

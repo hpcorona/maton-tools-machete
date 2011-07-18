@@ -23,6 +23,10 @@ namespace machete {
       Clear();
     }
     
+    Text::~Text() {
+      
+    }
+    
     void Text::Clear() {
       chars = new FontChar*[cap];
       for (int i = 0; i < cap; i++) {
@@ -41,7 +45,17 @@ namespace machete {
     }
     
     void Text::Invalidate() {
-      // TODO: Nada aún
+      maxPivot = 0;
+      textSize.x = 0; textSize.y = 0;
+      
+      float cmp;
+      for (int i = 0; i < len; i++) {
+        cmp = chars[i]->GetPivot().y;
+        maxPivot = cmin(cmp, maxPivot);
+        
+        textSize.x += chars[i]->GetXAdvance();
+        textSize.y = cmax(textSize.y, chars[i]->GetYAdvance());
+      }
     }
     
     void Text::Update(float time) {
@@ -61,6 +75,14 @@ namespace machete {
         
         bx += chars[i]->GetXAdvance();
       }
+    }
+    
+    float Text::GetMaxPivot() const {
+      return maxPivot;
+    }
+    
+    Vec2 & Text::GetTextSize() {
+      return textSize;
     }
     
     Font::Font(const char *name, struct Tex * t) {

@@ -13,6 +13,7 @@
 
 #include "../graphics/draw.h"
 #include "../data/lists.h"
+#include "../input/touch.h"
 
 using namespace machete::graphics;
 using namespace machete::math;
@@ -356,6 +357,13 @@ namespace machete {
        \param ctx DrawContext to draw the elements.
        */
       virtual void Draw(const Mat4 & matrix, Vec2 & pos, Vec4 & color, DrawContext *ctx) = 0;
+      
+      //! Send a touch event to this element.
+      /*!
+       \param touch The touch event.
+       \return True if the event was processed.
+       */
+      virtual bool TouchEvent(machete::input::Touch *touch) { return false; };
       
     protected:
       

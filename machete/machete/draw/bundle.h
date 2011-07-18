@@ -235,6 +235,20 @@ namespace machete {
        */
       Widget* NewWidget(struct BdlWidget *bwdg) const;
       
+      //! Create a new Button.
+      /*!
+       \param name Name of the bundle button.
+       \return A new Button. NULL if there is no widget with that name in the bundle.
+       */
+      Button* NewButton(const char* name) const;
+
+      //! Create a new Button based on an Widget's metadata.
+      /*!
+       \param bwdg Widget metadata.
+       \return A new Button.
+       */
+      Button* NewButton(struct BdlWidget *bwdg) const;
+      
     protected:
       
       //! Load all texture atlases and build all the images.

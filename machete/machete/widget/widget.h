@@ -13,6 +13,10 @@
 
 #include "../draw/meta.h"
 #include "../draw/element.h"
+#include "../input/touch.h"
+#include "../draw/font.h"
+
+using namespace machete::draw;
 
 namespace machete {
   namespace widget {
@@ -89,7 +93,36 @@ namespace machete {
 
     };
     
-    class Widget : public machete::draw::Container {
+    class Widget;
+    
+    //! The widget event adapter to manage events on widgets in a per-application basis.
+    class WidgetEventAdapter {
+    public:
+      
+      //! A widget was tapped.
+      /*!
+       \param widget The widget that was tapped.
+       */
+      virtual void WidgetTapped(Widget *widget) {}
+      
+      //! A widget is being dragged.
+      /*!
+       \param widget The widget that is being dragged.
+       \param movement The movement offset.
+       */
+      virtual void WidgetDragged(Widget *widget, Vec2 & movement) {}
+      
+      //! A widget was affected by inertia.
+      /*!
+       \param widget The widget that is being moved by inertia.
+       \param movement The movement offset.
+       */
+      virtual void WidgetInertia(Widget *widget, Vec2 & movement) {}
+      
+    };
+    
+    //! A widget container that can be sized and still looks good using a framed image.
+    class Widget : public machete::draw::Container, public machete::input::TouchListener {
     public:
       
       Widget();
@@ -141,14 +174,14 @@ namespace machete {
        */
       void Draw(const Mat4 & matrix, Vec2 & pos, Vec4 & color, DrawContext *ctx);
       
-      //! Change the size of the widget.
+      //! Change the size of the widget. Automatically calls the Invalidate method.
       /*!
        \param width The new width of the widget.
        \param height the new height of the widget.
        */
       void SetSize(float width, float height);
       
-      //! Change the size of the widget.
+      //! Change the size of the widget. Automatically calls the Invalidate method.
       /*!
        \param size The new size of the widget.
        */
@@ -160,6 +193,40 @@ namespace machete {
        */
       inline Vec2 & GetSize();
       
+      //! The user may be making a tap.
+      virtual void TouchTapIntent();
+      
+      //! The user is definitely not making a tap.
+      virtual void TouchTapCancelled();
+      
+      //! The user has performed a tap.
+      virtual void TouchTapPerformed();
+      
+      //! The user is dragging with his finger around the widget.
+      virtual void TouchDrag(Vec2 & move);
+      
+      //! The user has dragged "violently" and released a finger, causing an inertia.
+      virtual void TouchInertia(Vec2 & move);
+      
+      //! Send a touch event to this element.
+      /*!
+       \param touch The touch event.
+       \return True if the event was processed.
+       */
+      virtual bool TouchEvent(machete::input::Touch *touch);
+      
+      //! Changes the current event listener.
+      /*!
+       \param event The new event listener.
+       */
+      void SetEventListener(WidgetEventAdapter *event);
+      
+      //! Gets the current event listener.
+      /*!
+       \return The current event listener.
+       */
+      WidgetEventAdapter *GetEventListener();
+      
     private:
       
       //! The states supported by this widget.
@@ -170,6 +237,65 @@ namespace machete {
       
       //! The size of the widget.
       Vec2 size;
+      
+      //! Touch processor.
+      machete::input::TouchProcessor touchProc;
+      
+      //! The event listener for widget events.
+      WidgetEventAdapter *event;
+      
+    };
+    
+    //! A simple Button Widget, with a Text component inside.
+    /*!
+     The widget must have a 'normal' and 'pressed' state.
+     */
+    class Button : public Widget {
+    public:
+
+      //! Create a new button.
+      Button();
+      
+      //! Destructor.
+      ~Button();
+      
+      //! Changes the button's label.
+      /*!
+       \param label The new label.
+       */
+      void SetLabel(Str & label);
+      
+      //! Change the button's label.
+      /*!
+       \param label The new label.
+       */
+      void SetLabel(const char* label);
+      
+      //! Change the font of the button.
+      /*!
+       \param font The new font.
+       */
+      void SetFont(Font *font);
+      
+      //! The button was pressed but not released.
+      virtual void TouchTapIntent();
+      
+      //! The button was not released or was moved (maybe a drag was requested).
+      virtual void TouchTapCancelled();
+      
+      //! The button was pressed.
+      virtual void TouchTapPerformed();
+      
+      //! Invalidates the size.
+      void Invalidate();
+      
+    private:
+
+      //! Font to be used with this button.
+      Font *font;
+      
+      //! The label for the button.
+      Text *label;
       
     };
     
