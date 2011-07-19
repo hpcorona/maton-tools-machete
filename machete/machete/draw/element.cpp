@@ -131,6 +131,18 @@ namespace machete {
       }
     }
     
+    bool Container::TouchEvent(machete::input::Touch *touch) {
+      childs.Reset();
+      while (childs.Next()) {
+        if (childs.GetCurrent()->GetValue()->TouchEvent(touch)) {
+          return true;
+        }
+      }
+      
+      return false;
+    }
+
+    
     Iterator<Element*> *Container::Iterator() {
       if (count == 0) {
         return NULL;

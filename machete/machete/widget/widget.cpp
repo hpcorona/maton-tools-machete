@@ -305,11 +305,8 @@ namespace machete {
     }
     
     bool Widget::TouchEvent(machete::input::Touch *touch) {
-      childs.Reset();
-      while (childs.Next()) {
-        if (childs.GetCurrent()->GetValue()->TouchEvent(touch)) {
-          return true;
-        }
+      if (Container::TouchEvent(touch) == true) {
+        return true;
       }
       
       Rect2D bounds = GetGlobalBounds();

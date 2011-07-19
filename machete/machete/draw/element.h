@@ -99,6 +99,14 @@ namespace machete {
       void Draw(const Mat4 & matrix, Vec2 & pos, Vec4 & color, DrawContext *ctx);
       Iterator<Element*> *Iterator();
       
+      //! Send a touch event to this element.
+      /*!
+       \param touch The touch event.
+       \return True if the event was processed.
+       */
+      bool TouchEvent(machete::input::Touch *touch);
+
+      
     protected:
       
       //! Number of immediate childs.
