@@ -507,6 +507,9 @@ namespace machete {
       //! The dynamic texture as a MetaSprite.
       MetaSprite *texture;
       
+      //! The dynamic render context.
+      DrawContext *dynamic;
+      
     };
     
   }
