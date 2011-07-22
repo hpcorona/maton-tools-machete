@@ -200,6 +200,12 @@ namespace machete {
        */
       bool IsFlipY() const { return flipY; }
       
+      //! Change the current meta element.
+      /*!
+       \param element The new meta element.
+       */
+      void SetMetaElement(MetaElement *element) { this->element = element; }
+      
     protected:
       
       //! To flip on x.
@@ -478,6 +484,14 @@ namespace machete {
        \param ctx DrawContext to draw the elements.
        */
       void Draw(const Mat4 & matrix, Vec2 & pos, Vec4 & color, DrawContext *ctx);
+      
+      //! Draw this element to a drawing context.
+      /*!
+       If usingTexture is true, then it will only render the texture. If it's false, then it will render it's childs.
+       
+       \param ctx DrawContext to draw the elements.
+       */
+      void Draw(DrawContext *ctx);
       
       //! Get the texture MetaSprite.
       /*!

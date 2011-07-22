@@ -170,13 +170,19 @@ namespace machete {
     Drawing::Drawing(MetaElement *e) {
       element = e;
       bounds.pos = position + pivot;
-      bounds.size = element->GetSize();
+      
+      if (element != NULL) {
+        bounds.size = element->GetSize();
+      }
+      
       flipX = false;
       flipY = false;
     }
     
     void Drawing::Invalidate() {
       bounds.Clear();
+      
+      if (element == NULL) return;
       
       bounds.size = element->GetSize();
       bounds.pos += position + pivot;
@@ -188,6 +194,8 @@ namespace machete {
     }
     
     void Drawing::Draw(const Mat4 & matrix, Vec2 & pos, Vec4 & color, DrawContext *ctx) {
+      if (element == NULL) return;
+      
       Vec2 Position = position + pos;
       Vec4 Color = this->color * color;
       
@@ -414,7 +422,6 @@ namespace machete {
     }
     
     void Dynamic::Draw(const Mat4 & matrix, Vec2 & pos, Vec4 & color, DrawContext *ctx) {
-      
       if (usingTexture) {
         if (texture != NULL) {
           Vec4 NewColor = this->color * color;
@@ -426,6 +433,17 @@ namespace machete {
         Container::Draw(matrix, pos, color, ctx);
       }
     }
-    
+
+    void Dynamic::Draw(DrawContext *ctx) {
+      if (usingTexture) {
+        if (texture != NULL) {
+          texture->Draw(ctx, pivot, position, scale, color, rotation, false, false);
+        }
+      } else {
+        Root::context = ctx;
+        Root::Draw();
+      }
+    }
+
   }
 }
