@@ -151,12 +151,6 @@ machete::graphics::DrawContext* CreateDrawContext(machete::graphics::RenderTarge
   }
   
   machete::graphics::DrawContext *renEngine = new machete::graphics::DrawContext(target);
-  
-  if (context.API == kEAGLRenderingAPIOpenGLES1) {
-    NSLog(@"Using OpenGL ES 1.1");
-  } else {
-    NSLog(@"Using OpenGL ES 2.0");
-  }
 
   if (target == machete::graphics::TargetScreen) {
     [context renderbufferStorage:GL_RENDERBUFFER fromDrawable:eaglLayer];

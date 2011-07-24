@@ -57,6 +57,12 @@ namespace machete {
      \return The number of bytes that was loaded into memory. No additional bytes are added.
      */
     virtual unsigned int LoadFile(const char* name, char** data) = 0;
+    
+    //! Generates a random integer.
+    /*!
+     \return A random integer.
+     */
+    virtual unsigned int Random() = 0;
   };
 
   //! Platform specific features.
@@ -106,6 +112,12 @@ namespace machete {
        \return The number of bytes that was loaded into memory. No additional bytes are added.
        */
       unsigned int LoadFile(const char* name, char** data);
+      
+      //! Generates a random integer.
+      /*!
+       \return A random integer.
+       */
+      unsigned int Random();
       
     private:
       
