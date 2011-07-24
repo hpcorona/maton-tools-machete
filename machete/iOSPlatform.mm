@@ -69,11 +69,7 @@ public:
   }
   
   inline unsigned int Random() {
-    unsigned int r = arc4random();
-    Str logged("",10);
-    logged += (int)r;
-    machete::common::Log(logged);
-    return r;
+    return arc4random();
   }
   
 protected:
