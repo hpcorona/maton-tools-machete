@@ -183,7 +183,26 @@ namespace machete {
       Tree<Str, struct BdlWidget*> *node = widgets.Seek(name);
       
       if (node == NULL) {
-        return NULL;
+        Tree<Str, MetaWidget*> *fnode = framed.Seek(name);
+        if (fnode == NULL) {
+          return NULL;
+        }
+        
+        MetaWidget *mw = fnode->GetValue();
+        
+        Widget *wdg = new Widget();
+        wdg->Add("normal", mw);
+        wdg->SetState("normal");
+        
+        if (mw->IsVertical() && !mw->IsHorizontal()) {
+          wdg->SetDisplay(WidgetVertical);
+        } else if (mw->IsHorizontal() && !mw->IsVertical()) {
+          wdg->SetDisplay(WidgetHorizontal);
+        }
+        
+        wdg->SetSize(mw->GetSize());
+        
+        return wdg;
       }
       
       return NewWidget(node->GetValue());

@@ -57,22 +57,22 @@ namespace machete {
       Container();
       
       //! Adds an element at the end of the list.
-      void Add(Element *child);
+      virtual void Add(Element *child);
       
       //! Removes an element from the list.
-      void Remove(Element *child);
+      virtual void Remove(Element *child);
       
       //! Switches one element for another.
       /*!
        This is not a swap, to make a swap you would need to do two switches.
        */
-      void Switch(Element *prev, Element *elem);
+      virtual void Switch(Element *prev, Element *elem);
       
       //! Count the childs.
       /*!
        \return The number of immediate childs.
        */
-      inline int Count() const { return count; }
+      virtual inline int Count() const { return count; }
       
       //! Invalidates the container, updating it's bounds.
       /*!

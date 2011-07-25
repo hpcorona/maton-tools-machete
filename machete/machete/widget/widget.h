@@ -69,6 +69,12 @@ namespace machete {
       //! Reset the Draw Size to the original widget size.
       void Reset();
       
+      //! Check if it's candidate for only vertical scroll.
+      bool IsVertical() { return bottomRight.x == 0; }
+      
+      //! Check if it's candidate for only horizontal scroll.
+      bool IsHorizontal() { return bottomRight.y == 0; }
+      
     protected:
       //! Size of the original widget.
       Vec2 size;
@@ -82,11 +88,23 @@ namespace machete {
       //! Bottom right box size.
       Vec2 bottomRight;
 
-      //! Vertexes.
+      //! Vertexes 9 image mode.
       Vtx verts[16];
+      
+      //! Vertexes 3 image Vertical.
+      Vtx vertsV[8];
+      
+      //! Vertexes 3 image Horizontal.
+      Vtx vertsH[8];
       
       //! Elements to create the widget (9-image mode).
       unsigned short elems[54];
+      
+      //! Elements to create the widget (3-image vertical).
+      unsigned short elemsV[18];
+      
+      //! Elements to create the widget (3-image horizontal).
+      unsigned short elemsH[18];
       
       //! Texture.
       unsigned int texture;
@@ -119,6 +137,12 @@ namespace machete {
        */
       virtual void WidgetInertia(Widget *widget, Vec2 & movement) {}
       
+    };
+    
+    enum WidgetDisplay {
+      WidgetNormal,
+      WidgetVertical,
+      WidgetHorizontal
     };
     
     //! A widget container that can be sized and still looks good using a framed image.
@@ -227,7 +251,13 @@ namespace machete {
        */
       WidgetEventAdapter *GetEventListener();
       
-    private:
+      //! Change the widget's display type.
+      /*!
+       \param type Widget display type.
+       */
+      void SetDisplay(WidgetDisplay type);
+      
+    protected:
       
       //! The states supported by this widget.
       Hash<Str, MetaWidget*> states;
@@ -243,6 +273,9 @@ namespace machete {
       
       //! The event listener for widget events.
       WidgetEventAdapter *event;
+      
+      //! Widget display type.
+      WidgetDisplay display;
       
     };
     
@@ -289,7 +322,7 @@ namespace machete {
       //! Invalidates the size.
       void Invalidate();
       
-    private:
+    protected:
 
       //! Font to be used with this button.
       Font *font;
@@ -298,6 +331,115 @@ namespace machete {
       Text *label;
       
     };
-    
+
+    //! A simple Scroll Pane Widget.
+    /*!
+     This widget consist of a frame widget to draw borders, and a vertical and horizontal scroll bar.
+     */
+    class Scroll : public Widget {
+    public:
+      
+      //! Create a new Scroll pane.
+      Scroll(int width, int height);
+      
+      //! Destructor.
+      ~Scroll();
+      
+      //! Invalidates the size.
+      void Invalidate();
+      
+      //! Draw the texture of the container, then the internal drawing.
+      /*!
+       \param matrix The current transformation matrix. If this will be changed, then you must restore it before returning from this method.
+       \param pos Position or Offset to draw elements.
+       \param color Tint to apply to all objects.
+       \param ctx DrawContext to draw the elements.
+       */
+      void Draw(const Mat4 & matrix, Vec2 & pos, Vec4 & color, DrawContext *ctx);
+      
+      //! Adds an element at the end of the list.
+      void Add(Element *child);
+      
+      //! Removes an element from the list.
+      void Remove(Element *child);
+      
+      //! Switches one element for another.
+      /*!
+       This is not a swap, to make a swap you would need to do two switches.
+       */
+      void Switch(Element *prev, Element *elem);
+      
+      //! Count the childs.
+      /*!
+       \return The number of immediate childs.
+       */
+      inline int Count() const;
+      
+      //! Updates this container and it's childs.
+      /*!
+       \param time The time since the last update, in seconds.
+       */
+      void Update(float time);
+      
+      //! Changes the decorators: border, vertical scrollbar, horizontal scrollbar.
+      /*!
+       \param frame The frame border, drawed after the container.
+       \param vScroll The vertical scrollbar.
+       \param hScroll The horizontal scrollbar.
+       */
+      void SetDecorators(Widget *frame, Widget *vScroll, Widget *hScroll);
+      
+      //! The user is dragging with his finger around the widget.
+      void TouchDrag(Vec2 & move);
+      
+      //! The user has dragged "violently" and released a finger, causing an inertia.
+      void TouchInertia(Vec2 & move);
+      
+    protected:
+      
+      //! Draw the frame and then the scrollbars.
+      /*!
+       \param matrix The current transformation matrix. If this will be changed, then you must restore it before returning from this method.
+       \param pos Position or Offset to draw elements.
+       \param color Tint to apply to all objects.
+       \param ctx DrawContext to draw the elements.
+       */
+      void InternalDraw(const Mat4 & matrix, Vec2 & pos, Vec4 & color, DrawContext *ctx);
+      
+      //! Calculates the elastic values based on time. (Counter-inertia).
+      /*!
+       \param time Time elapsed.
+       */
+      void CalculateElastic(float time);
+      
+      //! Optional frame widget to draw borders.
+      Widget *frame;
+      
+      //! Optional vertical scrollbar.
+      Widget *vScroll;
+      
+      //! Optional horizontal scrollbar.
+      Widget *hScroll;
+
+      //! Bottom and Right margins for the Scrollbars.
+      Vec2 margin;
+      
+      //! Elastic offset on the viewport.
+      Vec2 elastic;
+
+      //! Dynamic viewport.
+      Dynamic *viewport;
+      
+      //! Container to clip the real contents.
+      Container *container;
+      
+      //! Drawing vertical scrollbar.
+      bool drawVScroll;
+      
+      //! Drawing horizontal scrollbar.
+      bool drawHScroll;
+      
+    };
+
   }
 }
