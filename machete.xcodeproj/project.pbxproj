@@ -17,6 +17,8 @@
 		A81A334213AF1C49001C2871 /* font.h in Headers */ = {isa = PBXBuildFile; fileRef = A81A334013AF1C49001C2871 /* font.h */; };
 		A81A334513AF1C6D001C2871 /* meta.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A81A334313AF1C6D001C2871 /* meta.cpp */; };
 		A81A334613AF1C6D001C2871 /* meta.h in Headers */ = {isa = PBXBuildFile; fileRef = A81A334413AF1C6D001C2871 /* meta.h */; };
+		A829396F13DE747F005D0D64 /* func.h in Headers */ = {isa = PBXBuildFile; fileRef = A829396E13DE747F005D0D64 /* func.h */; };
+		A829397113DE7D18005D0D64 /* func.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A829397013DE7D18005D0D64 /* func.cpp */; };
 		A839A6AD13AE9A4700D0C254 /* bundle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A839A6AB13AE9A4700D0C254 /* bundle.cpp */; };
 		A839A6AE13AE9A4700D0C254 /* bundle.h in Headers */ = {isa = PBXBuildFile; fileRef = A839A6AC13AE9A4700D0C254 /* bundle.h */; };
 		A839E21313AB3E65004A1CA5 /* platform.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A839E21213AB3E65004A1CA5 /* platform.cpp */; };
@@ -56,6 +58,8 @@
 		A81A334013AF1C49001C2871 /* font.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = font.h; sourceTree = "<group>"; };
 		A81A334313AF1C6D001C2871 /* meta.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = meta.cpp; sourceTree = "<group>"; };
 		A81A334413AF1C6D001C2871 /* meta.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = meta.h; sourceTree = "<group>"; };
+		A829396E13DE747F005D0D64 /* func.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = func.h; sourceTree = "<group>"; };
+		A829397013DE7D18005D0D64 /* func.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = func.cpp; sourceTree = "<group>"; };
 		A839A6AB13AE9A4700D0C254 /* bundle.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = bundle.cpp; sourceTree = "<group>"; };
 		A839A6AC13AE9A4700D0C254 /* bundle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = bundle.h; sourceTree = "<group>"; };
 		A839E21213AB3E65004A1CA5 /* platform.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = platform.cpp; sourceTree = "<group>"; };
@@ -127,6 +131,16 @@
 			);
 			name = draw;
 			path = machete/machete/draw;
+			sourceTree = SOURCE_ROOT;
+		};
+		A829396C13DE7418005D0D64 /* anim */ = {
+			isa = PBXGroup;
+			children = (
+				A829396E13DE747F005D0D64 /* func.h */,
+				A829397013DE7D18005D0D64 /* func.cpp */,
+			);
+			name = anim;
+			path = machete/machete/anim;
 			sourceTree = SOURCE_ROOT;
 		};
 		A874066C13B502D300F8B807 /* input */ = {
@@ -201,6 +215,7 @@
 		A888581A135CB1FC00F7732C /* machete */ = {
 			isa = PBXGroup;
 			children = (
+				A829396C13DE7418005D0D64 /* anim */,
 				A876348713C10311006B1333 /* widget */,
 				A874066C13B502D300F8B807 /* input */,
 				A8114FD213AB9FA400103559 /* draw */,
@@ -288,6 +303,7 @@
 				A81A334613AF1C6D001C2871 /* meta.h in Headers */,
 				A874067013B5030200F8B807 /* touch.h in Headers */,
 				A876348C13C104D6006B1333 /* widget.h in Headers */,
+				A829396F13DE747F005D0D64 /* func.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -350,6 +366,7 @@
 				A81A334513AF1C6D001C2871 /* meta.cpp in Sources */,
 				A874066F13B5030200F8B807 /* touch.cpp in Sources */,
 				A876348A13C104CA006B1333 /* widget.cpp in Sources */,
+				A829397113DE7D18005D0D64 /* func.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

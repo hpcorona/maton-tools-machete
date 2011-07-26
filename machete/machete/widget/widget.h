@@ -21,6 +21,8 @@ using namespace machete::draw;
 namespace machete {
   namespace widget {
     
+#define SCROLL_ELASTICITY 10.0f
+    
     class MetaWidget : machete::draw::MetaElement {
     public:
       

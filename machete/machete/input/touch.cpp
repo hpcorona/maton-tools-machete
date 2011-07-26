@@ -35,6 +35,7 @@ namespace machete {
       withTap = false;
       tracking = false;
       touch = NULL;
+      alive = false;
     }
     
     bool TouchProcessor::Gather(Touch *touch, const machete::math::Rect2D & bounds) {
@@ -51,10 +52,11 @@ namespace machete {
       }
       
       if (inside && !tracking) {
-        if (touch->phase == TouchMove) {
+        if (bounds.Contains(touch->start) && touch->phase == TouchMove) {
           if (listener->TouchAcceptDrag()) {
             math::Vec2 startOff = touch->current - touch->start;
             listener->TouchDrag(startOff);
+            alive = false;
 
             tracking = true;
             withTap = false;
@@ -81,8 +83,10 @@ namespace machete {
           tracking = false;
           withTap = false;
         } else {
-          // TODO Touch end without tap, it was dragging
-          // prepare inertia?
+          listener->TouchDrag(touch->offset);
+          
+          time = 0;
+          alive = true;
           
           tracking = false;
         }
@@ -97,16 +101,17 @@ namespace machete {
         if (listener->TouchTapIntent() == true) {
           tracking = true;
           withTap = true;
+          alive = false;
         } else {
           listener->TouchTapCancelled();
           withTap = false;
           
           if (listener->TouchAcceptDrag()) {
             tracking = true;
+            alive = false;
           }
         }
       } else if (tracking && touch->phase == TouchMove) {
-        
         if (withTap) {
           math::Vec2 startOff = touch->current - touch->start;
           
@@ -118,7 +123,7 @@ namespace machete {
             startOff.y = -startOff.y;
           }
 
-          if (startOff.x > 10 || startOff.y > 10) {
+          if (startOff.Length() > 10) {
             withTap = false;
             tracking = false;
             
@@ -128,6 +133,8 @@ namespace machete {
           }
         }
         
+        alive = false;
+        inertia = touch->offset;
         listener->TouchDrag(touch->offset);
       }
 
@@ -136,7 +143,15 @@ namespace machete {
     }
     
     void TouchProcessor::Update(float time) {
-      // TODO Inertia, acceleration, etc...
+      if (alive) {
+        this->time += time;
+        if (this->time > 2) {
+          alive = false;
+        }
+        
+        inertia -= inertia * this->time;
+        listener->TouchInertia(inertia);
+      }
     }
     
     void TouchProcessor::Acquiere(TouchReceiver *owner) {
@@ -149,6 +164,18 @@ namespace machete {
       if (touch != NULL) {
         touch->owner = NULL;
       }
+    }
+    
+    bool TouchProcessor::IsTracking() const {
+      return tracking;
+    }
+    
+    bool TouchProcessor::IsAlive() const {
+      return alive;
+    }
+    
+    void TouchProcessor::Stop() {
+      alive = false;
     }
     
     TouchInput *TheTouchInput = new TouchInput();

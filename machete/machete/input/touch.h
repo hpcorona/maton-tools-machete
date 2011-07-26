@@ -12,6 +12,7 @@
 #pragma once
 
 #include "../math/vector.h"
+#include "../anim/func.h"
 
 #ifndef NULL
 #define NULL 0
@@ -202,7 +203,19 @@ namespace machete {
        */
       void Update(float time);
       
-    private:
+      //! Detects if it's still running inertia.
+      /*!
+       \return True if it's still moving.
+       */
+      bool IsAlive() const;
+      
+      //! Detect if it's tracking touch.
+      bool IsTracking() const;
+      
+      //! Stops the inertia.
+      void Stop();
+      
+    protected:
       
       //! The touch event listener.
       TouchListener *listener;
@@ -215,6 +228,15 @@ namespace machete {
       
       //! Current touch event.
       Touch* touch;
+      
+      //! Inertia.
+      machete::math::Vec2 inertia;
+      
+      //! Inertia time.
+      float time;
+      
+      //! Is still moving by inertia.
+      bool alive;
       
     };
     

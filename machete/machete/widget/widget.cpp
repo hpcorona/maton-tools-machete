@@ -733,6 +733,22 @@ namespace machete {
       
       viewport->Draw();
       
+      if (touchProc.IsTracking() == false && touchProc.IsAlive() && (elastic.x != 0 || elastic.y != 0)) {
+        Vec2 strength(-elastic.x * SCROLL_ELASTICITY * time, -elastic.y * SCROLL_ELASTICITY * time);
+        
+        if (abs(elastic.x) < 3) {
+          strength.x = 0;
+          elastic.x = 0;
+        }
+        
+        if (abs(elastic.y) < 3) {
+          strength.y = 0;
+          elastic.y = 0;
+        }
+        
+        TouchInertia(strength);
+      }
+      
       CalculateElastic(time);
     }
     
@@ -762,11 +778,19 @@ namespace machete {
     }
     
     bool Scroll::TouchEvent(machete::input::Touch *touch) {
+      Rect2D bounds = GetGlobalBounds();
+      
+      if (!touchProc.IsAlive()) {
+        if (!touchProc.IsTracking() && !bounds.Contains(touch->current)) {
+          return false;
+        }
+      } else {
+        touchProc.Stop();
+      }
+      
       if (container->TouchEvent(touch) == true) {
         return true;
       }
-      
-      Rect2D bounds = GetGlobalBounds();
       
       return touchProc.Gather(touch, bounds);
     }
