@@ -218,7 +218,7 @@ namespace machete {
       inline Vec2 & GetSize();
       
       //! The user may be making a tap.
-      virtual void TouchTapIntent();
+      virtual bool TouchTapIntent();
       
       //! The user is definitely not making a tap.
       virtual void TouchTapCancelled();
@@ -226,11 +226,17 @@ namespace machete {
       //! The user has performed a tap.
       virtual void TouchTapPerformed();
       
+      //! The widget accepts drag.
+      virtual bool TouchAcceptDrag();
+      
       //! The user is dragging with his finger around the widget.
       virtual void TouchDrag(Vec2 & move);
       
       //! The user has dragged "violently" and released a finger, causing an inertia.
       virtual void TouchInertia(Vec2 & move);
+      
+      //! The touch event has ended.
+      virtual void TouchEnded();
       
       //! Send a touch event to this element.
       /*!
@@ -311,13 +317,16 @@ namespace machete {
       void SetFont(Font *font);
       
       //! The button was pressed but not released.
-      virtual void TouchTapIntent();
+      virtual bool TouchTapIntent();
       
       //! The button was not released or was moved (maybe a drag was requested).
       virtual void TouchTapCancelled();
       
       //! The button was pressed.
       virtual void TouchTapPerformed();
+
+      //! The touch event was ended
+      virtual void TouchEnded();
       
       //! Invalidates the size.
       void Invalidate();
@@ -389,11 +398,21 @@ namespace machete {
        */
       void SetDecorators(Widget *frame, Widget *vScroll, Widget *hScroll);
       
+      //! The widget accepts drag.
+      virtual bool TouchAcceptDrag();
+      
       //! The user is dragging with his finger around the widget.
       void TouchDrag(Vec2 & move);
       
       //! The user has dragged "violently" and released a finger, causing an inertia.
       void TouchInertia(Vec2 & move);
+      
+      //! Send a touch event to this element.
+      /*!
+       \param touch The touch event.
+       \return True if the event was processed.
+       */
+      virtual bool TouchEvent(machete::input::Touch *touch);
       
     protected:
       

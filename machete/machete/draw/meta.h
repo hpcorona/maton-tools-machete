@@ -126,7 +126,7 @@ namespace machete {
     };
     
     //! Abstract element prividing the basic functionality for scene management.
-    class Element {
+    class Element : public machete::input::TouchReceiver {
     public:
       
       //! Create a new Element. This is abstract, you need to use other specialiced classes.

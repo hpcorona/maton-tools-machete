@@ -22,6 +22,20 @@ namespace machete {
   //! Input classes and data structures.
   namespace input {
     
+    struct Touch;
+    
+    class TouchReceiver {
+    public:
+      
+      //! Send a touch event to this element.
+      /*!
+       \param touch The touch event.
+       \return True if the event was processed.
+       */
+      virtual bool TouchEvent(Touch *touch) = 0;
+      
+    };
+    
     //! Defines the current state of a Touch event.
     enum TouchPhase {
       TouchStart,     //!< The touch was started.
@@ -40,6 +54,7 @@ namespace machete {
         finger = 0;
         phase = TouchNone;
         tapCount = 0;
+        owner = NULL;
       }
       
       //! The reference is used to bind a touch event with an object of any kind.
@@ -62,6 +77,9 @@ namespace machete {
       
       //! The change between the previous coordinate and the new one.
       machete::math::Vec2 offset;
+      
+      //! The current touch processor owner.
+      TouchReceiver *owner;
       
       //! The number of taps that the user has made. Only available with the TouchEnd phase.
       int tapCount;
@@ -129,7 +147,7 @@ namespace machete {
     public:
       
       //! The user may be making a tap.
-      virtual void TouchTapIntent() = 0;
+      virtual bool TouchTapIntent() = 0;
       
       //! The user is definitely not making a tap.
       virtual void TouchTapCancelled() = 0;
@@ -137,11 +155,17 @@ namespace machete {
       //! The user has performed a tap.
       virtual void TouchTapPerformed() = 0;
       
+      //! See if it accepts drag.
+      virtual bool TouchAcceptDrag() = 0;
+      
       //! The user is dragging with his finger around the widget.
       virtual void TouchDrag(machete::math::Vec2 & move) = 0;
       
       //! The user has dragged "violently" and released a finger, causing an inertia.
       virtual void TouchInertia(machete::math::Vec2 & move) = 0;
+      
+      //! The touch has ended.
+      virtual void TouchEnded() = 0;
       
     };
     
@@ -163,6 +187,15 @@ namespace machete {
        */
       bool Gather(Touch *touch, const machete::math::Rect2D & bounds);
       
+      //! Acquiere a touch event.
+      /*!
+       \param owner The touch receiver.
+       */
+      void Acquiere(TouchReceiver *owner);
+      
+      //! Release a touch event from an owner, making it ownerless.
+      void Release();
+      
       //! Update the inertia, if any applies.
       /*!
        \param time The time in seconds.
@@ -179,6 +212,9 @@ namespace machete {
       
       //! Flag to know if we are tracking a touch.
       bool tracking;
+      
+      //! Current touch event.
+      Touch* touch;
       
     };
     

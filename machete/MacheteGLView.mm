@@ -124,6 +124,10 @@ CAEAGLLayer *eaglLayer = NULL;
     t->current.y = pos.y;
     t->tapCount = touch.tapCount;
     t->offset = t->current - t->previous;
+    
+    if (t->phase == TouchStart) {
+      t->owner = NULL;
+    }
   }
   
   TheTouchInput->MarkAvailable();

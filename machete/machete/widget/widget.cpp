@@ -445,8 +445,8 @@ namespace machete {
       return touchProc.Gather(touch, bounds);
     }
     
-    void Widget::TouchTapIntent() {
-      
+    bool Widget::TouchTapIntent() {
+      return false;
     }
     
     void Widget::TouchTapCancelled() {
@@ -459,6 +459,10 @@ namespace machete {
       }
     }
     
+    bool Widget::TouchAcceptDrag() {
+      return false;
+    }
+    
     void Widget::TouchDrag(Vec2 & move) {
       if (event != NULL) {
         event->WidgetDragged(this, move);
@@ -469,6 +473,10 @@ namespace machete {
       if (event != NULL) {
         event->WidgetInertia(this, move);
       }
+    }
+    
+    void Widget::TouchEnded() {
+      
     }
     
     void Widget::SetEventListener(WidgetEventAdapter *event) {
@@ -520,22 +528,32 @@ namespace machete {
       this->font = font;
     }
     
-    void Button::TouchTapIntent() {
+    bool Button::TouchTapIntent() {
       SetState("pressed");
+      touchProc.Acquiere(this);
       
       Widget::TouchTapIntent();
+      
+      return true;
     }
     
     void Button::TouchTapCancelled() {
       SetState("normal");
+      touchProc.Release();
 
       Widget::TouchTapCancelled();
     }
     
     void Button::TouchTapPerformed() {
       SetState("normal");
+      touchProc.Release();
       
       Widget::TouchTapPerformed();
+    }
+    
+    void Button::TouchEnded() {
+      SetState("normal");
+      touchProc.Release();
     }
     
     void Button::Invalidate() {
@@ -564,6 +582,7 @@ namespace machete {
       
       container = new Container();
       viewport->Add(container);
+      viewport->SetParent(this);
 
       SetSize(width, height);
 
@@ -734,6 +753,22 @@ namespace machete {
       Vec2 np = container->position + move;
       
       container->SetPosition(np);
+    }
+    
+    bool Scroll::TouchAcceptDrag() {
+      touchProc.Acquiere(this);
+      
+      return true;
+    }
+    
+    bool Scroll::TouchEvent(machete::input::Touch *touch) {
+      if (container->TouchEvent(touch) == true) {
+        return true;
+      }
+      
+      Rect2D bounds = GetGlobalBounds();
+      
+      return touchProc.Gather(touch, bounds);
     }
     
     void Scroll::CalculateElastic(float time) {

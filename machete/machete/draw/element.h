@@ -104,7 +104,7 @@ namespace machete {
        \param touch The touch event.
        \return True if the event was processed.
        */
-      bool TouchEvent(machete::input::Touch *touch);
+      virtual bool TouchEvent(machete::input::Touch *touch);
 
       
     protected:
