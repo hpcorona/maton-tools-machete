@@ -277,7 +277,10 @@ namespace machete {
       Vec2 Position = position + pos;
       Vec4 Color = this->color * color;
       
-      current->GetValue()->GetElement()->Draw(matrix, Position, Color, ctx);
+      Element *elem = current->GetValue()->GetElement();
+      if (elem != NULL) {
+        elem->Draw(matrix, Position, Color, ctx);
+      }
     }
     
     void Animation::Restart() {
@@ -342,11 +345,10 @@ namespace machete {
     }
     
     bool Actor::Play(const char* name, const char* fallback) {
-      if (Play(name) == false) {
+      if (!Play(name, false)) {
         return false;
       }
       
-      SetLoop(false);
       SetFallback(fallback);
       
       return true;

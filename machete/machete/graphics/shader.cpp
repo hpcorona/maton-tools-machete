@@ -7,7 +7,7 @@
 //
 
 #include "shader.h"
-#include "log.h"
+#include "../common/log.h"
 
 #include "vtx.frag"
 #include "vtx.vert"
@@ -190,7 +190,7 @@ namespace machete {
                       GL_CLAMP_TO_EDGE);
       glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T,
                       GL_CLAMP_TO_EDGE);
-
+      
       glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
       
       t->id = texId;
