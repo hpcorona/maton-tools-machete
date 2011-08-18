@@ -11,10 +11,12 @@
 
 #pragma once
 
+#include "../data/lists.h"
 #include "../draw/meta.h"
 #include "../draw/element.h"
 #include "../input/touch.h"
 #include "../draw/font.h"
+#include "../common/log.h"
 
 using namespace machete::draw;
 
@@ -416,6 +418,52 @@ namespace machete {
        */
       virtual bool TouchEvent(machete::input::Touch *touch);
       
+      //! Configure the vertical scrollbar.
+      /*!
+       \param allowVScroll Allow the user to drag the pane vertically.
+       \param drawVScroll Draw the vertical scrollbar. If this is false, then the vertical scrollbar will never be drawn.
+       \param autoVScroll Auto hide the scrollbar if the user is no longar dragging. If the drawVScroll is false then the scrollbar will never show up.
+       */
+      void ConfigureVScroll(bool allowVScroll, bool drawVScroll, bool autoVScroll);
+
+      //! Configure the horizontal scrollbar.
+      /*!
+       \param allowHScroll Allow the user to drag the pane horizontally.
+       \param drawHScroll Draw the horizontal scrollbar. If this is false, then the vertical scrollbar will never be drawn.
+       \param autoHScroll Auto hide the scrollbar if the user is no longar dragging. If the drawHScroll is false then the scrollbar will never show up.
+       */
+      void ConfigureHScroll(bool allowHScroll, bool drawHScroll, bool autoHScroll);
+      
+      //! Configure if the user is able to drag freely or the widget will try to center into a glue point.
+      /*!
+       \param freeDrag True to allow the user to drag freely.
+       */
+      void SetFreeDrag(bool freeDrag);
+      
+      //! Returns if the scroll is in free drag mode.
+      /*!
+       \return True if the scroll is in free drag mode. False otherwise.
+       */
+      inline bool IsFreeDrag() const;
+      
+      //! Add a new glue point.
+      /*!
+       \param gp The glue point to add.
+       */
+      void AddGluePoint(const Vec2 & gp);
+      
+      //! Center the view at the desired point.
+      /*!
+       \param cp The center point.
+       */
+      void CenterView(const Vec2 & cp);
+      
+      //! Seek gluepoint.
+      /*!
+       \param dir Seek for a glue point in the desired direction.
+       */
+      void SeekGluePoint(const Vec2 & dir);
+
     protected:
       
       //! Draw the frame and then the scrollbars.
@@ -447,6 +495,9 @@ namespace machete {
       
       //! Elastic offset on the viewport.
       Vec2 elastic;
+      
+      //! Current center.
+      Vec2 center;
 
       //! Dynamic viewport.
       Dynamic *viewport;
@@ -459,6 +510,24 @@ namespace machete {
       
       //! Drawing horizontal scrollbar.
       bool drawHScroll;
+      
+      //! Auto hide the vertical scrollbar.
+      bool autoVScroll;
+      
+      //! Auto hide the horizontal scrollbar.
+      bool autoHScroll;
+      
+      //! Allow vertical scroll.
+      bool allowVScroll;
+      
+      //! Allow horizontal scroll.
+      bool allowHScroll;
+
+      //! Allow free dragging. If this is false, then it will always auto-center into a glue point.
+      bool freeDrag;
+      
+      //! Glue points.
+      machete::data::Iterator<Vec2> gluePoints;
       
     };
 

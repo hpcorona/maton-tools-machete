@@ -594,6 +594,14 @@ namespace machete {
       
       drawVScroll = true;
       drawHScroll = true;
+      
+      allowVScroll = true;
+      allowHScroll = true;
+      
+      autoVScroll = false;
+      autoHScroll = false;
+      
+      freeDrag = true;
     }
     
     Scroll::~Scroll() {
@@ -736,20 +744,29 @@ namespace machete {
       if (touchProc.IsTracking() == false && touchProc.IsAlive() && (elastic.x != 0 || elastic.y != 0)) {
         Vec2 strength(-elastic.x * SCROLL_ELASTICITY * time, -elastic.y * SCROLL_ELASTICITY * time);
         
-        if (abs(elastic.x) < 3) {
-          strength.x = 0;
-          elastic.x = 0;
-        }
-        
-        if (abs(elastic.y) < 3) {
-          strength.y = 0;
-          elastic.y = 0;
-        }
-        
         TouchInertia(strength);
       }
       
       CalculateElastic(time);
+      
+      if (touchProc.IsAlive() == false && touchProc.IsTracking() == false) {
+        if (autoVScroll && vScroll != NULL) {
+          vScroll->color.w -= time;
+          if (vScroll->color.w < 0) {
+            vScroll->color.w = 0;
+          }
+        }
+
+        if (autoHScroll && hScroll != NULL) {
+          hScroll->color.w -= time;
+          if (hScroll->color.w < 0) {
+            hScroll->color.w = 0;
+          }
+        }
+      }
+      
+      center.x = -container->position.x + size.x * 0.5f;
+      center.y = -container->position.y + size.y * 0.5f;
     }
     
     void Scroll::SetDecorators(machete::widget::Widget *frame, machete::widget::Widget *vScroll, machete::widget::Widget *hScroll) {
@@ -760,15 +777,55 @@ namespace machete {
     }
 
     void Scroll::TouchDrag(Vec2 & move) {
-      Vec2 np = container->position + move;
+      if (allowHScroll && allowVScroll) {
+        Vec2 np = container->position + move;
       
-      container->SetPosition(np);
+        container->SetPosition(np);
+      } else if (allowHScroll) {
+        Vec2 np = container->position;
+        np.x += move.x;
+        
+        container->SetPosition(np);
+      } else if (allowVScroll) {
+        Vec2 np = container->position;
+        np.y += move.y;
+        
+        container->SetPosition(np);
+      }
+      
+      if (autoVScroll && vScroll != NULL) {
+        vScroll->color.w = 1;
+      }
+
+      if (autoHScroll && hScroll != NULL) {
+        hScroll->color.w = 1;
+      }
     }
     
     void Scroll::TouchInertia(Vec2 & move) {
-      Vec2 np = container->position + move;
+      if (allowHScroll && allowVScroll) {
+        Vec2 np = container->position + move;
+        
+        container->SetPosition(np);
+      } else if (allowHScroll) {
+        Vec2 np = container->position;
+        np.x += move.x;
+        
+        container->SetPosition(np);
+      } else if (allowVScroll) {
+        Vec2 np = container->position;
+        np.y += move.y;
+        
+        container->SetPosition(np);
+      }
+
+      if (autoVScroll && vScroll != NULL) {
+        vScroll->color.w = 1;
+      }
       
-      container->SetPosition(np);
+      if (autoHScroll && hScroll != NULL) {
+        hScroll->color.w = 1;
+      }
     }
     
     bool Scroll::TouchAcceptDrag() {
@@ -831,6 +888,38 @@ namespace machete {
           elastic.y = container->position.y - my;
         }
       }
+    }
+    
+    void Scroll::ConfigureVScroll(bool allowVScroll, bool drawVScroll, bool autoVScroll) {
+      this->allowVScroll = allowVScroll;
+      this->drawVScroll = drawVScroll;
+      this->autoVScroll = autoVScroll;
+    }
+    
+    void Scroll::ConfigureHScroll(bool allowHScroll, bool drawHScroll, bool autoHScroll) {
+      this->allowHScroll = allowHScroll;
+      this->drawHScroll = drawHScroll;
+      this->autoHScroll = autoHScroll;
+    }
+    
+    void Scroll::SetFreeDrag(bool freeDrag) {
+      this->freeDrag = freeDrag;
+    }
+    
+    bool Scroll::IsFreeDrag() const {
+      return freeDrag;
+    }
+    
+    void Scroll::AddGluePoint(const Vec2 &gp) {
+      gluePoints.Append(gp);
+    }
+    
+    void Scroll::CenterView(const Vec2 &cp) {
+      //TODO: Falta
+    }
+    
+    void Scroll::SeekGluePoint(const Vec2 &dir) {
+      
     }
 
   }
