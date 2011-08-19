@@ -602,6 +602,9 @@ namespace machete {
       autoHScroll = false;
       
       freeDrag = true;
+      
+      centered = false;
+      centering = false;
     }
     
     Scroll::~Scroll() {
@@ -736,6 +739,13 @@ namespace machete {
     }
     
     void Scroll::Update(float time) {
+      if (!touchProc.IsTracking() && centering && !centered) {
+        center.x = -container->position.x + size.x * 0.5f;
+        center.y = -container->position.y + size.y * 0.5f;
+        
+        StepTarget(time);
+      }
+
       touchProc.Update(time);
       viewport->Update(time);
       
@@ -744,12 +754,32 @@ namespace machete {
       if (touchProc.IsTracking() == false && touchProc.IsAlive() && (elastic.x != 0 || elastic.y != 0)) {
         Vec2 strength(-elastic.x * SCROLL_ELASTICITY * time, -elastic.y * SCROLL_ELASTICITY * time);
         
+        if (elastic.x > 0) {
+          if (elastic.x + strength.x < 0) {
+            strength.x = -elastic.x;
+          }
+        } else if (elastic.x < 0) {
+          if (elastic.x + strength.x > 0) {
+            strength.x = -elastic.x;
+          }
+        }
+
+        if (elastic.y > 0) {
+          if (elastic.y + strength.y < 0) {
+            strength.y = -elastic.y;
+          }
+        } else if (elastic.y < 0) {
+          if (elastic.y + strength.y > 0) {
+            strength.y = -elastic.y;
+          }
+        }
+
         TouchInertia(strength);
       }
       
       CalculateElastic(time);
       
-      if (touchProc.IsAlive() == false && touchProc.IsTracking() == false) {
+      if (centering == false && touchProc.IsAlive() == false && touchProc.IsTracking() == false) {
         if (autoVScroll && vScroll != NULL) {
           vScroll->color.w -= time;
           if (vScroll->color.w < 0) {
@@ -767,6 +797,17 @@ namespace machete {
       
       center.x = -container->position.x + size.x * 0.5f;
       center.y = -container->position.y + size.y * 0.5f;
+
+      if (centering) {
+        if (cabs(center.x - targetGlue.x) < 1.0f && cabs(center.y - targetGlue.y) < 1.0f) {
+          centering = false;
+          centered = true;
+        }
+      }
+      
+      if (!freeDrag && !centering && !centered && !touchProc.IsTracking()) {
+        SeekGluePoint(ZERO2);
+      }
     }
     
     void Scroll::SetDecorators(machete::widget::Widget *frame, machete::widget::Widget *vScroll, machete::widget::Widget *hScroll) {
@@ -777,6 +818,9 @@ namespace machete {
     }
 
     void Scroll::TouchDrag(Vec2 & move) {
+      centered = false;
+      centering = false;
+      
       if (allowHScroll && allowVScroll) {
         Vec2 np = container->position + move;
       
@@ -803,6 +847,8 @@ namespace machete {
     }
     
     void Scroll::TouchInertia(Vec2 & move) {
+      centered = false;
+
       if (allowHScroll && allowVScroll) {
         Vec2 np = container->position + move;
         
@@ -828,6 +874,16 @@ namespace machete {
       }
     }
     
+    bool Scroll::TouchTapIntent() {
+      if (touchProc.IsAlive()) {
+        touchProc.Acquiere(this);
+        
+        return true;
+      }
+      
+      return false;
+    }
+    
     bool Scroll::TouchAcceptDrag() {
       touchProc.Acquiere(this);
       
@@ -836,13 +892,22 @@ namespace machete {
     
     bool Scroll::TouchEvent(machete::input::Touch *touch) {
       Rect2D bounds = GetGlobalBounds();
+      bool contained = bounds.Contains(touch->current);
       
       if (!touchProc.IsAlive()) {
-        if (!touchProc.IsTracking() && !bounds.Contains(touch->current)) {
+        if (!touchProc.IsTracking() && !contained) {
           return false;
         }
       } else {
-        touchProc.Stop();
+        if (contained) {
+          if (touchProc.Gather(touch, bounds)) {
+            return true;
+          }
+        }
+      }
+      
+      if (touch->phase == machete::input::TouchStart && !contained) {
+        return false;
       }
       
       if (container->TouchEvent(touch) == true) {
@@ -914,12 +979,83 @@ namespace machete {
       gluePoints.Append(gp);
     }
     
+    void Scroll::AddGluePoint(float x, float y) {
+      Vec2 gp(x, y);
+      AddGluePoint(gp);
+    }
+    
     void Scroll::CenterView(const Vec2 &cp) {
-      //TODO: Falta
+      if (cp.x != center.x || cp.y != center.y) {
+        targetGlue = cp;
+        centering = true;
+        centered = false;
+      }
     }
     
     void Scroll::SeekGluePoint(const Vec2 &dir) {
+      // TODO: Seek on the direction, currently will only seek the closer one
       
+      Vec2 current = center;
+      Vec2 delta;
+      float len = 0;
+      bool first = true;
+      
+      gluePoints.Reset();
+      while (gluePoints.Next()) {
+        Vec2 p = gluePoints.GetCurrent()->GetValue();
+        
+        if (first) {
+          current = p;
+          delta = current - center;
+          len = delta.LengthSquared();
+          first = false;
+        } else {
+          delta = p - center;
+          
+          if (delta.LengthSquared() < len) {
+            current = p;
+            len = delta.LengthSquared();
+          }
+        }
+      }
+      
+      if (!first) {
+        touchProc.Stop();
+        CenterView(current);
+      } else {
+        centering = false;
+        centered = true;
+      }
+    }
+    
+    void Scroll::StepTarget(float time) {
+      if (!centering) return;
+      
+      Vec2 diff = targetGlue - center;
+
+      Vec2 strength(-diff.x * SCROLL_ELASTICITY * time, -diff.y * SCROLL_ELASTICITY * time);
+
+      if (diff.x > 0) {
+        if (diff.x + strength.x < 0) {
+          strength.x = -diff.x;
+        }
+      } else if (diff.x < 0) {
+        if (diff.x + strength.x > 0) {
+          strength.x = -diff.x;
+        }
+      }
+      
+      if (diff.y > 0) {
+        if (diff.y + strength.y < 0) {
+          strength.y = -diff.y;
+        }
+      } else if (diff.y < 0) {
+        if (diff.y + strength.y > 0) {
+          strength.y = -diff.y;
+        }
+      }
+      
+      TouchInertia(strength);
     }
 
   }

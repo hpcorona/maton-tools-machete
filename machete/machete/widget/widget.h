@@ -402,6 +402,9 @@ namespace machete {
        */
       void SetDecorators(Widget *frame, Widget *vScroll, Widget *hScroll);
       
+      //! The widget accepts tap intent when alive.
+      virtual bool TouchTapIntent();
+      
       //! The widget accepts drag.
       virtual bool TouchAcceptDrag();
       
@@ -452,6 +455,13 @@ namespace machete {
        */
       void AddGluePoint(const Vec2 & gp);
       
+      //! Add a new glue point.
+      /*!
+       \param x The x position of the glue point.
+       \param y The y position of the glue point.
+       */
+      void AddGluePoint(float x, float y);
+      
       //! Center the view at the desired point.
       /*!
        \param cp The center point.
@@ -480,6 +490,12 @@ namespace machete {
        \param time Time elapsed.
        */
       void CalculateElastic(float time);
+      
+      //! Step closer to the next target glue point.
+      /*!
+       \param time Time elapsed.
+       */
+      void StepTarget(float time);
       
       //! Optional frame widget to draw borders.
       Widget *frame;
@@ -525,6 +541,15 @@ namespace machete {
 
       //! Allow free dragging. If this is false, then it will always auto-center into a glue point.
       bool freeDrag;
+      
+      //! The widget is centered into a gluepoint.
+      bool centered;
+      
+      //! The widget is currently centering.
+      bool centering;
+      
+      //! Target glue point.
+      Vec2 targetGlue;
       
       //! Glue points.
       machete::data::Iterator<Vec2> gluePoints;
