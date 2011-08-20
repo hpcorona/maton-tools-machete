@@ -12,6 +12,7 @@
 #pragma once
 
 #include "../graphics/draw.h"
+#include "../input/touch.h"
 #include "meta.h"
 
 namespace machete {

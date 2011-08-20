@@ -446,6 +446,6 @@ namespace machete {
         Root::Draw();
       }
     }
-
+    
   }
 }

@@ -125,21 +125,21 @@ namespace machete {
       /*!
        \param widget The widget that was tapped.
        */
-      virtual void WidgetTapped(Widget *widget) {}
+      virtual void WidgetTapped(Element *widget) {}
       
       //! A widget is being dragged.
       /*!
        \param widget The widget that is being dragged.
        \param movement The movement offset.
        */
-      virtual void WidgetDragged(Widget *widget, Vec2 & movement) {}
+      virtual void WidgetDragged(Element *widget, Vec2 & movement) {}
       
       //! A widget was affected by inertia.
       /*!
        \param widget The widget that is being moved by inertia.
        \param movement The movement offset.
        */
-      virtual void WidgetInertia(Widget *widget, Vec2 & movement) {}
+      virtual void WidgetInertia(Element *widget, Vec2 & movement) {}
       
     };
     
@@ -473,6 +473,12 @@ namespace machete {
        \param dir Seek for a glue point in the desired direction.
        */
       void SeekGluePoint(const Vec2 & dir);
+      
+      //! Get the current center.
+      /*!
+       \return The center of the view.
+       */
+      Vec2 & GetCenter();
 
     protected:
       
@@ -496,6 +502,9 @@ namespace machete {
        \param time Time elapsed.
        */
       void StepTarget(float time);
+      
+      //! The user has dragged "violently" and released a finger, causing an inertia.
+      void ElasticMovement(Vec2 & move);
       
       //! Optional frame widget to draw borders.
       Widget *frame;
@@ -551,10 +560,77 @@ namespace machete {
       //! Target glue point.
       Vec2 targetGlue;
       
+      //! Last inertia movement.
+      Vec2 lastInertia;
+      
       //! Glue points.
       machete::data::Iterator<Vec2> gluePoints;
       
     };
+    
+    //! A container with touch support.
+    /*!
+     Not propertly a widget, but a more lightweight implementation.
+     */
+    class TouchContainer : public Container, public machete::input::TouchListener {
+    public:
+      //! Constructor.
+      TouchContainer();
+      
+      //! Destructor.
+      ~TouchContainer();
+      
+      //! The user may be making a tap.
+      virtual bool TouchTapIntent();
+      
+      //! The user is definitely not making a tap.
+      virtual void TouchTapCancelled();
+      
+      //! The user has performed a tap.
+      virtual void TouchTapPerformed();
+      
+      //! See if it accepts drag.
+      virtual bool TouchAcceptDrag();
+      
+      //! The user is dragging with his finger around the widget.
+      virtual void TouchDrag(machete::math::Vec2 & move);
+      
+      //! The user has dragged "violently" and released a finger, causing an inertia.
+      virtual void TouchInertia(machete::math::Vec2 & move);
+      
+      //! The touch has ended.
+      virtual void TouchEnded();
+      
+      //! Send a touch event to this element.
+      /*!
+       \param touch The touch event.
+       \return True if the event was processed.
+       */
+      virtual bool TouchEvent(machete::input::Touch *touch);
+
+      //! Changes the current event listener.
+      /*!
+       \param event The new event listener.
+       */
+      void SetEventListener(WidgetEventAdapter *event);
+      
+      //! Gets the current event listener.
+      /*!
+       \return The current event listener.
+       */
+      WidgetEventAdapter *GetEventListener();
+      
+      //! Update animations.
+      virtual void Update(float time);
+
+    protected:
+      //! The touch processor.
+      machete::input::TouchProcessor touchProc;
+      
+      //! Event listener.
+      WidgetEventAdapter *event;
+    };
+
 
   }
 }

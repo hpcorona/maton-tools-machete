@@ -123,7 +123,7 @@ namespace machete {
             startOff.y = -startOff.y;
           }
 
-          if (startOff.Length() > 10) {
+          if (startOff.LengthSquared() > 400) {
             withTap = false;
             tracking = false;
             

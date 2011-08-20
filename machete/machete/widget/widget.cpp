@@ -774,7 +774,7 @@ namespace machete {
           }
         }
 
-        TouchInertia(strength);
+        ElasticMovement(strength);
       }
       
       CalculateElastic(time);
@@ -847,8 +847,14 @@ namespace machete {
     }
     
     void Scroll::TouchInertia(Vec2 & move) {
-      centered = false;
+      lastInertia = move;
 
+      ElasticMovement(move);
+    }
+    
+    void Scroll::ElasticMovement(Vec2 & move) {
+      centered = false;
+      
       if (allowHScroll && allowVScroll) {
         Vec2 np = container->position + move;
         
@@ -864,7 +870,7 @@ namespace machete {
         
         container->SetPosition(np);
       }
-
+      
       if (autoVScroll && vScroll != NULL) {
         vScroll->color.w = 1;
       }
@@ -995,7 +1001,13 @@ namespace machete {
     void Scroll::SeekGluePoint(const Vec2 &dir) {
       // TODO: Seek on the direction, currently will only seek the closer one
       
+      Vec2 center = this->center;
+      if (touchProc.IsAlive()) {
+        center += (lastInertia * SCROLL_ELASTICITY * -1.0f);
+      }
+      
       Vec2 current = center;
+      
       Vec2 delta;
       float len = 0;
       bool first = true;
@@ -1055,7 +1067,81 @@ namespace machete {
         }
       }
       
-      TouchInertia(strength);
+      ElasticMovement(strength);
+    }
+    
+    Vec2 & Scroll::GetCenter() {
+      return center;
+    }
+
+    TouchContainer::TouchContainer() : touchProc(this) {
+      Container();
+      
+      event = NULL;
+    }
+    
+    TouchContainer::~TouchContainer() {
+      
+    }
+    
+    bool TouchContainer::TouchTapIntent() {
+      return false;
+    }
+    
+    void TouchContainer::TouchTapPerformed() {
+      if (event != NULL) {
+        event->WidgetTapped(this);
+      }
+      
+      touchProc.Release();
+    }
+    
+    void TouchContainer::TouchTapCancelled() {
+      touchProc.Release();
+    }
+    
+    bool TouchContainer::TouchAcceptDrag() {
+      return false;
+    }
+    
+    void TouchContainer::TouchDrag(machete::math::Vec2 &move) {
+      if (event != NULL) {
+        event->WidgetDragged(this, move);
+      }
+    }
+    
+    void TouchContainer::TouchInertia(machete::math::Vec2 &move) {
+      if (event != NULL) {
+        event->WidgetInertia(this, move);
+      }
+    }
+    
+    void TouchContainer::TouchEnded() {
+      touchProc.Release();
+    }
+    
+    bool TouchContainer::TouchEvent(machete::input::Touch *touch) {
+      if (Container::TouchEvent(touch) == true) {
+        return true;
+      }
+      
+      Rect2D bounds = GetGlobalBounds();
+      
+      return touchProc.Gather(touch, bounds);
+    }
+    
+    void TouchContainer::SetEventListener(machete::widget::WidgetEventAdapter *event) {
+      this->event = event;
+    }
+    
+    WidgetEventAdapter* TouchContainer::GetEventListener() {
+      return event;
+    }
+    
+    void TouchContainer::Update(float time) {
+      touchProc.Update(time);
+      
+      Container::Update(time);
     }
 
   }
