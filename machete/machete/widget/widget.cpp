@@ -1001,7 +1001,6 @@ namespace machete {
     }
     
     void Scroll::SeekGluePoint(const Vec2 &dir) {
-      // TODO: Seek on the direction, currently will only seek the closer one
       bool still = false;
       
       Vec2 target = this->center;
