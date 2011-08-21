@@ -806,8 +806,10 @@ namespace machete {
       }
       
       if (!freeDrag && !centering && !centered && !touchProc.IsTracking()) {
-        SeekGluePoint(ZERO2);
+        SeekGluePoint(lastInertia);
       }
+      
+      lastInertia.x = 0; lastInertia.y = 0;
     }
     
     void Scroll::SetDecorators(machete::widget::Widget *frame, machete::widget::Widget *vScroll, machete::widget::Widget *hScroll) {
@@ -1000,44 +1002,76 @@ namespace machete {
     
     void Scroll::SeekGluePoint(const Vec2 &dir) {
       // TODO: Seek on the direction, currently will only seek the closer one
+      bool still = false;
       
-      Vec2 center = this->center;
+      Vec2 target = this->center;
       if (touchProc.IsAlive()) {
-        center += (lastInertia * SCROLL_ELASTICITY * -1.0f);
+        target += (dir * -20.0f);
       }
+      Vec2 tdiff = target - this->center;
+      float targetAngle = 0;
+      if (dir.x == 0 && dir.y == 0) {
+        still = true;
+      } else {
+        targetAngle = catan2(tdiff.y, tdiff.x);
+      }
+      float closerLen = cmax(size.LengthSquared() * 0.01f - tdiff.LengthSquared(), 0);
       
       Vec2 current = center;
+      Vec2 diff;
+      Vec2 p;
       
-      Vec2 delta;
-      float len = 0;
-      bool first = true;
+      bool found = false;
+      float len = size.LengthSquared();
       
       gluePoints.Reset();
       while (gluePoints.Next()) {
-        Vec2 p = gluePoints.GetCurrent()->GetValue();
+        p = gluePoints.GetCurrent()->GetValue();
+        diff = p - this->center;
+        float plen = diff.LengthSquared();
         
-        if (first) {
-          current = p;
-          delta = current - center;
-          len = delta.LengthSquared();
-          first = false;
-        } else {
-          delta = p - center;
-          
-          if (delta.LengthSquared() < len) {
+        float thisAngle = catan2(diff.y, diff.x);
+        
+        if (plen < closerLen) {
+          if (plen < len || found == false) {
+            found = true;
             current = p;
-            len = delta.LengthSquared();
+            len = plen;
           }
+          continue;
+        }
+        
+        if (still == false && cabs(targetAngle - thisAngle) > 0.2f) continue;
+
+        if (plen < len || found == false) {
+          found = true;
+          current = p;
+          len = plen;
         }
       }
       
-      if (!first) {
-        touchProc.Stop();
+      touchProc.Stop();
+      if (found) {
         CenterView(current);
-      } else {
-        centering = false;
-        centered = true;
+        return;
       }
+      
+      current = target;
+      
+      gluePoints.Reset();
+      while (gluePoints.Next()) {
+        p = gluePoints.GetCurrent()->GetValue();
+        diff = p - this->center;
+        float plen = diff.LengthSquared();
+        
+        if (!found || plen < len) {
+          found = true;
+          current = p;
+          len = plen;
+        }
+      }
+      
+      CenterView(current);
     }
     
     void Scroll::StepTarget(float time) {
