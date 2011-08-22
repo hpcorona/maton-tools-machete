@@ -479,6 +479,12 @@ namespace machete {
        \return The center of the view.
        */
       Vec2 & GetCenter();
+      
+      //! Detect if the widget is currently centering.
+      bool IsCentering() const;
+      
+      //! Detect if the widget is currently centered;
+      bool IsCentered() const;
 
     protected:
       

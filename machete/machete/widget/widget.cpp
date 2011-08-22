@@ -1106,6 +1106,14 @@ namespace machete {
     Vec2 & Scroll::GetCenter() {
       return center;
     }
+    
+    bool Scroll::IsCentered() const {
+      return centered;
+    }
+    
+    bool Scroll::IsCentering() const {
+      return centering;
+    }
 
     TouchContainer::TouchContainer() : touchProc(this) {
       Container();
