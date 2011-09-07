@@ -24,6 +24,7 @@
 #include "data/mbd.h"
 #include "common/log.h"
 #include "input/touch.h"
+#include "sound/sound.h"
 
 //! The main namespace. All the escential definitions of the engine are here.
 namespace machete {
@@ -116,6 +117,7 @@ namespace machete {
     
     graphics::TheShaderMgr = new graphics::ShaderMgr();
     graphics::TheTextureMgr = new graphics::TextureMgr();
+    sound::TheSoundMgr = new sound::SoundManager();
   }
   
 }

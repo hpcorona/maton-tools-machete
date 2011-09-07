@@ -27,6 +27,10 @@ namespace machete {
       return platf->LoadFile(name, data);
     }
     
+    unsigned int Platform::LoadAudio(const char *name) {
+      return platf->LoadAudio(name);
+    }
+    
     unsigned int Platform::Random() {
       return platf->Random();
     }

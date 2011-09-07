@@ -10,6 +10,8 @@
 		A801E0DA13A06120002FA9E8 /* shader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A801E0D813A06120002FA9E8 /* shader.cpp */; };
 		A801E0DB13A06120002FA9E8 /* shader.h in Headers */ = {isa = PBXBuildFile; fileRef = A801E0D913A06120002FA9E8 /* shader.h */; };
 		A801E0DF13A068B3002FA9E8 /* log.h in Headers */ = {isa = PBXBuildFile; fileRef = A801E0DE13A068B3002FA9E8 /* log.h */; };
+		A80A9A83140622D200614DB0 /* OpenAL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A80A9A82140622D200614DB0 /* OpenAL.framework */; };
+		A80A9A891406238900614DB0 /* sound.h in Headers */ = {isa = PBXBuildFile; fileRef = A80A9A881406238900614DB0 /* sound.h */; };
 		A8114FD613ABA09F00103559 /* element.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A8114FD413ABA09F00103559 /* element.cpp */; };
 		A8114FD713ABA09F00103559 /* element.h in Headers */ = {isa = PBXBuildFile; fileRef = A8114FD513ABA09F00103559 /* element.h */; };
 		A816243B1399D14D00CE8ED5 /* mbd.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A816243A1399D14D00CE8ED5 /* mbd.cpp */; };
@@ -40,6 +42,9 @@
 		A8885865135CBB9800F7732C /* MacheteGLView.mm in Sources */ = {isa = PBXBuildFile; fileRef = A8885863135CBB9800F7732C /* MacheteGLView.mm */; };
 		A89365531375ACA900B0B46C /* tree.h in Headers */ = {isa = PBXBuildFile; fileRef = A89365521375ACA900B0B46C /* tree.h */; };
 		A89365571375B62300B0B46C /* str.h in Headers */ = {isa = PBXBuildFile; fileRef = A89365551375B62200B0B46C /* str.h */; };
+		A8A8D06B140AB2EC005C9E2B /* sound.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A8A8D06A140AB2EC005C9E2B /* sound.cpp */; };
+		A8CD9A9F141714A600270862 /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A8CD9A9E141714A600270862 /* CoreAudio.framework */; };
+		A8CD9AA41417156100270862 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A8CD9AA31417156100270862 /* AudioToolbox.framework */; };
 		A8DF994213A9E05F008A27CA /* iOSPlatform.mm in Sources */ = {isa = PBXBuildFile; fileRef = A84955ED13A89014002BB310 /* iOSPlatform.mm */; };
 		A8E4DD8413A93A5B00A27214 /* platform.h in Headers */ = {isa = PBXBuildFile; fileRef = A8E4DD8313A93A5B00A27214 /* platform.h */; };
 		A8E4DD8713A93BB300A27214 /* draw.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A8E4DD8513A93BB300A27214 /* draw.cpp */; };
@@ -51,6 +56,8 @@
 		A801E0D813A06120002FA9E8 /* shader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = shader.cpp; sourceTree = "<group>"; };
 		A801E0D913A06120002FA9E8 /* shader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = shader.h; sourceTree = "<group>"; };
 		A801E0DE13A068B3002FA9E8 /* log.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = log.h; sourceTree = "<group>"; };
+		A80A9A82140622D200614DB0 /* OpenAL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenAL.framework; path = System/Library/Frameworks/OpenAL.framework; sourceTree = SDKROOT; };
+		A80A9A881406238900614DB0 /* sound.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = sound.h; sourceTree = "<group>"; };
 		A8114FD413ABA09F00103559 /* element.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = element.cpp; sourceTree = "<group>"; };
 		A8114FD513ABA09F00103559 /* element.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = element.h; sourceTree = "<group>"; };
 		A816243A1399D14D00CE8ED5 /* mbd.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = mbd.cpp; sourceTree = "<group>"; };
@@ -86,6 +93,9 @@
 		A8885863135CBB9800F7732C /* MacheteGLView.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = MacheteGLView.mm; sourceTree = "<group>"; };
 		A89365521375ACA900B0B46C /* tree.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tree.h; sourceTree = "<group>"; };
 		A89365551375B62200B0B46C /* str.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = str.h; sourceTree = "<group>"; };
+		A8A8D06A140AB2EC005C9E2B /* sound.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = sound.cpp; sourceTree = "<group>"; };
+		A8CD9A9E141714A600270862 /* CoreAudio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreAudio.framework; path = System/Library/Frameworks/CoreAudio.framework; sourceTree = SDKROOT; };
+		A8CD9AA31417156100270862 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
 		A8E4DD8313A93A5B00A27214 /* platform.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = platform.h; sourceTree = "<group>"; };
 		A8E4DD8513A93BB300A27214 /* draw.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = draw.cpp; sourceTree = "<group>"; };
 		A8E4DD8613A93BB300A27214 /* draw.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = draw.h; sourceTree = "<group>"; };
@@ -97,6 +107,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A8CD9AA41417156100270862 /* AudioToolbox.framework in Frameworks */,
+				A8CD9A9F141714A600270862 /* CoreAudio.framework in Frameworks */,
+				A80A9A83140622D200614DB0 /* OpenAL.framework in Frameworks */,
 				A8885861135CBB8200F7732C /* CoreGraphics.framework in Frameworks */,
 				A888585F135CBB7D00F7732C /* UIKit.framework in Frameworks */,
 				A8885855135CB85100F7732C /* QuartzCore.framework in Frameworks */,
@@ -115,6 +128,16 @@
 			);
 			name = common;
 			path = machete/machete/common;
+			sourceTree = SOURCE_ROOT;
+		};
+		A80A9A871406230B00614DB0 /* sound */ = {
+			isa = PBXGroup;
+			children = (
+				A80A9A881406238900614DB0 /* sound.h */,
+				A8A8D06A140AB2EC005C9E2B /* sound.cpp */,
+			);
+			name = sound;
+			path = machete/machete/sound;
 			sourceTree = SOURCE_ROOT;
 		};
 		A8114FD213AB9FA400103559 /* draw */ = {
@@ -166,6 +189,9 @@
 		A8885802135CB02F00F7732C = {
 			isa = PBXGroup;
 			children = (
+				A8CD9AA31417156100270862 /* AudioToolbox.framework */,
+				A8CD9A9E141714A600270862 /* CoreAudio.framework */,
+				A80A9A82140622D200614DB0 /* OpenAL.framework */,
 				A8885860135CBB8200F7732C /* CoreGraphics.framework */,
 				A888585E135CBB7D00F7732C /* UIKit.framework */,
 				A8885854135CB85100F7732C /* QuartzCore.framework */,
@@ -216,14 +242,15 @@
 			isa = PBXGroup;
 			children = (
 				A829396C13DE7418005D0D64 /* anim */,
-				A876348713C10311006B1333 /* widget */,
-				A874066C13B502D300F8B807 /* input */,
+				A801E0DD13A06127002FA9E8 /* common */,
+				A8E4DD7D13A9360F00A27214 /* data */,
 				A8114FD213AB9FA400103559 /* draw */,
 				A8E4DD7F13A9374500A27214 /* graphics */,
+				A874066C13B502D300F8B807 /* input */,
 				A8E4DD7E13A9363C00A27214 /* math */,
-				A8E4DD7D13A9360F00A27214 /* data */,
 				A8E4DD7A13A91C5C00A27214 /* platform */,
-				A801E0DD13A06127002FA9E8 /* common */,
+				A80A9A871406230B00614DB0 /* sound */,
+				A876348713C10311006B1333 /* widget */,
 				A8885829135CB1FC00F7732C /* engine.h */,
 			);
 			path = machete;
@@ -304,6 +331,7 @@
 				A874067013B5030200F8B807 /* touch.h in Headers */,
 				A876348C13C104D6006B1333 /* widget.h in Headers */,
 				A829396F13DE747F005D0D64 /* func.h in Headers */,
+				A80A9A891406238900614DB0 /* sound.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -367,6 +395,7 @@
 				A874066F13B5030200F8B807 /* touch.cpp in Sources */,
 				A876348A13C104CA006B1333 /* widget.cpp in Sources */,
 				A829397113DE7D18005D0D64 /* func.cpp in Sources */,
+				A8A8D06B140AB2EC005C9E2B /* sound.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -58,6 +58,13 @@ namespace machete {
      */
     virtual unsigned int LoadFile(const char* name, char** data) = 0;
     
+    //! Load an audio file from the resources path.
+    /*!
+     \param name File name to load.
+     \return The OpenAL buffer id that was created.
+     */
+    virtual unsigned int LoadAudio(const char* name) = 0;
+
     //! Generates a random integer.
     /*!
      \return A random integer.
@@ -112,6 +119,13 @@ namespace machete {
        \return The number of bytes that was loaded into memory. No additional bytes are added.
        */
       unsigned int LoadFile(const char* name, char** data);
+      
+      //! Load an audio file from the resources path.
+      /*!
+       \param name File name to load.
+       \return The OpenAL buffer id that was created.
+       */
+      unsigned int LoadAudio(const char* name);
       
       //! Generates a random integer.
       /*!
