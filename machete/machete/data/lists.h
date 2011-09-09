@@ -29,6 +29,7 @@ namespace machete {
       LinkedList() {
         empty = true;
         next = NULL;
+        prev = NULL;
       }
       
 			//! Create a LinkedList with one element.
@@ -36,6 +37,7 @@ namespace machete {
         value = v;
         empty = false;
         next = NULL;
+        prev = NULL;
       }
       
 			//! Destructor.
@@ -51,7 +53,7 @@ namespace machete {
 			 After running this method, this node wil become a tail.
 			 */
       void Clear() {
-        if (next != NULL) return;
+        if (next != NULL || prev != NULL) return;
         
         value = NULL;
         empty = true;
@@ -98,9 +100,9 @@ namespace machete {
       
 			//! Get the next node.
 			/*!
-			 \return The next node. It will return NULL if this node is the tail or of this node is empty.
+			 \return The next node. It will return NULL if this node is the tail or if this node is empty.
 			 */
-      LinkedList<T> *GetNext() {
+      inline LinkedList<T> *GetNext() {
         return next;
       }
       
@@ -112,11 +114,27 @@ namespace machete {
         this->next = next;
       }
       
+      //! Get the previous node.
+      /*!
+       \return The previous node. It will return NULL if this node is the root or if this node is empty.
+       */
+      inline LinkedList<T> *GetPrevious() {
+        return prev;
+      }
+      
+      //! Changes the previous node.
+      /*!
+       \param prev The previous node that must precede this node. If prev is NULL, then this node will become the root.
+       */
+      void SetPrevious(LinkedList<T> *prev) {
+        this->prev = prev;
+      }
+      
       //! Checks if this node is empty.
 			/*!
 			 \return true if this node is empty. false otherwise.
 			 */
-      bool IsEmpty() {
+      inline bool IsEmpty() const {
         return empty;
       }
       
@@ -129,6 +147,9 @@ namespace machete {
       
 			//! Pointer to the next node.
       LinkedList<T> *next;
+      
+      //! Pointer to the previous node.
+      LinkedList<T> *prev;
     };
     
 		//! Iterator list. Automatically manages a LinkedList internally.
@@ -144,7 +165,9 @@ namespace machete {
 			//! Creates a new Iterator with a new/empty LinkedList
       Iterator() {
         root = new LinkedList<T>();
+        tail = root;
         current = NULL;
+        count = 0;
       }
       
 			//! Creates a new Iterator based on an existing LinkedList
@@ -154,6 +177,13 @@ namespace machete {
       Iterator(LinkedList<T> *root) {
         this->root = root;
         current = NULL;
+        tail = root;
+        count = 1;
+        
+        while (tail->GetNext() != NULL) {
+          count++;
+          tail = tail->GetNext();
+        }
       }
       
 			//! Destructor.
@@ -164,7 +194,8 @@ namespace machete {
 			//! Append an item at the end of the LinkedList.
 			//! \sa LinkedList::Append
       void Append(const T &v) {
-        root->Append(v);
+        tail->Append(v);
+        count++;
       }
       
 			//! Get the root LinkedList node.
@@ -195,6 +226,18 @@ namespace machete {
         return current->GetNext() != NULL;
       }
       
+      //! Check if we have more elements previous to our node in our list.
+      /*!
+       \return false if we are at the start of the list and we have no more elements. true if there are more elements.
+       */
+      bool HasPrevious() {
+        if (current == NULL) {
+          return root->IsEmpty() == false;
+        }
+        
+        return current->GetPrevious() != NULL;
+      }
+      
       //! Move on to the next node of the LinkedList.
 			/*!
 			 \return true if the move was performed. false if there was no more elements in the list.
@@ -208,6 +251,24 @@ namespace machete {
           current = root;
         } else {
           current = current->GetNext();
+        }
+        
+        return true;
+      }
+      
+      //! Move on to the previous node of the LinkedList.
+      /*!
+       \return true if the move was performed. false if there was no more elements in the list.
+       */
+      bool Previous() {
+        if (HasPrevious() == false) {
+          return false;
+        }
+        
+        if (current == NULL) {
+          current = tail;
+        } else {
+          current = current->GetPrevious();
         }
         
         return true;
@@ -244,7 +305,93 @@ namespace machete {
           delete root;
           
           root = next;
+          root->SetPrevious(NULL);
         }
+        count--;
+      }
+
+      //! Removes the Tail node and sets the next element as the root.
+			/*!
+			 If the root node is empty, then no action is done.
+			 */
+      void RemoveTail() {
+        if (root->IsEmpty()) return;
+        
+        LinkedList<T> *prev = tail->GetPrevious();
+        
+        if (prev == NULL) {
+          root->Clear();
+        } else {
+          tail->SetPrevious(NULL);
+          
+          if (current == tail) {
+            current = NULL;
+          }
+          
+          delete tail;
+          
+          tail = prev;
+          tail->SetNext(NULL);
+        }
+        count--;
+      }
+      
+      //! Removes the current node.
+      /*!
+       If the current node is the tail, then RemoveTail will be called. Same for the root; the RemoveRoot
+       method will be called.
+       
+       It will also move on to the next or previous node, depending on the forward parameter.
+       \param forward If true, then the current node will move to the next node. If it's false then it will move backwards.
+       */
+      void RemoveCurrent(bool forward) {
+        if (root->IsEmpty()) return;
+        
+        if (current == NULL) return;
+        
+        if (root == tail) {
+          RemoveRoot();
+          
+          current = NULL;
+        } else {
+          if (current == root) {
+            RemoveRoot();
+            
+            if (forward) {
+              current = root;
+            }
+          } else if (current == tail) {
+            RemoveTail();
+            
+            if (!forward) {
+              current = tail;
+            }
+          } else if (current != NULL) {
+            LinkedList<T>* prev = current->GetPrevious();
+            LinkedList<T>* next = current->GetNext();
+            
+            delete current;
+            
+            prev->SetNext(next);
+            next->SetPrevious(prev);
+            
+            if (forward) {
+              current = next;
+            } else {
+              current = prev;
+            }
+            
+            count--;
+          }
+        }
+      }
+      
+      //! Count the elements in the iterator.
+      /*!
+       \return The element count.
+       */
+      inline int Count() const {
+        return count;
       }
       
     private:
@@ -253,6 +400,12 @@ namespace machete {
       
 			//! The root node
       LinkedList<T> *root;
+      
+      //! The tail node
+      LinkedList<T> *tail;
+      
+      //! Element count
+      int count;
     };
     
 		//! A simple array list.
