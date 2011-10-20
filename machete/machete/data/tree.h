@@ -11,6 +11,8 @@
 
 #pragma once
 
+#include "lists.h"
+
 #ifndef NULL
 #define NULL 0
 #endif
@@ -296,6 +298,22 @@ namespace machete {
         // TODO: Empty the current node.
         // NOTE: DO NOT delete the data. ??
         empty = true;
+      }
+      
+      //! Append to an enumerator.
+      /*!
+       \param elements The iterator that will receive the elements.
+       */
+      void AppendTo(Iterator<Tree<K,T>*>* elements) {
+        if (left != NULL) {
+          left->AppendTo(elements);
+        }
+        
+        elements->Append(this);
+        
+        if (right != NULL) {
+          right->AppendTo(elements);
+        }
       }
       
     protected:
@@ -878,6 +896,18 @@ namespace machete {
        */
       inline int Count() const {
         return count;
+      }
+      
+      //! Create an enumerator with all the nodes of the tree.
+      /*!
+       \return All the nodes in the tree.
+       */
+      Iterator<Tree<K, T>*>* Enumerate() const {
+        Iterator<Tree<K, T>*>* elements = new Iterator<Tree<K, T>*>();
+        
+        tree->AppendTo(elements);
+        
+        return elements;
       }
       
     private:

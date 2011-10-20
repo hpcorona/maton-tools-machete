@@ -21,11 +21,69 @@
 using namespace machete::data;
 using namespace machete::platform;
 
+#define MAX_SOUNDS  5
+
 namespace machete {
   
   //! Classes related to sound management.
   namespace sound {
     
+    //! Represents a single sound.
+    class Sound {
+    public:
+      
+      //! Creates a new source binded to a buffer.
+      /*!
+       \param buffer The start buffer.
+       \param cat Category flags.
+       */
+      Sound(ALuint buffer, unsigned int cat);
+      
+      //! Destructor.
+      ~Sound();
+      
+      //! Rebind a source to a new buffer.
+      /*!
+       \param buffer The new buffer.
+       \param cat The new category flags.
+       */
+      inline void Rebind(ALuint buffer, unsigned int cat);
+      
+      //! Rewind the source.
+      inline void Rewind();
+      
+      //! Start playing the sound.
+      inline void Play();
+      
+      //! Pause the sound.
+      inline void Pause();
+      
+      //! Resume the sound.
+      inline void Resume();
+      
+      //! Stop the sound.
+      inline void Stop();
+      
+      //! Get the current category.
+      /*!
+       \return The category flags.
+       */
+      inline unsigned int GetCategory() const;
+
+    private:
+      
+      //! Category flag.
+      unsigned int category;
+      
+      //! The ALuint source.
+      unsigned int source;
+      
+      //! Detects if it's paused.
+      bool pause;
+      
+    };
+    
+    //! Global sound manager class definition.
     class SoundManager {
     public:
       
@@ -55,23 +113,28 @@ namespace machete {
       /*!
        \brief If the sound is playing, it will be stoped and restarted.
        \param name Name of the sound to play.
+       \param category The category flags.
+       \return The source of the sound.
        */
-      void PlaySingleton(const char* name);
+      Sound* PlaySingleton(const char* name, unsigned int category);
       
       //! Play a sound.
       /*!
        \brief If the sound is playing, a new sound will start.
+       \param name The name of the sound to play.
+       \param category The category flags.
+       \return The source of the sound.
        */
-      void Play(const char* name);
+      Sound* Play(const char* name, unsigned int category);
       
     protected:
       
-      //! Creates a new source.
+      //! Loads a new sound buffer.
       /*!
-       \param name The buffer name.
-       \return The source.
+       \param name The name of the sound.
+       \return The buffer id.
        */
-      ALuint NewSource(const char* name);
+      unsigned int LoadBuffer(const char* name);
       
       //! OpenAL context.
       ALCcontext* context;
@@ -83,7 +146,17 @@ namespace machete {
       Hash<Str, ALuint> buffers;
       
       //! Sound source singletons.
-      Hash<Str, ALuint> singletons;
+      Hash<Str, Sound*> singletons;
+      
+      //! Sounds currently playing. Non-playing sources are moved on to the available list.
+      /*!
+       \brief Singletons doesn't count here.
+       */
+      Iterator<Sound*> sounds;
+      
+      //! Unused sources cache.
+      Iterator<Sound*> available;
+      
     };
     
     //! Global sound manager.
