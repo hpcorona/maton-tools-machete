@@ -325,6 +325,10 @@ namespace machete {
       state = NULL;
       event = NULL;
       display = WidgetNormal;
+      
+      allowDragY = false;
+      allowDragX = false;
+      allowTap = false;
     }
     
     Widget::Widget(const Vec2 & size) : touchProc(this) {
@@ -332,6 +336,10 @@ namespace machete {
       state = NULL;
       event = NULL;
       display = WidgetNormal;
+
+      allowDragY = false;
+      allowDragX = false;
+      allowTap = false;
     }
     
     void Widget::Add(const Str & state, MetaWidget *meta) {
@@ -445,8 +453,12 @@ namespace machete {
       return touchProc.Gather(touch, bounds);
     }
     
+    bool Widget::TouchAcceptTap() {
+      return allowTap;
+    }
+    
     bool Widget::TouchTapIntent() {
-      return false;
+      return allowTap;
     }
     
     void Widget::TouchTapCancelled() {
@@ -459,10 +471,14 @@ namespace machete {
       }
     }
     
-    bool Widget::TouchAcceptDrag() {
-      return false;
+    bool Widget::TouchAcceptDragX() {
+      return allowDragX;
     }
-    
+
+    bool Widget::TouchAcceptDragY() {
+      return allowDragY;
+    }
+
     void Widget::TouchDrag(Vec2 & move) {
       if (event != NULL) {
         event->WidgetDragged(this, move);
@@ -483,6 +499,18 @@ namespace machete {
       this->event = event;
     }
     
+    void Widget::SetAllowTap(bool allow) {
+      allowTap = allow;
+    }
+    
+    void Widget::SetAllowDragX(bool allow) {
+      allowDragX = allow;
+    }
+    
+    void Widget::SetAllowDragY(bool allow) {
+      allowDragY = allow;
+    }
+    
     WidgetEventAdapter *Widget::GetEventListener() {
       return event;
     }
@@ -497,6 +525,8 @@ namespace machete {
       label = new Text(30);
       
       Container::Add(label);
+      
+      allowTap = true;
     }
     
     Button::~Button() {
@@ -605,6 +635,9 @@ namespace machete {
       
       centered = false;
       centering = false;
+      
+      allowDragY = true;
+      allowDragX = true;
     }
     
     Scroll::~Scroll() {
@@ -967,12 +1000,14 @@ namespace machete {
       this->allowVScroll = allowVScroll;
       this->drawVScroll = drawVScroll;
       this->autoVScroll = autoVScroll;
+      allowDragY = allowVScroll;
     }
     
     void Scroll::ConfigureHScroll(bool allowHScroll, bool drawHScroll, bool autoHScroll) {
       this->allowHScroll = allowHScroll;
       this->drawHScroll = drawHScroll;
       this->autoHScroll = autoHScroll;
+      allowDragX = allowHScroll;
     }
     
     void Scroll::SetFreeDrag(bool freeDrag) {
@@ -1119,14 +1154,20 @@ namespace machete {
       Container();
       
       event = NULL;
+      
+      
     }
     
     TouchContainer::~TouchContainer() {
       
     }
-    
+
+    bool TouchContainer::TouchAcceptTap() {
+      return allowTap;
+    }
+
     bool TouchContainer::TouchTapIntent() {
-      return false;
+      return allowTap;
     }
     
     void TouchContainer::TouchTapPerformed() {
@@ -1141,10 +1182,14 @@ namespace machete {
       touchProc.Release();
     }
     
-    bool TouchContainer::TouchAcceptDrag() {
-      return false;
+    bool TouchContainer::TouchAcceptDragY() {
+      return allowDragY;
     }
-    
+
+    bool TouchContainer::TouchAcceptDragX() {
+      return allowDragX;
+    }
+
     void TouchContainer::TouchDrag(machete::math::Vec2 &move) {
       if (event != NULL) {
         event->WidgetDragged(this, move);

@@ -76,6 +76,7 @@ namespace machete {
         }
         if (next == NULL) {
           next = new LinkedList<T>(v);
+          next->prev = this;
         } else {
           next->Append(v);
         }
@@ -196,6 +197,10 @@ namespace machete {
       void Append(const T &v) {
         tail->Append(v);
         count++;
+        
+        if (count > 1) {
+          tail = tail->GetNext();
+        }
       }
       
 			//! Get the root LinkedList node.

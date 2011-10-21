@@ -24,25 +24,17 @@ namespace machete {
     void Container::Remove(Element *child) {
       childs.Reset();
       
-      LinkedList<Element*> *prev = NULL, *current = NULL;
+      LinkedList<Element*> *current = NULL;
       
-      prev = childs.GetRoot();
       while (childs.Next()) {
         current = childs.GetCurrent();
         
         if (current->GetValue() == child) {
-          if (current == prev) {
-            childs.RemoveRoot();
-          } else {
-            prev->SetNext(current->GetNext());
-            delete current;
-          }
+          childs.RemoveCurrent(true);
           
           count--;
           break;
         }
-        
-        prev = current;
       }
     }
     
@@ -133,7 +125,7 @@ namespace machete {
     
     bool Container::TouchEvent(machete::input::Touch *touch) {
       childs.Reset();
-      while (childs.Next()) {
+      while (childs.Previous()) {
         if (childs.GetCurrent()->GetValue()->TouchEvent(touch)) {
           return true;
         }

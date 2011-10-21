@@ -147,6 +147,9 @@ namespace machete {
     class TouchListener {
     public:
       
+      //! See if it accepts taps.
+      virtual bool TouchAcceptTap() = 0;
+      
       //! The user may be making a tap.
       virtual bool TouchTapIntent() = 0;
       
@@ -157,7 +160,10 @@ namespace machete {
       virtual void TouchTapPerformed() = 0;
       
       //! See if it accepts drag.
-      virtual bool TouchAcceptDrag() = 0;
+      virtual bool TouchAcceptDragX() = 0;
+      
+      //! See if it accepts drag.
+      virtual bool TouchAcceptDragY() = 0;
       
       //! The user is dragging with his finger around the widget.
       virtual void TouchDrag(machete::math::Vec2 & move) = 0;

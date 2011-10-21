@@ -53,8 +53,22 @@ namespace machete {
       
       if (inside && !tracking) {
         if (bounds.Contains(touch->start) && touch->phase == TouchMove) {
-          if (listener->TouchAcceptDrag()) {
-            math::Vec2 startOff = touch->current - touch->start;
+          math::Vec2 startOff = touch->current - touch->start;
+          
+          bool isVertical = true;
+          if (fabs(startOff.x) > fabs(startOff.y)) {
+            isVertical = false;
+          }
+          if ((!isVertical && listener->TouchAcceptDragX()) || (isVertical && listener->TouchAcceptDragY())) {
+            
+            if (listener->TouchAcceptDragX() == false) {
+              startOff.x = 0;
+            }
+            
+            if (listener->TouchAcceptDragY() == false) {
+              startOff.y = 0;
+            }
+            
             listener->TouchDrag(startOff);
             alive = false;
 
@@ -83,6 +97,14 @@ namespace machete {
           tracking = false;
           withTap = false;
         } else {
+          if (listener->TouchAcceptDragX() == false) {
+            touch->offset.x = 0;
+          }
+          
+          if (listener->TouchAcceptDragY() == false) {
+            touch->offset.y = 0;
+          }
+
           listener->TouchDrag(touch->offset);
           
           time = 0;
@@ -98,7 +120,7 @@ namespace machete {
       }
       
       if (inside && touch->phase == TouchStart) {
-        if (listener->TouchTapIntent() == true) {
+        if (listener->TouchAcceptTap() && listener->TouchTapIntent() == true) {
           tracking = true;
           withTap = true;
           alive = false;
@@ -106,7 +128,7 @@ namespace machete {
           listener->TouchTapCancelled();
           withTap = false;
           
-          if (listener->TouchAcceptDrag()) {
+          if (listener->TouchAcceptDragX() || listener->TouchAcceptDragY()) {
             tracking = true;
             alive = false;
           }

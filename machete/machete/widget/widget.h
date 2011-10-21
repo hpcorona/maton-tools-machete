@@ -115,8 +115,6 @@ namespace machete {
 
     };
     
-    class Widget;
-    
     //! The widget event adapter to manage events on widgets in a per-application basis.
     class WidgetEventAdapter {
     public:
@@ -143,10 +141,11 @@ namespace machete {
       
     };
     
+    //! Widget display type.
     enum WidgetDisplay {
-      WidgetNormal,
-      WidgetVertical,
-      WidgetHorizontal
+      WidgetNormal,       //! Nine-image mode widget. Scales in both ways.
+      WidgetVertical,     //! Three-image mode widget. Scales vertically.
+      WidgetHorizontal    //! Thre-image mode widget. Scales horizontally.
     };
     
     //! A widget container that can be sized and still looks good using a framed image.
@@ -221,6 +220,9 @@ namespace machete {
        */
       inline Vec2 & GetSize();
       
+      //! The widget accepts tap.
+      virtual bool TouchAcceptTap();
+      
       //! The user may be making a tap.
       virtual bool TouchTapIntent();
       
@@ -230,9 +232,12 @@ namespace machete {
       //! The user has performed a tap.
       virtual void TouchTapPerformed();
       
-      //! The widget accepts drag.
-      virtual bool TouchAcceptDrag();
-      
+      //! The widget accepts vertical drag.
+      virtual bool TouchAcceptDragY();
+
+      //! The widget accepts horizontal drag.
+      virtual bool TouchAcceptDragX();
+
       //! The user is dragging with his finger around the widget.
       virtual void TouchDrag(Vec2 & move);
       
@@ -267,7 +272,34 @@ namespace machete {
        */
       void SetDisplay(WidgetDisplay type);
       
+      //! Change tapping allowed.
+      /*!
+       \param allow If tapping will be allowed.
+       */
+      inline void SetAllowTap(bool allow);
+      
+      //! Change vertical drag allowed.
+      /*!
+       \param allow If vertical dragging will be allowed.
+       */
+      inline void SetAllowDragY(bool allow);
+
+      //! Change horizontal drag allowed.
+      /*!
+       \param allow If horizontal dragging will be allowed.
+       */
+      inline void SetAllowDragX(bool allow);
+
     protected:
+      
+      //! Allow taps on the widget.
+      bool allowTap;
+      
+      //! Allow drag vertically.
+      bool allowDragY;
+      
+      //! Allow drag horizontally.
+      bool allowDragX;
       
       //! The states supported by this widget.
       Hash<Str, MetaWidget*> states;
@@ -586,6 +618,9 @@ namespace machete {
       //! Destructor.
       ~TouchContainer();
       
+      //! See if it accepts taps.
+      virtual bool TouchAcceptTap();
+      
       //! The user may be making a tap.
       virtual bool TouchTapIntent();
       
@@ -595,9 +630,12 @@ namespace machete {
       //! The user has performed a tap.
       virtual void TouchTapPerformed();
       
-      //! See if it accepts drag.
-      virtual bool TouchAcceptDrag();
-      
+      //! See if it accepts horizontal drag.
+      virtual bool TouchAcceptDragX();
+
+      //! See if it accepts vertical drag.
+      virtual bool TouchAcceptDragY();
+
       //! The user is dragging with his finger around the widget.
       virtual void TouchDrag(machete::math::Vec2 & move);
       
@@ -629,12 +667,39 @@ namespace machete {
       //! Update animations.
       virtual void Update(float time);
 
+      //! Change tapping allowed.
+      /*!
+       \param allow If tapping will be allowed.
+       */
+      inline void SetAllowTap(bool allow);
+      
+      //! Change vertical drag allowed.
+      /*!
+       \param allow If vertical dragging will be allowed.
+       */
+      inline void SetAllowDragY(bool allow);
+      
+      //! Change horizontal drag allowed.
+      /*!
+       \param allow If horizontal dragging will be allowed.
+       */
+      inline void SetAllowDragX(bool allow);
+
     protected:
       //! The touch processor.
       machete::input::TouchProcessor touchProc;
       
       //! Event listener.
       WidgetEventAdapter *event;
+
+      //! Allow taps on the widget.
+      bool allowTap;
+      
+      //! Allow drag vertically.
+      bool allowDragY;
+      
+      //! Allow drag horizontally.
+      bool allowDragX;
     };
 
 
