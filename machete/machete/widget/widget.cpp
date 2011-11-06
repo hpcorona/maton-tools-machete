@@ -492,7 +492,9 @@ namespace machete {
     }
     
     void Widget::TouchEnded() {
-      
+      if (event != NULL) {
+        event->WidgetEndTouch(this);
+      }
     }
     
     void Widget::SetEventListener(WidgetEventAdapter *event) {
@@ -1203,10 +1205,15 @@ namespace machete {
     }
     
     void TouchContainer::TouchEnded() {
+      if (event != NULL) {
+        event->WidgetEndTouch(this);
+      }
       touchProc.Release();
     }
     
     bool TouchContainer::TouchEvent(machete::input::Touch *touch) {
+      if (!active || !visible) return false;
+      
       if (Container::TouchEvent(touch) == true) {
         return true;
       }

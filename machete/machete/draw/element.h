@@ -348,14 +348,14 @@ namespace machete {
        \sa Animation::IsFinished
        \return true if the animation is finished.
        */
-      inline bool IsFinished() const;
+      bool IsFinished() const;
       
       //! Check if the current animation is looped.
       /*!
        \sa Animation::IsLoop
        \return true if the animation is looped.
        */
-      inline bool IsLoop() const;
+      bool IsLoop() const;
       
       //! Change the fallback animation.
       /*!

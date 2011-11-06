@@ -42,7 +42,7 @@ namespace machete {
       
 			//! Destructor.
       ~LinkedList() {
-        delete next;
+        // Don't delete anything.
       }
       
 			//! Clears the current node.
@@ -358,36 +358,38 @@ namespace machete {
           RemoveRoot();
           
           current = NULL;
-        } else {
-          if (current == root) {
-            RemoveRoot();
+        } else if (current == root) {
+          RemoveRoot();
             
-            if (forward) {
-              current = root;
-            }
-          } else if (current == tail) {
-            RemoveTail();
-            
-            if (!forward) {
-              current = tail;
-            }
-          } else if (current != NULL) {
-            LinkedList<T>* prev = current->GetPrevious();
-            LinkedList<T>* next = current->GetNext();
-            
-            delete current;
-            
-            prev->SetNext(next);
-            next->SetPrevious(prev);
-            
-            if (forward) {
-              current = next;
-            } else {
-              current = prev;
-            }
-            
-            count--;
+          if (forward) {
+            current = root;
+          } else {
+            current = NULL;
           }
+        } else if (current == tail) {
+          RemoveTail();
+            
+          if (!forward) {
+            current = tail;
+          } else {
+            current = NULL;
+          }
+        } else {
+          LinkedList<T>* prev = current->GetPrevious();
+          LinkedList<T>* next = current->GetNext();
+            
+          delete current;
+            
+          prev->SetNext(next);
+          next->SetPrevious(prev);
+            
+          if (forward) {
+            current = next;
+          } else {
+            current = prev;
+          }
+            
+          count--;
         }
       }
       

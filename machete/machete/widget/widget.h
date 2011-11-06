@@ -132,6 +132,12 @@ namespace machete {
        */
       virtual void WidgetDragged(Element *widget, Vec2 & movement) {}
       
+      //! The end of a touch event.
+      /*!
+       \param widget The widget that has ended a touch event on.
+       */
+      virtual void WidgetEndTouch(Element *widget) {}
+      
       //! A widget was affected by inertia.
       /*!
        \param widget The widget that is being moved by inertia.

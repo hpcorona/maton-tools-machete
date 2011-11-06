@@ -124,6 +124,8 @@ namespace machete {
     }
     
     bool Container::TouchEvent(machete::input::Touch *touch) {
+      if (!active || !visible) return false;
+      
       childs.Reset();
       while (childs.Previous()) {
         if (childs.GetCurrent()->GetValue()->TouchEvent(touch)) {
@@ -218,6 +220,10 @@ namespace machete {
         e = current->GetValue()->GetElement();
       }
       
+      if (e == NULL && frames.GetRoot() != NULL && frames.GetRoot()->IsEmpty() == false) {
+        e = frames.GetRoot()->GetValue()->GetElement();
+      }
+      
       if (e != NULL) {
         bounds += e->GetBounds();
       }
@@ -292,13 +298,13 @@ namespace machete {
       actions.Add(action, anim);
     }
     
-    inline bool Actor::IsFinished() const {
+    bool Actor::IsFinished() const {
       if (current == NULL) return true;
       
       return current->IsFinished();
     }
     
-    inline bool Actor::IsLoop() const {
+    bool Actor::IsLoop() const {
       if (current == NULL) return false;
       
       return current->IsLoop();
@@ -357,7 +363,21 @@ namespace machete {
     }
     
     void Actor::Invalidate() {
-      // TODO: Falta revisar esto
+      bounds.Clear();
+      
+      Element *e = NULL;
+      
+      if (current != NULL) {
+        e = current;
+      }
+      
+      if (e != NULL) {
+        e->Invalidate();
+        bounds += e->GetBounds();
+      }
+      
+      bounds += position;
+      bounds *= scale;
     }
     
     void Actor::Update(float time) {
