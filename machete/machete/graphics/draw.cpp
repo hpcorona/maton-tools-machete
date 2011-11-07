@@ -104,7 +104,7 @@ namespace machete {
 
     BufferMgr *TheBufferMgr = NULL;
     
-    DrawContext::DrawContext(RenderTarget t) {
+    DrawContext::DrawContext(RenderTarget t) : color(0.5f, 0.5f, 0.5f, 1.0f) {
       if (TheBufferMgr == NULL) {
         TheBufferMgr = new BufferMgr();
       }
@@ -175,7 +175,7 @@ namespace machete {
       renderer.SetBase(base);
       
       if (target == TargetScreen) {
-        glClearColor(0.5f, 0.5f, 0.5f, 1);
+        glClearColor(color.x, color.y, color.z, color.w);
       } else {
         glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
       }
@@ -250,6 +250,10 @@ namespace machete {
       
       indices = TheBufferMgr->GetIdxArrayBuffer();
       indexBuffer = TheBufferMgr->GetIdxBuffer();
+    }
+    
+    void DrawContext::SetClearColor(machete::math::Vec4 &color) {
+      this->color = color;
     }
     
   }

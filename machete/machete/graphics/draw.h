@@ -214,6 +214,12 @@ namespace machete {
        */
       unsigned int GetRenderTexture() const { return texture; }
       
+      //! Set the clear color.
+      /*!
+       \param color The clear color.
+       */
+      void SetClearColor(machete::math::Vec4 & color);
+      
     private:
       //! Vertex Renderer Program.
       VtxRender renderer;
@@ -253,6 +259,9 @@ namespace machete {
       
       //! The base matrix to make all look 2D.
       machete::math::Mat4 base;
+      
+      //! Clear color.
+      machete::math::Vec4 color;
       
       //! The last texture used.
       GLuint lastTexBind;
