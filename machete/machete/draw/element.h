@@ -63,6 +63,12 @@ namespace machete {
       //! Removes an element from the list.
       virtual void Remove(Element *child);
       
+      //! Removes all childs from the list.
+      /*!
+       \param del If the elements should be also deleted.
+       */
+      virtual void RemoveAllChilds(bool del);
+      
       //! Switches one element for another.
       /*!
        This is not a swap, to make a swap you would need to do two switches.

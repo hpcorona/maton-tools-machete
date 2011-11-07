@@ -38,6 +38,20 @@ namespace machete {
       }
     }
     
+    void Container::RemoveAllChilds(bool del) {
+      while (childs.Count() > 0) {
+        if (del) {
+          childs.Reset();
+          childs.Next();
+          Element *elm = childs.GetCurrent()->GetValue();
+          delete elm;
+          
+          childs.GetCurrent()->SetValue(NULL);
+        }
+        childs.RemoveRoot();
+      }
+    }
+    
     void Container::Switch(Element *child, Element *elem) {
       childs.Reset();
       
