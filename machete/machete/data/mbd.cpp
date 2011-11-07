@@ -38,7 +38,7 @@ namespace machete {
       
       va_list li;
       va_start(li, qry);
-      Str xs(2);
+      Str xs(6);
       
       for (int i = 0; i < count; i++) {
         int x = va_arg(li, int);
@@ -72,7 +72,7 @@ namespace machete {
       
       va_list li;
       va_start(li, qry);
-      Str xs(2);
+      Str xs(6);
       
       for (int i = 0; i < count; i++) {
         int x = va_arg(li, int);
@@ -105,7 +105,7 @@ namespace machete {
       
       va_list li;
       va_start(li, qry);
-      Str xs(2);
+      Str xs(6);
       
       for (int i = 0; i < count; i++) {
         int x = va_arg(li, int);
@@ -138,7 +138,7 @@ namespace machete {
       
       va_list li;
       va_start(li, qry);
-      Str xs(2);
+      Str xs(6);
       
       for (int i = 0; i < count; i++) {
         int x = va_arg(li, int);
