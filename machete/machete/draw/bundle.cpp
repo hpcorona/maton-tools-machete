@@ -433,7 +433,7 @@ namespace machete {
         }
         
         if (image == NULL) {
-          return;
+          continue;
         }
         
         Vec2 topLeft(left, top);

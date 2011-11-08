@@ -236,9 +236,17 @@ namespace machete {
       {
         return Vector4(x + v.x, y + v.y,  z + v.z, w + v.w);
       }
+      Vector4 operator-(const Vector4& v) const
+      {
+        return Vector4(x - v.x, y - v.y,  z - v.z, w - v.w);
+      }
       Vector4 operator*(const Vector4& v) const
       {
         return Vector4(x * v.x, y * v.y,  z * v.z, w * v.w);
+      }
+      Vector4 operator*(T v) const
+      {
+        return Vector4(x * v, y * v, z * v, w * v);
       }
       void operator+=(const Vector4& v)
       {
