@@ -23,7 +23,7 @@ extern CAEAGLLayer *eaglLayer;
 
 @interface MacheteGLView : UIView {
   machete::graphics::DrawContext* renEngine;
-  float timestamp;
+  double timestamp;
     
   machete::IGame *game;
 }

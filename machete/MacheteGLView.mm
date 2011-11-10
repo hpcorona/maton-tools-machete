@@ -70,13 +70,15 @@ CAEAGLLayer *eaglLayer = NULL;
 }
 
 - (void)drawView: (CADisplayLink*) displayLink {
-  float elapsedSeconds = 0;
+  double elapsedSeconds = 0;
   if (displayLink != nil) {
     elapsedSeconds = displayLink.timestamp - timestamp;
     timestamp = displayLink.timestamp;
   }
   
-  game->Update(elapsedSeconds);
+  if (elapsedSeconds >= 0.1f) return;
+  
+  game->Update((float)elapsedSeconds);
   game->Render();
   
   [context presentRenderbuffer:GL_RENDERBUFFER];
