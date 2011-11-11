@@ -529,6 +529,8 @@ namespace machete {
       Container::Add(label);
       
       allowTap = true;
+      allowDragX = false;
+      allowDragY = false;
     }
     
     Button::~Button() {
@@ -786,8 +788,12 @@ namespace machete {
       
       viewport->Draw();
       
-      if (touchProc.IsTracking() == false && touchProc.IsAlive() && (elastic.x != 0 || elastic.y != 0)) {
+      if (touchProc.IsTracking() == false && (touchProc.IsAlive() || (elastic.x != 0 || elastic.y != 0))) {
         Vec2 strength(-elastic.x * SCROLL_ELASTICITY * time, -elastic.y * SCROLL_ELASTICITY * time);
+        
+        if (strength.LengthSquared() <= 1.0f) {
+          strength.x = -elastic.x; strength.y = -elastic.y;
+        }
         
         if (elastic.x > 0) {
           if (elastic.x + strength.x < 0) {
@@ -814,16 +820,16 @@ namespace machete {
       
       CalculateElastic(time);
       
-      if (centering == false && touchProc.IsAlive() == false && touchProc.IsTracking() == false) {
+      if (centering == false && (touchProc.IsAlive() == false || elastic.LengthSquared() == 0) && touchProc.IsTracking() == false) {
         if (autoVScroll && vScroll != NULL) {
-          vScroll->color.w -= time;
+          vScroll->color.w -= time * 4.0f;
           if (vScroll->color.w < 0) {
             vScroll->color.w = 0;
           }
         }
 
         if (autoHScroll && hScroll != NULL) {
-          hScroll->color.w -= time;
+          hScroll->color.w -= time * 4.0f;
           if (hScroll->color.w < 0) {
             hScroll->color.w = 0;
           }

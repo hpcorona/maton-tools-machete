@@ -167,11 +167,13 @@ namespace machete {
     void TouchProcessor::Update(float time) {
       if (alive) {
         this->time += time;
-        if (this->time > 2) {
+        if (inertia.LengthSquared() <= 1.0f) {
           alive = false;
+          inertia.x = 0; inertia.y = 0;
+        } else {
+          inertia -= inertia * this->time;
         }
         
-        inertia -= inertia * this->time;
         listener->TouchInertia(inertia);
       }
     }
