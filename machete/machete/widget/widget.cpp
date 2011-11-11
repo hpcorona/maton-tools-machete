@@ -864,6 +864,10 @@ namespace machete {
       centered = false;
       centering = false;
       
+      if (elastic.LengthSquared() != 0) {
+        move = move * 0.5f;
+      }
+      
       if (allowHScroll && allowVScroll) {
         Vec2 np = container->position + move;
       
