@@ -788,7 +788,7 @@ namespace machete {
       
       viewport->Draw();
       
-      if (touchProc.IsTracking() == false && (touchProc.IsAlive() || (elastic.x != 0 || elastic.y != 0))) {
+      if (centering == false && touchProc.IsTracking() == false && (touchProc.IsAlive() || (elastic.x != 0 || elastic.y != 0))) {
         Vec2 strength(-elastic.x * SCROLL_ELASTICITY * time, -elastic.y * SCROLL_ELASTICITY * time);
         
         if (strength.LengthSquared() <= 1.0f) {
