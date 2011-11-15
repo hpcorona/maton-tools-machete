@@ -65,6 +65,26 @@ namespace machete {
      */
     virtual unsigned int LoadAudio(const char* name) = 0;
 
+    //! Load the general information about an mp3 file.
+    /*!
+     \param name File name to load.
+     \return True if it was loaded. False otherwise.
+     */
+    virtual bool LoadMusicInfo(const char* name, unsigned int &maxPSize, unsigned int &pCount, int & auFormat, int & freq) = 0;
+    
+    //! Load data buffers from an mp3 file.
+    /*!
+     \param name File name to load.
+     \param maxPacketSize The maximum packet size.
+     \param offset The offset of the packet, 0 for the first.
+     \param count Number of buffers to load.
+     \param packsLoaded Number of packets actually loaded.
+     \param audioData Initialized audio data to load the packets. It must be at least count * maxPacketSize.
+     \param bytesLoaded Bytes loaded into audioData.
+     \return True if no problem.
+     */
+    virtual bool LoadMusicBuffers(const char* name, unsigned int maxPacketSize, unsigned int offset, unsigned int count, unsigned int &packsLoaded, void *audioData, unsigned int &bytesLoaded) = 0;
+    
     //! Generates a random integer.
     /*!
      \return A random integer.
@@ -126,6 +146,26 @@ namespace machete {
        \return The OpenAL buffer id that was created.
        */
       unsigned int LoadAudio(const char* name);
+      
+      //! Load the general information about an mp3 file.
+      /*!
+       \param name File name to load.
+       \return True if it was loaded. False otherwise.
+       */
+      bool LoadMusicInfo(const char* name, unsigned int &maxPSize, unsigned int &pCount, int & auFormat, int & freq);
+      
+      //! Load data buffers from an mp3 file.
+      /*!
+       \param name File name to load.
+       \param maxPacketSize The maximum packet size.
+       \param offset The offset of the packet, 0 for the first.
+       \param count Number of buffers to load.
+       \param packsLoaded Number of packets actually loaded.
+       \param audioData Initialized audio data to load the packets. It must be at least count * maxPacketSize.
+       \param bytesLoaded Bytes loaded into audioData.
+       \return True if no problem.
+       */
+      bool LoadMusicBuffers(const char* name, unsigned int maxPacketSize, unsigned int offset, unsigned int count, unsigned int &packsLoaded, void *audioData, unsigned int &bytesLoaded);
       
       //! Generates a random integer.
       /*!

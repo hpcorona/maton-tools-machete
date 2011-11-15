@@ -9,8 +9,201 @@
 #include "sound.h"
 #include <iostream>
 
+
 namespace machete {
   namespace sound {
+    
+    ALvoid  alBufferDataStatic(const ALint bid, ALenum format, ALvoid* data, ALsizei size, ALsizei freq) {
+      static	alBufferDataStaticProcPtr	proc = NULL;
+      
+      if (proc == NULL) {
+        proc = (alBufferDataStaticProcPtr) alGetProcAddress((const ALCchar*) "alBufferDataStatic");
+      }
+      
+      if (proc)
+        proc(bid, format, data, size, freq);
+      
+      return;
+    }
+    
+    Music::Music(const char *name) {
+      audioData = NULL;
+      
+      this->name = new char[80];
+      machete::data::Str n = name;
+      n.GetChars(this->name, 80);
+      
+      soundLoaded = ThePlatform->LoadMusicInfo(this->name, maxPacketSize, packetCount, format, frequency);
+      
+      if (soundLoaded) {
+        alGenBuffers(MAX_MUSIC_BUFFERS, buffers);
+        currBuffer = 0;
+        currPacket = 0;
+
+        ALfloat sourcePos[] = { 0, 0, 0 };
+        ALfloat sourceVel[] = { 0, 0, 0 };
+        
+        alGenSources(1, &source);
+        alSourcef(source, AL_PITCH, 1.0f);
+        alSourcef(source, AL_GAIN, 1.0f);
+        alSourcei(source, AL_LOOPING, 0);
+        alSourcefv(source, AL_POSITION, sourcePos);
+        alSourcefv(source, AL_VELOCITY, sourceVel);
+        
+        pause = true;
+        
+        audioData = new char*[MAX_MUSIC_BUFFERS];
+        for (int i = 0; i < MAX_MUSIC_BUFFERS; i++) {
+          audioData[i] = new char[maxPacketSize * packetCount];
+        }
+
+        Enqueue(MAX_MUSIC_BUFFERS);
+      }
+    }
+    
+    Music::~Music() {
+      delete name;
+      
+      if (soundLoaded) {
+        for (int i = 0; i < MAX_MUSIC_BUFFERS; i++) {
+          delete audioData[i];
+        }
+        
+        delete [] audioData;
+
+        alDeleteBuffers(MAX_MUSIC_BUFFERS, buffers);
+        alDeleteSources(1, &source);
+      }
+    }
+    
+    bool Music::Enqueue(int count) {
+      if (!soundLoaded) return false;
+      
+      bool oneLoaded = false;
+      
+      while (count-- > 0) {
+        std::cout << "LOADING FROM: " << currPacket << std::endl;
+        unsigned int pkLoaded = 0;
+        unsigned int btLoaded = 0;
+        
+        bool res;
+        res = ThePlatform->LoadMusicBuffers(this->name, maxPacketSize, currPacket, 1, pkLoaded, audioData[currBuffer], btLoaded);
+        
+        if (!res || pkLoaded != 1 || btLoaded == 0) {
+          return oneLoaded;
+        }
+        
+        unsigned int buff = buffers[currBuffer];
+
+        //alBufferDataStatic(buff, AL_FORMAT_STEREO16, audioData[currBuffer], btLoaded, frequency);
+        alBufferData(buff, format, audioData[currBuffer], btLoaded, frequency);
+        if (alGetError() != AL_NO_ERROR) {
+          int err = alGetError();
+          std::cout << err << std::endl;
+        }
+          
+        alSourceQueueBuffers(source, 1, &buff);
+        if (alGetError() != AL_NO_ERROR) {
+          int err = alGetError();
+          std::cout << err << std::endl;
+        }
+        
+        ALint res1;
+        alGetBufferi(buff, AL_BITS, &res1); // res = 16 (this is OK)
+        alGetBufferi(buff, AL_CHANNELS, &res1); // res = 2 (this is OK)
+        alGetBufferi(buff, AL_SIZE, &res1); // res = 44100 (this is OK)
+        alGetBufferi(buff, AL_FREQUENCY, &res1); // res = -2147483648 (this is CORRUPT!)
+        
+        currBuffer = (currBuffer + 1) % MAX_MUSIC_BUFFERS;
+        currPacket = (currPacket + 1) % packetCount;
+        
+        oneLoaded = true;
+      }
+      
+      int queued;
+      alGetSourcei(source, AL_BUFFERS_QUEUED, &queued);
+      std::cout << "QUEUED: " << queued << std::endl;
+      
+      return true;
+    }
+    
+    void Music::Rewind() {
+      if (!soundLoaded) return;
+      
+      alSourceStop(source);
+      
+      currPacket = 0;
+      currBuffer = 0;
+      
+      if (pause == false) {
+        alSourcePlay(source);
+      }
+    }
+    
+    void Music::Play() {
+      if (!soundLoaded) return;
+
+      alSourcePlay(source);
+      if (alGetError() != AL_NO_ERROR) {
+        int err = alGetError();
+        std::cout << err << std::endl;
+      }
+      
+      pause = false;
+    }
+    
+    void Music::Pause() {
+      if (!soundLoaded) return;
+      
+      alSourcePause(source);
+      
+      pause = true;
+    }
+    
+    void Music::Resume() {
+      if (!soundLoaded) return;
+      
+      alSourcePlay(source);
+      
+      pause = false;
+    }
+    
+    void Music::Stop() {
+      if (!soundLoaded) return;
+      
+      alSourceStop(source);
+      
+      pause = true;
+      
+      Rewind();
+    }
+    
+    bool Music::IsPlaying() {
+      if (!soundLoaded) return false;
+      
+      ALint val;
+      
+      alGetSourcei(source, AL_SOURCE_STATE, &val);
+      return val == AL_PLAYING;
+    }
+    
+    void Music::Update(float time) {
+      if (!soundLoaded) return;
+      
+      int processed;
+      
+      alGetSourcei(source, AL_BUFFERS_PROCESSED, &processed);
+      
+      if (processed > 0) {
+        alSourceUnqueueBuffers(source, processed, unbuff);
+      
+        Enqueue(processed);
+      }
+    }
+    
+    bool Music::IsLoaded() const {
+      return soundLoaded;
+    }
     
     Sound::Sound(ALuint buffer, unsigned int cat) {
       ALfloat sourcePos[] = { 0, 0, 0 };
@@ -68,6 +261,13 @@ namespace machete {
       alSourceStop(source);
       
       pause = true;
+    }
+    
+    bool Sound::IsPlaying() {
+      ALint val;
+      
+      alGetSourcei(source, AL_SOURCE_STATE, &val);
+      return val == AL_PLAYING;
     }
     
     unsigned int Sound::GetCategory() const {
@@ -229,6 +429,23 @@ namespace machete {
         }
         
         return LoadBuffer(name);
+      }
+      
+      return node->GetValue();
+    }
+    
+    Music* SoundManager::LoadMusic(const char* name) {
+      Tree<Str, Music*>* node = musics.Seek(name);
+      if (node == NULL) {
+        Music* music = new Music(name);
+        if (music->IsLoaded() == false) {
+          delete music;
+          
+          return NULL;
+        }
+        
+        musics.Add(name, music);
+        return music;
       }
       
       return node->GetValue();

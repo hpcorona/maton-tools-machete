@@ -10,6 +10,7 @@
 
 #include <OpenAL/al.h>
 #include <OpenAL/alc.h>
+#include <OpenAL/oalStaticBufferExtension.h>
 #include "../data/tree.h"
 #include "../data/str.h"
 #include "../platform/platform.h"
@@ -22,11 +23,104 @@ using namespace machete::data;
 using namespace machete::platform;
 
 #define MAX_SOUNDS  5
+#define MAX_MUSIC_BUFFERS   3
 
 namespace machete {
   
   //! Classes related to sound management.
   namespace sound {
+    
+    //! Represent a buffered sound (mp3 maybe).
+    class Music {
+    public:
+      //! Creates a new music object.
+      /*!
+       \param name Name of the music file.
+       */
+      Music(const char* name);
+      
+      //! Destructor.
+      ~Music();
+      
+      //! Update the music, loading new packets if needed.
+      /*!
+       \param time Time increment (not used).
+       */
+      void Update(float time);
+      
+      //! Rewind the source.
+      void Rewind();
+      
+      //! Start playing the sound.
+      void Play();
+      
+      //! Pause the sound.
+      void Pause();
+      
+      //! Resume the sound.
+      void Resume();
+      
+      //! Stop the sound.
+      void Stop();
+      
+      //! Check if it's playing.
+      /*!
+       \return True if it's playing.
+       */
+      bool IsPlaying();
+      
+      //! Check if the music was loaded.
+      bool IsLoaded() const;
+      
+    protected:
+      
+      //! Enqueue next packets.
+      /*!
+       \param count Number of packets to enqueue.
+       \return True if no problem.
+       */
+      bool Enqueue(int count);
+      
+      // Audio file name.
+      char *name;
+      
+      //! The ALuint source.
+      unsigned int source;
+      
+      //! Detects if it's paused.
+      bool pause;
+      
+      //! Music format.
+      int format;
+      
+      //! Maximum packet size.
+      unsigned int maxPacketSize;
+      
+      //! Packet count.
+      unsigned int packetCount;
+      
+      //! Frequency.
+      int frequency;
+      
+      //! Sound loaded.
+      bool soundLoaded;
+      
+      //! Music buffers.
+      unsigned int buffers[MAX_MUSIC_BUFFERS];
+      
+      //! Unbufferer.
+      unsigned int unbuff[MAX_MUSIC_BUFFERS];
+      
+      //! Current local music buffer.
+      unsigned int currBuffer;
+      
+      //! Current music packet.
+      unsigned int currPacket;
+      
+      //! Audio data temporal buffer.
+      char** audioData;
+
+    };
     
     //! Represents a single sound.
     class Sound {
@@ -63,6 +157,12 @@ namespace machete {
       
       //! Stop the sound.
       inline void Stop();
+      
+      //! Check if it's playing.
+      /*!
+       \return True if it's playing.
+       */
+      inline bool IsPlaying();
       
       //! Get the current category.
       /*!
@@ -127,6 +227,13 @@ namespace machete {
        */
       Sound* Play(const char* name, unsigned int category);
       
+      //! Load a Music file, more likely a compressed sound mp3.
+      /*!
+       \param name Name of the music file.
+       \return Null if it could not be loaded. The music otherwise.
+       */
+      Music* LoadMusic(const char* name);
+      
     protected:
       
       //! Loads a new sound buffer.
@@ -156,6 +263,9 @@ namespace machete {
       
       //! Unused sources cache.
       Iterator<Sound*> available;
+      
+      //! Music cache.
+      Hash<Str, Music*> musics;
       
     };
     

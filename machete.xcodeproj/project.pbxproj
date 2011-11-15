@@ -24,6 +24,10 @@
 		A839A6AD13AE9A4700D0C254 /* bundle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A839A6AB13AE9A4700D0C254 /* bundle.cpp */; };
 		A839A6AE13AE9A4700D0C254 /* bundle.h in Headers */ = {isa = PBXBuildFile; fileRef = A839A6AC13AE9A4700D0C254 /* bundle.h */; };
 		A839E21313AB3E65004A1CA5 /* platform.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A839E21213AB3E65004A1CA5 /* platform.cpp */; };
+		A84701151471E7260046FC3F /* libTremor.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A84701141471E7260046FC3F /* libTremor.a */; };
+		A847011A1471E7350046FC3F /* ivorbiscodec.h in Headers */ = {isa = PBXBuildFile; fileRef = A84701171471E7350046FC3F /* ivorbiscodec.h */; };
+		A847011B1471E7350046FC3F /* ivorbisfile.h in Headers */ = {isa = PBXBuildFile; fileRef = A84701181471E7350046FC3F /* ivorbisfile.h */; };
+		A847011C1471E7350046FC3F /* ogg.h in Headers */ = {isa = PBXBuildFile; fileRef = A84701191471E7350046FC3F /* ogg.h */; };
 		A85B7EE71398909A008776AB /* mbd.h in Headers */ = {isa = PBXBuildFile; fileRef = A85B7EE61398909A008776AB /* mbd.h */; };
 		A874066F13B5030200F8B807 /* touch.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A874066D13B5030200F8B807 /* touch.cpp */; };
 		A874067013B5030200F8B807 /* touch.h in Headers */ = {isa = PBXBuildFile; fileRef = A874066E13B5030200F8B807 /* touch.h */; };
@@ -70,6 +74,10 @@
 		A839A6AB13AE9A4700D0C254 /* bundle.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = bundle.cpp; sourceTree = "<group>"; };
 		A839A6AC13AE9A4700D0C254 /* bundle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = bundle.h; sourceTree = "<group>"; };
 		A839E21213AB3E65004A1CA5 /* platform.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = platform.cpp; sourceTree = "<group>"; };
+		A84701141471E7260046FC3F /* libTremor.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libTremor.a; sourceTree = "<group>"; };
+		A84701171471E7350046FC3F /* ivorbiscodec.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ivorbiscodec.h; sourceTree = "<group>"; };
+		A84701181471E7350046FC3F /* ivorbisfile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ivorbisfile.h; sourceTree = "<group>"; };
+		A84701191471E7350046FC3F /* ogg.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ogg.h; sourceTree = "<group>"; };
 		A84955ED13A89014002BB310 /* iOSPlatform.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = iOSPlatform.mm; sourceTree = "<group>"; };
 		A85130FF13A7357E00084BD5 /* vtx.vert */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = vtx.vert; sourceTree = "<group>"; };
 		A851310213A7359400084BD5 /* vtx.frag */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = vtx.frag; sourceTree = "<group>"; };
@@ -115,6 +123,7 @@
 				A8885855135CB85100F7732C /* QuartzCore.framework in Frameworks */,
 				A8885853135CB84B00F7732C /* OpenGLES.framework in Frameworks */,
 				A8885811135CB02F00F7732C /* Foundation.framework in Frameworks */,
+				A84701151471E7260046FC3F /* libTremor.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -166,6 +175,49 @@
 			path = machete/machete/anim;
 			sourceTree = SOURCE_ROOT;
 		};
+		A847010F1471E6990046FC3F /* deps */ = {
+			isa = PBXGroup;
+			children = (
+				A84701111471E6E90046FC3F /* vorbis */,
+			);
+			path = deps;
+			sourceTree = "<group>";
+		};
+		A84701111471E6E90046FC3F /* vorbis */ = {
+			isa = PBXGroup;
+			children = (
+				A84701131471E6FC0046FC3F /* lib */,
+				A84701121471E6F40046FC3F /* include */,
+			);
+			path = vorbis;
+			sourceTree = "<group>";
+		};
+		A84701121471E6F40046FC3F /* include */ = {
+			isa = PBXGroup;
+			children = (
+				A84701161471E7350046FC3F /* Tremor */,
+			);
+			path = include;
+			sourceTree = "<group>";
+		};
+		A84701131471E6FC0046FC3F /* lib */ = {
+			isa = PBXGroup;
+			children = (
+				A84701141471E7260046FC3F /* libTremor.a */,
+			);
+			path = lib;
+			sourceTree = "<group>";
+		};
+		A84701161471E7350046FC3F /* Tremor */ = {
+			isa = PBXGroup;
+			children = (
+				A84701171471E7350046FC3F /* ivorbiscodec.h */,
+				A84701181471E7350046FC3F /* ivorbisfile.h */,
+				A84701191471E7350046FC3F /* ogg.h */,
+			);
+			path = Tremor;
+			sourceTree = "<group>";
+		};
 		A874066C13B502D300F8B807 /* input */ = {
 			isa = PBXGroup;
 			children = (
@@ -199,6 +251,7 @@
 				A8885812135CB02F00F7732C /* machete */,
 				A888580F135CB02F00F7732C /* Frameworks */,
 				A888580E135CB02F00F7732C /* Products */,
+				A847010F1471E6990046FC3F /* deps */,
 			);
 			sourceTree = "<group>";
 		};
@@ -332,6 +385,9 @@
 				A876348C13C104D6006B1333 /* widget.h in Headers */,
 				A829396F13DE747F005D0D64 /* func.h in Headers */,
 				A80A9A891406238900614DB0 /* sound.h in Headers */,
+				A847011A1471E7350046FC3F /* ivorbiscodec.h in Headers */,
+				A847011B1471E7350046FC3F /* ivorbisfile.h in Headers */,
+				A847011C1471E7350046FC3F /* ogg.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -443,6 +499,10 @@
 					TARGET_IOS,
 					ENGINE,
 				);
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/deps/vorbis/lib\"",
+				);
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -458,6 +518,10 @@
 				"GCC_PREPROCESSOR_DEFINITIONS[arch=*]" = (
 					TARGET_IOS,
 					ENGINE,
+				);
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/deps/vorbis/lib\"",
 				);
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";

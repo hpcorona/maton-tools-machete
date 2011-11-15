@@ -158,10 +158,88 @@ public:
     
     alBufferData(buffer, auFormat, data, size, freq);
     
-    // Don't know if i can free the data...
     free(data);
     
     return buffer;
+  }
+  
+  bool LoadMusicInfo(const char* name, unsigned int &maxPSize, unsigned int &pCount, int & auFormat, int & freq) {
+    NSString* basePath = [NSString stringWithUTF8String:name];
+    
+    NSString* resourcePath = [[NSBundle mainBundle] resourcePath];
+    NSString* fullPath = [resourcePath stringByAppendingPathComponent:basePath];
+    
+    NSURL* audioURL = [NSURL fileURLWithPath:fullPath];
+    
+    AudioFileID audioFile;
+    OSStatus res = AudioFileOpenURL((CFURLRef)audioURL, kAudioFileReadPermission, 0, &audioFile);
+    if (res != 0) {
+      NSLog(@"Could not load: %@", fullPath);
+      return false;
+    }
+    
+    UInt32 maxPacketSize;
+    UInt32 propSize = sizeof(maxPacketSize);
+    UInt64 packetCount;
+    UInt32 propSize64 = sizeof(packetCount);
+    
+    AudioFileGetProperty(audioFile, kAudioFilePropertyPacketSizeUpperBound, &propSize, &maxPacketSize);
+    AudioFileGetProperty(audioFile, kAudioFilePropertyAudioDataPacketCount, &propSize64, &packetCount);
+    
+    maxPSize = maxPacketSize;
+    pCount = packetCount;
+    
+    unsigned int total = maxPacketSize * packetCount;
+    
+    if (maxPSize == 4) {
+      maxPSize = 1024;
+      pCount = total / maxPSize;
+      if (total % maxPSize > 0) {
+        pCount += 1;
+      }
+    }
+    
+    AudioStreamBasicDescription format;
+    propSize = sizeof(AudioStreamBasicDescription);
+    
+    AudioFileGetProperty(audioFile, kAudioFilePropertyDataFormat, &propSize, &format);
+    
+    auFormat = (format.mChannelsPerFrame > 1) ? AL_FORMAT_STEREO16 : AL_FORMAT_MONO16;
+    freq = (ALsizei)format.mSampleRate;
+    
+    AudioFileClose(audioFile);
+    
+    return true;
+  }
+  
+  bool LoadMusicBuffers(const char* name, unsigned int maxPacketSize, unsigned int offset, unsigned int count, unsigned int &packsLoaded, void *audioData, unsigned int &bytesLoaded) {
+    NSString* basePath = [NSString stringWithUTF8String:name];
+    
+    NSString* resourcePath = [[NSBundle mainBundle] resourcePath];
+    NSString* fullPath = [resourcePath stringByAppendingPathComponent:basePath];
+    
+    NSURL* audioURL = [NSURL fileURLWithPath:fullPath];
+    
+    AudioFileID audioFile;
+    OSStatus res = AudioFileOpenURL((CFURLRef)audioURL, kAudioFileReadPermission, 0, &audioFile);
+    if (res != 0) {
+      NSLog(@"Could not load: %@", fullPath);
+      return false;
+    }
+    
+    SInt64 start = offset;
+    UInt32 ioNumPackets = count;
+    UInt32 ioBytes = count * maxPacketSize;
+    
+    AudioFileReadPacketData(audioFile, false, &ioBytes, NULL, start, &ioNumPackets, audioData);
+    
+    packsLoaded = ioNumPackets;
+    bytesLoaded = ioBytes;
+    
+    AudioFileClose(audioFile);
+    
+    return true;
+    
   }
   
   inline unsigned int Random() {
