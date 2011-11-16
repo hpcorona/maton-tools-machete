@@ -101,12 +101,6 @@ namespace machete {
           std::cout << err << std::endl;
         }
         
-        ALint res1;
-        alGetBufferi(buff, AL_BITS, &res1); // res = 16 (this is OK)
-        alGetBufferi(buff, AL_CHANNELS, &res1); // res = 2 (this is OK)
-        alGetBufferi(buff, AL_SIZE, &res1); // res = 44100 (this is OK)
-        alGetBufferi(buff, AL_FREQUENCY, &res1); // res = -2147483648 (this is CORRUPT!)
-        
         currBuffer = (currBuffer + 1) % MAX_MUSIC_BUFFERS;
         
         oneLoaded = true;
@@ -229,7 +223,7 @@ namespace machete {
         
       alGenSources(1, &source);
       alSourcef(source, AL_PITCH, 1.0f);
-      alSourcef(source, AL_GAIN, 1.0f);
+      alSourcef(source, AL_GAIN, 0.25f);
       alSourcei(source, AL_LOOPING, 0);
       alSource3f(source, AL_POSITION, 0, 0, 0);
       alSource3f(source, AL_VELOCITY, 0, 0, 0);
