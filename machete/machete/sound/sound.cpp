@@ -80,7 +80,10 @@ namespace machete {
         }
         
         int ttl = ov_streams(&oggStream);
-        std::cout << "SEC " << section << " OF " << ttl << std::endl;
+        
+        if (section >= ttl) {
+          ov_raw_seek(&oggStream, 0);
+        }
         
         if (size == 0) return oneLoaded;
         
@@ -120,9 +123,6 @@ namespace machete {
       if (!soundLoaded) return;
       
       alSourceStop(source);
-      
-      ov_raw_seek(&oggStream, 0);
-      currBuffer = 0;
       
       if (pause == false) {
         alSourcePlay(source);

@@ -29,7 +29,7 @@ using namespace machete::platform;
 
 #define MAX_SOUNDS  5
 #define MAX_MUSIC_BUFFERS   3
-#define MUSIC_BUFFER_SIZE   48000
+#define MUSIC_BUFFER_SIZE   128000
 
 namespace machete {
   
