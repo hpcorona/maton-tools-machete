@@ -90,6 +90,19 @@ namespace machete {
      \return A random integer.
      */
     virtual unsigned int Random() = 0;
+    
+    //! Open a file.
+    /*!
+     \param name File name.
+     \return The file descriptor.
+     */
+    virtual FILE* OpenFile(const char* name) = 0;
+    
+    //! Close a file.
+    /*!
+     \param hande File handle.
+     */
+    virtual void CloseFile(FILE* handle) = 0;
   };
 
   //! Platform specific features.
@@ -172,6 +185,19 @@ namespace machete {
        \return A random integer.
        */
       unsigned int Random();
+      
+      //! Open a file.
+      /*!
+       \param name File name.
+       \return The file descriptor.
+       */
+      FILE* OpenFile(const char* name);
+      
+      //! Close a file.
+      /*!
+       \param hande File handle.
+       */
+      void CloseFile(FILE* handle);
       
     private:
       

@@ -246,6 +246,21 @@ public:
     return arc4random();
   }
   
+  FILE* OpenFile(const char* name) {
+    NSString* basePath = [NSString stringWithUTF8String:name];
+    
+    NSString* resourcePath = [[NSBundle mainBundle] resourcePath];
+    NSString* fullPath = [resourcePath stringByAppendingPathComponent:basePath];
+    
+    FILE* f = fopen([fullPath cStringUsingEncoding:NSASCIIStringEncoding], "rb");
+    
+    return f;
+  }
+  
+  void CloseFile(FILE* handle) {
+    fclose(handle);
+  }
+  
 protected:
   CFDataRef imageData;
   

@@ -28,6 +28,7 @@
 		A847011A1471E7350046FC3F /* ivorbiscodec.h in Headers */ = {isa = PBXBuildFile; fileRef = A84701171471E7350046FC3F /* ivorbiscodec.h */; };
 		A847011B1471E7350046FC3F /* ivorbisfile.h in Headers */ = {isa = PBXBuildFile; fileRef = A84701181471E7350046FC3F /* ivorbisfile.h */; };
 		A847011C1471E7350046FC3F /* ogg.h in Headers */ = {isa = PBXBuildFile; fileRef = A84701191471E7350046FC3F /* ogg.h */; };
+		A847011E1471E9800046FC3F /* os_types.h in Headers */ = {isa = PBXBuildFile; fileRef = A847011D1471E9800046FC3F /* os_types.h */; };
 		A85B7EE71398909A008776AB /* mbd.h in Headers */ = {isa = PBXBuildFile; fileRef = A85B7EE61398909A008776AB /* mbd.h */; };
 		A874066F13B5030200F8B807 /* touch.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A874066D13B5030200F8B807 /* touch.cpp */; };
 		A874067013B5030200F8B807 /* touch.h in Headers */ = {isa = PBXBuildFile; fileRef = A874066E13B5030200F8B807 /* touch.h */; };
@@ -78,6 +79,7 @@
 		A84701171471E7350046FC3F /* ivorbiscodec.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ivorbiscodec.h; sourceTree = "<group>"; };
 		A84701181471E7350046FC3F /* ivorbisfile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ivorbisfile.h; sourceTree = "<group>"; };
 		A84701191471E7350046FC3F /* ogg.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ogg.h; sourceTree = "<group>"; };
+		A847011D1471E9800046FC3F /* os_types.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = os_types.h; sourceTree = "<group>"; };
 		A84955ED13A89014002BB310 /* iOSPlatform.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = iOSPlatform.mm; sourceTree = "<group>"; };
 		A85130FF13A7357E00084BD5 /* vtx.vert */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = vtx.vert; sourceTree = "<group>"; };
 		A851310213A7359400084BD5 /* vtx.frag */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = vtx.frag; sourceTree = "<group>"; };
@@ -214,6 +216,7 @@
 				A84701171471E7350046FC3F /* ivorbiscodec.h */,
 				A84701181471E7350046FC3F /* ivorbisfile.h */,
 				A84701191471E7350046FC3F /* ogg.h */,
+				A847011D1471E9800046FC3F /* os_types.h */,
 			);
 			path = Tremor;
 			sourceTree = "<group>";
@@ -388,6 +391,7 @@
 				A847011A1471E7350046FC3F /* ivorbiscodec.h in Headers */,
 				A847011B1471E7350046FC3F /* ivorbisfile.h in Headers */,
 				A847011C1471E7350046FC3F /* ogg.h in Headers */,
+				A847011E1471E9800046FC3F /* os_types.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -499,6 +503,7 @@
 					TARGET_IOS,
 					ENGINE,
 				);
+				HEADER_SEARCH_PATHS = "\"$(SRCROOT)/deps/vorbis/include\"";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)/deps/vorbis/lib\"",
@@ -519,6 +524,7 @@
 					TARGET_IOS,
 					ENGINE,
 				);
+				HEADER_SEARCH_PATHS = "\"$(SRCROOT)/deps/vorbis/include\"";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)/deps/vorbis/lib\"",

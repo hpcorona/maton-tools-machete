@@ -43,6 +43,14 @@ namespace machete {
       return platf->LoadMusicBuffers(name, maxPacketSize, offset, count, packsLoaded, audioData, bytesLoaded);
     }
     
+    FILE* Platform::OpenFile(const char* name) {
+      return platf->OpenFile(name);
+    }
+    
+    void Platform::CloseFile(FILE* handle) {
+      platf->CloseFile(handle);
+    }
+    
     Platform* ThePlatform = NULL;
     
   }

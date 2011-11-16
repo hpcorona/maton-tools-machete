@@ -11,6 +11,11 @@
 #include <OpenAL/al.h>
 #include <OpenAL/alc.h>
 #include <OpenAL/oalStaticBufferExtension.h>
+
+#include <Tremor/ogg.h>
+#include <Tremor/ivorbiscodec.h>
+#include <Tremor/ivorbisfile.h>
+
 #include "../data/tree.h"
 #include "../data/str.h"
 #include "../platform/platform.h"
@@ -24,13 +29,14 @@ using namespace machete::platform;
 
 #define MAX_SOUNDS  5
 #define MAX_MUSIC_BUFFERS   3
+#define MUSIC_BUFFER_SIZE   48000
 
 namespace machete {
   
   //! Classes related to sound management.
   namespace sound {
     
-    //! Represent a buffered sound (mp3 maybe).
+    //! Represent a buffered ogg sound.
     class Music {
     public:
       //! Creates a new music object.
@@ -81,7 +87,19 @@ namespace machete {
        */
       bool Enqueue(int count);
       
-      // Audio file name.
+      //! Load Ogg file.
+      void LoadOgg();
+      
+      //! File handle.
+      FILE* handle;
+      
+      //! Vorbis Stream.
+      OggVorbis_File oggStream;
+      
+      //! Formatting data.
+      vorbis_info* vorbisInfo;
+      
+      //! Audio file name.
       char *name;
       
       //! The ALuint source.
@@ -91,19 +109,13 @@ namespace machete {
       bool pause;
       
       //! Music format.
-      int format;
-      
-      //! Maximum packet size.
-      unsigned int maxPacketSize;
-      
-      //! Packet count.
-      unsigned int packetCount;
-      
-      //! Frequency.
-      int frequency;
+      ALenum format;
       
       //! Sound loaded.
       bool soundLoaded;
+      
+      //! First run.
+      bool firstRun;
       
       //! Music buffers.
       unsigned int buffers[MAX_MUSIC_BUFFERS];
@@ -113,9 +125,6 @@ namespace machete {
       
       //! Current local music buffer.
       unsigned int currBuffer;
-      
-      //! Current music packet.
-      unsigned int currPacket;
       
       //! Audio data temporal buffer.
       char** audioData;

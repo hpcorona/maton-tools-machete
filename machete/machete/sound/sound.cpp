@@ -28,48 +28,28 @@ namespace machete {
     
     Music::Music(const char *name) {
       audioData = NULL;
+      firstRun = true;
+      soundLoaded = false;
       
       this->name = new char[80];
       machete::data::Str n = name;
       n.GetChars(this->name, 80);
-      
-      soundLoaded = ThePlatform->LoadMusicInfo(this->name, maxPacketSize, packetCount, format, frequency);
-      
-      if (soundLoaded) {
-        alGenBuffers(MAX_MUSIC_BUFFERS, buffers);
-        currBuffer = 0;
-        currPacket = 0;
-
-        ALfloat sourcePos[] = { 0, 0, 0 };
-        ALfloat sourceVel[] = { 0, 0, 0 };
-        
-        alGenSources(1, &source);
-        alSourcef(source, AL_PITCH, 1.0f);
-        alSourcef(source, AL_GAIN, 1.0f);
-        alSourcei(source, AL_LOOPING, 0);
-        alSourcefv(source, AL_POSITION, sourcePos);
-        alSourcefv(source, AL_VELOCITY, sourceVel);
-        
-        pause = true;
-        
-        audioData = new char*[MAX_MUSIC_BUFFERS];
-        for (int i = 0; i < MAX_MUSIC_BUFFERS; i++) {
-          audioData[i] = new char[maxPacketSize * packetCount];
-        }
-
-        Enqueue(MAX_MUSIC_BUFFERS);
-      }
     }
     
     Music::~Music() {
       delete name;
       
       if (soundLoaded) {
-        for (int i = 0; i < MAX_MUSIC_BUFFERS; i++) {
-          delete audioData[i];
-        }
+        ov_clear(&oggStream);
+        ThePlatform->CloseFile(handle);
         
-        delete [] audioData;
+        if (audioData != NULL) {
+          for (int i = 0; i < MAX_MUSIC_BUFFERS; i++) {
+            delete audioData[i];
+          }
+        
+          delete [] audioData;
+        }
 
         alDeleteBuffers(MAX_MUSIC_BUFFERS, buffers);
         alDeleteSources(1, &source);
@@ -82,21 +62,31 @@ namespace machete {
       bool oneLoaded = false;
       
       while (count-- > 0) {
-        std::cout << "LOADING FROM: " << currPacket << std::endl;
-        unsigned int pkLoaded = 0;
-        unsigned int btLoaded = 0;
+        int size;
+        int section;
+        char *data = audioData[currBuffer];
         
-        bool res;
-        res = ThePlatform->LoadMusicBuffers(this->name, maxPacketSize, currPacket, 1, pkLoaded, audioData[currBuffer], btLoaded);
-        
-        if (!res || pkLoaded != 1 || btLoaded == 0) {
-          return oneLoaded;
+        size = 0;
+        while (size < MUSIC_BUFFER_SIZE) {
+          int result = ov_read(&oggStream, data + size, MUSIC_BUFFER_SIZE - size, &section);
+          
+          if (result > 0) {
+            size += result;
+          } else if (result == 0) {
+            break;
+          } else {
+            return oneLoaded;
+          }
         }
         
+        int ttl = ov_streams(&oggStream);
+        std::cout << "SEC " << section << " OF " << ttl << std::endl;
+        
+        if (size == 0) return oneLoaded;
+        
         unsigned int buff = buffers[currBuffer];
-
-        //alBufferDataStatic(buff, AL_FORMAT_STEREO16, audioData[currBuffer], btLoaded, frequency);
-        alBufferData(buff, format, audioData[currBuffer], btLoaded, frequency);
+        
+        alBufferDataStatic(buff, format, data, size, vorbisInfo->rate);
         if (alGetError() != AL_NO_ERROR) {
           int err = alGetError();
           std::cout << err << std::endl;
@@ -115,24 +105,23 @@ namespace machete {
         alGetBufferi(buff, AL_FREQUENCY, &res1); // res = -2147483648 (this is CORRUPT!)
         
         currBuffer = (currBuffer + 1) % MAX_MUSIC_BUFFERS;
-        currPacket = (currPacket + 1) % packetCount;
         
         oneLoaded = true;
       }
       
       int queued;
       alGetSourcei(source, AL_BUFFERS_QUEUED, &queued);
-      std::cout << "QUEUED: " << queued << std::endl;
       
       return true;
     }
     
     void Music::Rewind() {
+      LoadOgg();
       if (!soundLoaded) return;
       
       alSourceStop(source);
       
-      currPacket = 0;
+      ov_raw_seek(&oggStream, 0);
       currBuffer = 0;
       
       if (pause == false) {
@@ -141,6 +130,7 @@ namespace machete {
     }
     
     void Music::Play() {
+      LoadOgg();
       if (!soundLoaded) return;
 
       alSourcePlay(source);
@@ -161,6 +151,7 @@ namespace machete {
     }
     
     void Music::Resume() {
+      LoadOgg();
       if (!soundLoaded) return;
       
       alSourcePlay(source);
@@ -205,17 +196,62 @@ namespace machete {
       return soundLoaded;
     }
     
-    Sound::Sound(ALuint buffer, unsigned int cat) {
-      ALfloat sourcePos[] = { 0, 0, 0 };
-      ALfloat sourceVel[] = { 0, 0, 0 };
+    void Music::LoadOgg() {
+      if (!firstRun) return;
       
+      firstRun = false;
+      soundLoaded = false;
+      
+      handle = ThePlatform->OpenFile(name);
+      if (handle <= 0) {
+        return;
+      }
+      
+      int result;
+      result = ov_open(handle, &oggStream, NULL, 0);
+      if (result < 0) {
+        ThePlatform->CloseFile(handle);
+        return;
+      }
+      
+      vorbisInfo = ov_info(&oggStream, -1);
+      
+      if (vorbisInfo->channels == 1) {
+        format = AL_FORMAT_MONO16;
+      } else {
+        format = AL_FORMAT_STEREO16;
+      }
+      
+      soundLoaded = true;
+      
+      alGenBuffers(MAX_MUSIC_BUFFERS, buffers);
+      currBuffer = 0;
+        
+      alGenSources(1, &source);
+      alSourcef(source, AL_PITCH, 1.0f);
+      alSourcef(source, AL_GAIN, 1.0f);
+      alSourcei(source, AL_LOOPING, 0);
+      alSource3f(source, AL_POSITION, 0, 0, 0);
+      alSource3f(source, AL_VELOCITY, 0, 0, 0);
+        
+      pause = true;
+        
+      audioData = new char*[MAX_MUSIC_BUFFERS];
+      for (int i = 0; i < MAX_MUSIC_BUFFERS; i++) {
+        audioData[i] = new char[MUSIC_BUFFER_SIZE];
+      }
+        
+      Enqueue(MAX_MUSIC_BUFFERS);
+    }
+    
+    Sound::Sound(ALuint buffer, unsigned int cat) {
       alGenSources(1, &source);
       alSourcei(source, AL_BUFFER, buffer);
       alSourcef(source, AL_PITCH, 1.0f);
       alSourcef(source, AL_GAIN, 1.0f);
       alSourcei(source, AL_LOOPING, 0);
-      alSourcefv(source, AL_POSITION, sourcePos);
-      alSourcefv(source, AL_VELOCITY, sourceVel);
+      alSource3f(source, AL_POSITION, 0, 0, 0);
+      alSource3f(source, AL_VELOCITY, 0, 0, 0);
       
       category = cat;
       
@@ -438,11 +474,6 @@ namespace machete {
       Tree<Str, Music*>* node = musics.Seek(name);
       if (node == NULL) {
         Music* music = new Music(name);
-        if (music->IsLoaded() == false) {
-          delete music;
-          
-          return NULL;
-        }
         
         musics.Add(name, music);
         return music;
