@@ -35,20 +35,16 @@ namespace machete {
       return platf->Random();
     }
     
-    bool Platform::LoadMusicInfo(const char* name, unsigned int &maxPSize, unsigned int &pCount, int & auFormat, int & freq) {
-      return platf->LoadMusicInfo(name, maxPSize, pCount, auFormat, freq);
-    }
-    
-    bool Platform::LoadMusicBuffers(const char* name, unsigned int maxPacketSize, unsigned int offset, unsigned int count, unsigned int &packsLoaded, void *audioData, unsigned int &bytesLoaded) {
-      return platf->LoadMusicBuffers(name, maxPacketSize, offset, count, packsLoaded, audioData, bytesLoaded);
-    }
-    
     FILE* Platform::OpenFile(const char* name) {
       return platf->OpenFile(name);
     }
     
     void Platform::CloseFile(FILE* handle) {
       platf->CloseFile(handle);
+    }
+    
+    char* Platform::WritableFile(const char* name) {
+      return platf->WritableFile(name);
     }
     
     Platform* ThePlatform = NULL;

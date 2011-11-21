@@ -21,6 +21,9 @@
 		A81A334613AF1C6D001C2871 /* meta.h in Headers */ = {isa = PBXBuildFile; fileRef = A81A334413AF1C6D001C2871 /* meta.h */; };
 		A829396F13DE747F005D0D64 /* func.h in Headers */ = {isa = PBXBuildFile; fileRef = A829396E13DE747F005D0D64 /* func.h */; };
 		A829397113DE7D18005D0D64 /* func.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A829397013DE7D18005D0D64 /* func.cpp */; };
+		A8315180147980390036D4BB /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = A831517F147980390036D4BB /* libsqlite3.dylib */; };
+		A831518614798D9B0036D4BB /* sql.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A831518514798D9B0036D4BB /* sql.cpp */; };
+		A831518814798DA60036D4BB /* sql.h in Headers */ = {isa = PBXBuildFile; fileRef = A831518714798DA60036D4BB /* sql.h */; };
 		A839A6AD13AE9A4700D0C254 /* bundle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A839A6AB13AE9A4700D0C254 /* bundle.cpp */; };
 		A839A6AE13AE9A4700D0C254 /* bundle.h in Headers */ = {isa = PBXBuildFile; fileRef = A839A6AC13AE9A4700D0C254 /* bundle.h */; };
 		A839E21313AB3E65004A1CA5 /* platform.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A839E21213AB3E65004A1CA5 /* platform.cpp */; };
@@ -72,6 +75,9 @@
 		A81A334413AF1C6D001C2871 /* meta.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = meta.h; sourceTree = "<group>"; };
 		A829396E13DE747F005D0D64 /* func.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = func.h; sourceTree = "<group>"; };
 		A829397013DE7D18005D0D64 /* func.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = func.cpp; sourceTree = "<group>"; };
+		A831517F147980390036D4BB /* libsqlite3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsqlite3.dylib; path = usr/lib/libsqlite3.dylib; sourceTree = SDKROOT; };
+		A831518514798D9B0036D4BB /* sql.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = sql.cpp; sourceTree = "<group>"; };
+		A831518714798DA60036D4BB /* sql.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = sql.h; sourceTree = "<group>"; };
 		A839A6AB13AE9A4700D0C254 /* bundle.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = bundle.cpp; sourceTree = "<group>"; };
 		A839A6AC13AE9A4700D0C254 /* bundle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = bundle.h; sourceTree = "<group>"; };
 		A839E21213AB3E65004A1CA5 /* platform.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = platform.cpp; sourceTree = "<group>"; };
@@ -117,6 +123,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A8315180147980390036D4BB /* libsqlite3.dylib in Frameworks */,
 				A8CD9AA41417156100270862 /* AudioToolbox.framework in Frameworks */,
 				A8CD9A9F141714A600270862 /* CoreAudio.framework in Frameworks */,
 				A80A9A83140622D200614DB0 /* OpenAL.framework in Frameworks */,
@@ -176,6 +183,15 @@
 			name = anim;
 			path = machete/machete/anim;
 			sourceTree = SOURCE_ROOT;
+		};
+		A8315184147981070036D4BB /* storage */ = {
+			isa = PBXGroup;
+			children = (
+				A831518514798D9B0036D4BB /* sql.cpp */,
+				A831518714798DA60036D4BB /* sql.h */,
+			);
+			path = storage;
+			sourceTree = "<group>";
 		};
 		A847010F1471E6990046FC3F /* deps */ = {
 			isa = PBXGroup;
@@ -244,6 +260,7 @@
 		A8885802135CB02F00F7732C = {
 			isa = PBXGroup;
 			children = (
+				A831517F147980390036D4BB /* libsqlite3.dylib */,
 				A8CD9AA31417156100270862 /* AudioToolbox.framework */,
 				A8CD9A9E141714A600270862 /* CoreAudio.framework */,
 				A80A9A82140622D200614DB0 /* OpenAL.framework */,
@@ -297,6 +314,7 @@
 		A888581A135CB1FC00F7732C /* machete */ = {
 			isa = PBXGroup;
 			children = (
+				A8315184147981070036D4BB /* storage */,
 				A829396C13DE7418005D0D64 /* anim */,
 				A801E0DD13A06127002FA9E8 /* common */,
 				A8E4DD7D13A9360F00A27214 /* data */,
@@ -392,6 +410,7 @@
 				A847011B1471E7350046FC3F /* ivorbisfile.h in Headers */,
 				A847011C1471E7350046FC3F /* ogg.h in Headers */,
 				A847011E1471E9800046FC3F /* os_types.h in Headers */,
+				A831518814798DA60036D4BB /* sql.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -456,6 +475,7 @@
 				A876348A13C104CA006B1333 /* widget.cpp in Sources */,
 				A829397113DE7D18005D0D64 /* func.cpp in Sources */,
 				A8A8D06B140AB2EC005C9E2B /* sound.cpp in Sources */,
+				A831518614798D9B0036D4BB /* sql.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

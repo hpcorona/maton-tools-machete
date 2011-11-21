@@ -5,6 +5,7 @@
 #import <OpenAL/alc.h>
 #import <OpenAL/al.h>
 #import <AudioToolbox/AudioToolbox.h>
+#include <stdio.h>
 
 class PlatformiOS : public machete::IPlatform {
 public:
@@ -163,85 +164,6 @@ public:
     return buffer;
   }
   
-  bool LoadMusicInfo(const char* name, unsigned int &maxPSize, unsigned int &pCount, int & auFormat, int & freq) {
-    NSString* basePath = [NSString stringWithUTF8String:name];
-    
-    NSString* resourcePath = [[NSBundle mainBundle] resourcePath];
-    NSString* fullPath = [resourcePath stringByAppendingPathComponent:basePath];
-    
-    NSURL* audioURL = [NSURL fileURLWithPath:fullPath];
-    
-    AudioFileID audioFile;
-    OSStatus res = AudioFileOpenURL((CFURLRef)audioURL, kAudioFileReadPermission, 0, &audioFile);
-    if (res != 0) {
-      NSLog(@"Could not load: %@", fullPath);
-      return false;
-    }
-    
-    UInt32 maxPacketSize;
-    UInt32 propSize = sizeof(maxPacketSize);
-    UInt64 packetCount;
-    UInt32 propSize64 = sizeof(packetCount);
-    
-    AudioFileGetProperty(audioFile, kAudioFilePropertyPacketSizeUpperBound, &propSize, &maxPacketSize);
-    AudioFileGetProperty(audioFile, kAudioFilePropertyAudioDataPacketCount, &propSize64, &packetCount);
-    
-    maxPSize = maxPacketSize;
-    pCount = packetCount;
-    
-    unsigned int total = maxPacketSize * packetCount;
-    
-    if (maxPSize == 4) {
-      maxPSize = 1024;
-      pCount = total / maxPSize;
-      if (total % maxPSize > 0) {
-        pCount += 1;
-      }
-    }
-    
-    AudioStreamBasicDescription format;
-    propSize = sizeof(AudioStreamBasicDescription);
-    
-    AudioFileGetProperty(audioFile, kAudioFilePropertyDataFormat, &propSize, &format);
-    
-    auFormat = (format.mChannelsPerFrame > 1) ? AL_FORMAT_STEREO16 : AL_FORMAT_MONO16;
-    freq = (ALsizei)format.mSampleRate;
-    
-    AudioFileClose(audioFile);
-    
-    return true;
-  }
-  
-  bool LoadMusicBuffers(const char* name, unsigned int maxPacketSize, unsigned int offset, unsigned int count, unsigned int &packsLoaded, void *audioData, unsigned int &bytesLoaded) {
-    NSString* basePath = [NSString stringWithUTF8String:name];
-    
-    NSString* resourcePath = [[NSBundle mainBundle] resourcePath];
-    NSString* fullPath = [resourcePath stringByAppendingPathComponent:basePath];
-    
-    NSURL* audioURL = [NSURL fileURLWithPath:fullPath];
-    
-    AudioFileID audioFile;
-    OSStatus res = AudioFileOpenURL((CFURLRef)audioURL, kAudioFileReadPermission, 0, &audioFile);
-    if (res != 0) {
-      NSLog(@"Could not load: %@", fullPath);
-      return false;
-    }
-    
-    SInt64 start = offset;
-    UInt32 ioNumPackets = count;
-    UInt32 ioBytes = count * maxPacketSize;
-    
-    AudioFileReadPacketData(audioFile, false, &ioBytes, NULL, start, &ioNumPackets, audioData);
-    
-    packsLoaded = ioNumPackets;
-    bytesLoaded = ioBytes;
-    
-    AudioFileClose(audioFile);
-    
-    return true;
-    
-  }
-  
   inline unsigned int Random() {
     return arc4random();
   }
@@ -260,6 +182,27 @@ public:
   void CloseFile(FILE* handle) {
     fclose(handle);
   }
+  
+  char* WritableFile(const char* name) {
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    
+    NSString *docsDir = [paths objectAtIndex:0];
+    
+    NSString *file = [NSString stringWithUTF8String:name];
+    
+    NSString *finalPath = [docsDir stringByAppendingPathComponent:file];
+    
+    const char *c = [finalPath cStringUsingEncoding:NSASCIIStringEncoding];
+    
+    char *b = new char[ [finalPath length] + 1 ];
+    b[ [finalPath length] ] = 0;
+    for (int i = 0; i < [finalPath length]; i++) {
+      b[i] = c[i];
+    }
+    
+    return b;
+  }
+
   
 protected:
   CFDataRef imageData;

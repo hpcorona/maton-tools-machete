@@ -344,6 +344,17 @@ namespace machete {
         return newStr;
       }
       
+      //! Ensure minimum capacity.
+      void Ensure(int cap) {
+        if (cap > capacity) {
+          char *pv = chars;
+          chars = new char[capacity];
+          Assign(chars, len);
+          delete pv;
+          capacity = cap;
+        }
+      }
+      
 			//! Copy the content of a string into the current string.
       Str & operator = (const Str &ostr) {
         if (ostr.len > capacity) {

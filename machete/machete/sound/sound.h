@@ -6,6 +6,9 @@
 //  Copyright 2011 Matón Supergames. All rights reserved.
 //
 
+//! \file sound.h
+//! \brief Raw sound management, and OGG file loading/buffering and playing.
+
 #pragma once
 
 #include <OpenAL/al.h>

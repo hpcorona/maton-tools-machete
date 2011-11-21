@@ -65,26 +65,6 @@ namespace machete {
      */
     virtual unsigned int LoadAudio(const char* name) = 0;
 
-    //! Load the general information about an mp3 file.
-    /*!
-     \param name File name to load.
-     \return True if it was loaded. False otherwise.
-     */
-    virtual bool LoadMusicInfo(const char* name, unsigned int &maxPSize, unsigned int &pCount, int & auFormat, int & freq) = 0;
-    
-    //! Load data buffers from an mp3 file.
-    /*!
-     \param name File name to load.
-     \param maxPacketSize The maximum packet size.
-     \param offset The offset of the packet, 0 for the first.
-     \param count Number of buffers to load.
-     \param packsLoaded Number of packets actually loaded.
-     \param audioData Initialized audio data to load the packets. It must be at least count * maxPacketSize.
-     \param bytesLoaded Bytes loaded into audioData.
-     \return True if no problem.
-     */
-    virtual bool LoadMusicBuffers(const char* name, unsigned int maxPacketSize, unsigned int offset, unsigned int count, unsigned int &packsLoaded, void *audioData, unsigned int &bytesLoaded) = 0;
-    
     //! Generates a random integer.
     /*!
      \return A random integer.
@@ -103,6 +83,9 @@ namespace machete {
      \param hande File handle.
      */
     virtual void CloseFile(FILE* handle) = 0;
+    
+    //! Get the name of a complete writable file path.
+    virtual char* WritableFile(const char* name) = 0;
   };
 
   //! Platform specific features.
@@ -160,26 +143,6 @@ namespace machete {
        */
       unsigned int LoadAudio(const char* name);
       
-      //! Load the general information about an mp3 file.
-      /*!
-       \param name File name to load.
-       \return True if it was loaded. False otherwise.
-       */
-      bool LoadMusicInfo(const char* name, unsigned int &maxPSize, unsigned int &pCount, int & auFormat, int & freq);
-      
-      //! Load data buffers from an mp3 file.
-      /*!
-       \param name File name to load.
-       \param maxPacketSize The maximum packet size.
-       \param offset The offset of the packet, 0 for the first.
-       \param count Number of buffers to load.
-       \param packsLoaded Number of packets actually loaded.
-       \param audioData Initialized audio data to load the packets. It must be at least count * maxPacketSize.
-       \param bytesLoaded Bytes loaded into audioData.
-       \return True if no problem.
-       */
-      bool LoadMusicBuffers(const char* name, unsigned int maxPacketSize, unsigned int offset, unsigned int count, unsigned int &packsLoaded, void *audioData, unsigned int &bytesLoaded);
-      
       //! Generates a random integer.
       /*!
        \return A random integer.
@@ -198,7 +161,15 @@ namespace machete {
        \param hande File handle.
        */
       void CloseFile(FILE* handle);
-      
+
+      //! Get the name of a complete writable file path.
+      /*!
+       \brief The called must free up the memory.
+       \param name The final name.
+       \return The complete and valid file path.
+       */
+      char* WritableFile(const char* name);
+
     private:
       
       //! Platform specific implementation.
