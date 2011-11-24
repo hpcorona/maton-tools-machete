@@ -523,6 +523,9 @@ namespace machete {
       
       //! Detect if the widget is currently centered;
       bool IsCentered() const;
+      
+      //! Clear the current scroll.
+      void ClearScroll();
 
     protected:
       

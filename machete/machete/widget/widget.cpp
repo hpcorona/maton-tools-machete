@@ -1047,6 +1047,13 @@ namespace machete {
       }
     }
     
+    void Scroll::ClearScroll() {
+      container->SetPosition(0, 0);
+      center = size / 2;
+      centering = false;
+      centered = true;
+    }
+    
     void Scroll::SeekGluePoint(const Vec2 &dir) {
       bool still = false;
       
