@@ -16,6 +16,8 @@
 #define catan2(a,b) atan2f(a,b)
 #define cmin(a,b) (a>b?b:a)
 #define cmax(a,b) (a>b?a:b)
+#define cos(a) cosf(a)
+#define sin(a) sinf(a)
 
 #else
 

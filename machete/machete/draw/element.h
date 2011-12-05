@@ -94,7 +94,7 @@ namespace machete {
       /*!
        \param time The time since the last update, in seconds.
        */
-      void Update(float time);
+      virtual void Update(float time);
       
       //! Draw this element and it's childs to a drawing context.
       /*!
