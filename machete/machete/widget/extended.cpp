@@ -150,9 +150,9 @@ namespace machete {
       knobCont->SetPosition(pos);
       knobCont->Invalidate();
       
-      vpp = (max - min) / (range.y - range.x);
-      
       Progressbar::Invalidate();
+      
+      vpp = (max - min) / (range.y - range.x);
     }
     
     void Trackbar::WidgetStartDrag(machete::draw::Element *widget, Vec2 &position) {
