@@ -165,6 +165,9 @@ namespace machete {
       //! See if it accepts drag.
       virtual bool TouchAcceptDragY() = 0;
       
+      //! The user has started dragging the widget from the specified position.
+      virtual void TouchStartDrag(machete::math::Vec2 & position) = 0;
+      
       //! The user is dragging with his finger around the widget.
       virtual void TouchDrag(machete::math::Vec2 & move) = 0;
       

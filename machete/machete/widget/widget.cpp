@@ -458,17 +458,23 @@ namespace machete {
     }
     
     bool Widget::TouchTapIntent() {
+      if (allowTap) {
+        touchProc.Acquiere(this);
+      }
+      
       return allowTap;
     }
     
     void Widget::TouchTapCancelled() {
-      
+      touchProc.Release();
     }
     
     void Widget::TouchTapPerformed() {
       if (event != NULL) {
         event->WidgetTapped(this);
       }
+      
+      touchProc.Release();
     }
     
     bool Widget::TouchAcceptDragX() {
@@ -477,6 +483,14 @@ namespace machete {
 
     bool Widget::TouchAcceptDragY() {
       return allowDragY;
+    }
+    
+    void Widget::TouchStartDrag(Vec2 &position) {
+      if (event != NULL) {
+        event->WidgetStartDrag(this, position);
+      }
+      
+      touchProc.Acquiere(this);
     }
 
     void Widget::TouchDrag(Vec2 & move) {
@@ -495,6 +509,8 @@ namespace machete {
       if (event != NULL) {
         event->WidgetEndTouch(this);
       }
+      
+      touchProc.Release();
     }
     
     void Widget::SetEventListener(WidgetEventAdapter *event) {
@@ -564,7 +580,6 @@ namespace machete {
     
     bool Button::TouchTapIntent() {
       SetState("pressed");
-      touchProc.Acquiere(this);
       
       Widget::TouchTapIntent();
       
@@ -573,21 +588,18 @@ namespace machete {
     
     void Button::TouchTapCancelled() {
       SetState("normal");
-      touchProc.Release();
 
       Widget::TouchTapCancelled();
     }
     
     void Button::TouchTapPerformed() {
       SetState("normal");
-      touchProc.Release();
       
       Widget::TouchTapPerformed();
     }
     
     void Button::TouchEnded() {
       SetState("normal");
-      touchProc.Release();
     }
     
     void Button::Invalidate() {
@@ -938,9 +950,11 @@ namespace machete {
     }
     
     bool Scroll::TouchAcceptDrag() {
-      touchProc.Acquiere(this);
-      
       return true;
+    }
+    
+    void Scroll::TouchStartDrag(Vec2 &position) {
+      touchProc.Acquiere(this);
     }
     
     bool Scroll::TouchEvent(machete::input::Touch *touch) {
@@ -1186,6 +1200,10 @@ namespace machete {
     }
 
     bool TouchContainer::TouchTapIntent() {
+      if (allowTap) {
+        touchProc.Acquiere(this);
+      }
+      
       return allowTap;
     }
     
@@ -1207,6 +1225,13 @@ namespace machete {
 
     bool TouchContainer::TouchAcceptDragX() {
       return allowDragX;
+    }
+    
+    void TouchContainer::TouchStartDrag(machete::math::Vec2 &position) {
+      if (event != NULL) {
+        event->WidgetStartDrag(this, position);
+      }
+      touchProc.Acquiere(this);
     }
 
     void TouchContainer::TouchDrag(machete::math::Vec2 &move) {

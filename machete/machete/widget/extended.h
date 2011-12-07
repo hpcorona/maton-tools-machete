@@ -15,16 +15,26 @@
 namespace machete {
   namespace widget {
     
+    //! A widget change adapter to listen for widget changes.
+    class WidgetChangedAdapter {
+    public:
+      
+      //! The value of the widget was changed.
+      /*!
+       \param widget The widget.
+       */
+      virtual void WidgetValueChanged(Element *widget) {};
+      
+    };
+    
     //! A simple class to display configurable Progress bars.
-    class Progressbar : public TouchContainer {
+    class Progressbar : public Container {
     public:
       
       //! Create a new progressbar.
       /*!
        \param outer Outer frame widget.
        \param inner Inner frame widget.
-       \param vSep Vertical separators (left & right).
-       \param hSep Horizontal separators (up & down).
        */
       Progressbar(Widget *outer, Widget *inner);
       
@@ -131,6 +141,75 @@ namespace machete {
       
       //! Widget size.
       Vec2 size;
+      
+      //! Range.
+      Vec2 range;
+      
+    };
+    
+    //! Interactive progressbar with a know that the user can move.
+    /*!
+     \brief The knob widget must have the following states: 'normal', 'off', 'on', 'drag'.
+     */
+    class Trackbar : public Progressbar, WidgetEventAdapter {
+    public:
+      
+      //! Create a new trackbar.
+      /*!
+       \param outer Outer frame widget.
+       \param inner Inner frame widget.
+       \param offset Knob position offset.
+       */
+      Trackbar(Widget *outer, Widget *inner, Actor *knob);
+      
+      //! Destructor.
+      ~Trackbar();
+      
+      //! Invalidate the data.
+      void Invalidate();
+      
+      //! Start of a drag event.
+      /*!
+       \param widget The widget that is beign dragged.
+       \param position The initial position.
+       */
+      void WidgetStartDrag(Element *widget, Vec2 & position);
+      
+      //! A widget is being dragged.
+      /*!
+       \param widget The widget that is being dragged.
+       \param movement The movement offset.
+       */
+      void WidgetDragged(Element *widget, Vec2 & movement);
+      
+      //! The end of a touch event.
+      /*!
+       \param widget The widget that has ended a touch event on.
+       */
+      void WidgetEndTouch(Element *widget);
+      
+      //! Change the value listener.
+      /*!
+       \param listener Widget listener.
+       */
+      void SetChangeListener(WidgetChangedAdapter *listener);
+
+    protected:
+      
+      //! The knob.
+      Actor *knob;
+      
+      //! Touch container.
+      Widget *knobCont;
+      
+      //! Knob offset inside the knob container.
+      Vec2 offset;
+      
+      //! Value per pixel.
+      float vpp;
+      
+      //! Widget change listener.
+      WidgetChangedAdapter *changeListener;
       
     };
     

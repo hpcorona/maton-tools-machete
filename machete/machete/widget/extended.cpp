@@ -12,10 +12,6 @@ namespace machete {
   namespace widget {
     
     Progressbar::Progressbar(Widget *outer, Widget *inner) {
-      allowTap = false;
-      allowDragX = false;
-      allowDragY = false;
-      
       this->outer = outer;
       this->inner = inner;
       
@@ -110,7 +106,100 @@ namespace machete {
       inner->SetPosition(innPos);
       inner->SetSize(innSize);
       
-      TouchContainer::Invalidate();
+      range.x = innPos.x;
+      range.y = innPos.x + size.x - hBorder.x - hBorder.y;
+      
+      Container::Invalidate();
+    }
+    
+    Trackbar::Trackbar(Widget *outer, Widget *inner, Actor *knob) : Progressbar(outer, inner) {
+      this->knob = knob;
+      knobCont = new Widget();
+      knobCont->SetAllowDragX(true);
+      knobCont->draw::Container::Add(knob);
+      knobCont->Invalidate();
+      knobCont->SetEventListener(this);
+      
+      knob->Invalidate();
+      Rect2D kbound = knob->GetBounds();
+      offset = kbound.pos;
+      Vec2 offn = ZERO2 - offset;
+      knob->SetPosition(offn);
+      
+      knobCont->SetSize(kbound.size);
+      knobCont->Invalidate();
+      
+      outer->SetAllowDragX(true);
+      outer->SetEventListener(this);
+      
+      changeListener = NULL;
+      
+      Add(knobCont);
+    }
+    
+    Trackbar::~Trackbar() {
+      delete knob;
+      delete knobCont;
+    }
+    
+    void Trackbar::Invalidate() {
+      Vec2 pos = offset;
+      pos.x += hBorder.x + porcentile * (size.x - hBorder.x - hBorder.y);
+      pos.y += vBorder.x + (size.y - vBorder.x - vBorder.y) * 0.5f;
+      
+      knobCont->SetPosition(pos);
+      knobCont->Invalidate();
+      
+      vpp = (max - min) / (range.y - range.x);
+      
+      Progressbar::Invalidate();
+    }
+    
+    void Trackbar::WidgetStartDrag(machete::draw::Element *widget, Vec2 &position) {
+      knob->Play("drag");
+      
+      if (widget == knobCont) {
+        WidgetDragged(knobCont, ZERO2);
+      } else {
+        Rect2D size = inner->GetGlobalBounds();
+        Vec2 local = position - size.pos;
+        
+        float nv = (local.x - hBorder.x) * vpp;
+        
+        SetValue(nv);
+        Invalidate();
+        
+        if (changeListener != NULL) {
+          changeListener->WidgetValueChanged(this);
+        }
+      }
+    }
+    
+    void Trackbar::WidgetDragged(machete::draw::Element *widget, Vec2 &movement) {
+      float inc = vpp * movement.x;
+      
+      Increment(inc);
+      Invalidate();
+      
+      if (changeListener != NULL) {
+        changeListener->WidgetValueChanged(this);
+      }
+    }
+    
+    void Trackbar::WidgetEndTouch(machete::draw::Element *widget) {
+      Invalidate();
+      
+      if (porcentile == 0) {
+        knob->Play("off");
+      } else if (porcentile == 1) {
+        knob->Play("on");
+      } else {
+        knob->Play("normal");
+      }
+    }
+    
+    void Trackbar::SetChangeListener(machete::widget::WidgetChangedAdapter *listener) {
+      changeListener = listener;
     }
     
   }

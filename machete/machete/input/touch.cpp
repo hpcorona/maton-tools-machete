@@ -69,6 +69,7 @@ namespace machete {
               startOff.y = 0;
             }
             
+            listener->TouchStartDrag(touch->start);
             listener->TouchDrag(startOff);
             alive = false;
 
@@ -125,12 +126,23 @@ namespace machete {
           withTap = true;
           alive = false;
         } else {
-          listener->TouchTapCancelled();
+          if (withTap) {
+            listener->TouchTapCancelled();
+          }
+          
           withTap = false;
           
           if (listener->TouchAcceptDragX() || listener->TouchAcceptDragY()) {
             tracking = true;
             alive = false;
+            
+            listener->TouchStartDrag(touch->start);
+          } else {
+            tracking = false;
+            alive = false;
+            
+            this->touch = NULL;
+            return false;
           }
         }
       } else if (tracking && touch->phase == TouchMove) {

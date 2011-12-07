@@ -138,6 +138,12 @@ namespace machete {
        */
       virtual void WidgetEndTouch(Element *widget) {}
       
+      //! The start of a drag event.
+      /*!
+       \param widget The widget that has started a drag.
+       */
+      virtual void WidgetStartDrag(Element *widget, Vec2 & position) {}
+      
       //! A widget was affected by inertia.
       /*!
        \param widget The widget that is being moved by inertia.
@@ -243,6 +249,9 @@ namespace machete {
 
       //! The widget accepts horizontal drag.
       virtual bool TouchAcceptDragX();
+      
+      //! The user has started dragging with his finger at the specified position.
+      virtual void TouchStartDrag(Vec2 & position);
 
       //! The user is dragging with his finger around the widget.
       virtual void TouchDrag(Vec2 & move);
@@ -282,19 +291,19 @@ namespace machete {
       /*!
        \param allow If tapping will be allowed.
        */
-      inline void SetAllowTap(bool allow);
+      void SetAllowTap(bool allow);
       
       //! Change vertical drag allowed.
       /*!
        \param allow If vertical dragging will be allowed.
        */
-      inline void SetAllowDragY(bool allow);
+      void SetAllowDragY(bool allow);
 
       //! Change horizontal drag allowed.
       /*!
        \param allow If horizontal dragging will be allowed.
        */
-      inline void SetAllowDragX(bool allow);
+      void SetAllowDragX(bool allow);
 
     protected:
       
@@ -445,6 +454,9 @@ namespace machete {
       
       //! The widget accepts drag.
       virtual bool TouchAcceptDrag();
+      
+      //! Start dragging.
+      void TouchStartDrag(Vec2 & position);
       
       //! The user is dragging with his finger around the widget.
       void TouchDrag(Vec2 & move);
@@ -644,6 +656,9 @@ namespace machete {
 
       //! See if it accepts vertical drag.
       virtual bool TouchAcceptDragY();
+      
+      //! The user has started dragging his finger from the specified position.
+      virtual void TouchStartDrag(machete::math::Vec2 & position);
 
       //! The user is dragging with his finger around the widget.
       virtual void TouchDrag(machete::math::Vec2 & move);
