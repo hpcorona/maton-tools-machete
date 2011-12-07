@@ -26,6 +26,7 @@
 #include "input/touch.h"
 #include "sound/sound.h"
 #include "storage/sql.h"
+#include "widget/extended.h"
 
 //! The main namespace. All the escential definitions of the engine are here.
 namespace machete {
