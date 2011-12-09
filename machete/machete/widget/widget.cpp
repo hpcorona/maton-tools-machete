@@ -539,10 +539,15 @@ namespace machete {
     
     Button::Button() {
       font = NULL;
+      fontPress = NULL;
       
       label = new Text(30);
+      labelPress = new Text(30);
       
       Container::Add(label);
+      Container::Add(labelPress);
+      
+      labelPress->Disable();
       
       allowTap = true;
       allowDragX = false;
@@ -551,6 +556,7 @@ namespace machete {
     
     Button::~Button() {
       delete label;
+      delete labelPress;
     }
     
     void Button::SetLabel(Str & label) {
@@ -559,7 +565,14 @@ namespace machete {
         return;
       }
       
+      if (fontPress == NULL) {
+        this->labelPress->Clear();
+      }
+      
       font->Change(this->label, label);
+      if (fontPress != NULL) {
+        fontPress->Change(this->labelPress, label);
+      }
       
       Invalidate();
     }
@@ -568,6 +581,10 @@ namespace machete {
       if (font == NULL) {
         this->label->Clear();
         return;
+      }
+      
+      if (fontPress == NULL) {
+        this->labelPress->Clear();
       }
       
       Str lblText(label);
@@ -581,6 +598,11 @@ namespace machete {
     bool Button::TouchTapIntent() {
       SetState("pressed");
       
+      if (fontPress != NULL) {
+        label->Disable();
+        labelPress->Enable();
+      }
+      
       Widget::TouchTapIntent();
       
       return true;
@@ -589,21 +611,37 @@ namespace machete {
     void Button::TouchTapCancelled() {
       SetState("normal");
 
+      if (fontPress != NULL) {
+        label->Enable();
+        labelPress->Disable();
+      }
+      
       Widget::TouchTapCancelled();
     }
     
     void Button::TouchTapPerformed() {
       SetState("normal");
       
+      if (fontPress != NULL) {
+        label->Enable();
+        labelPress->Disable();
+      }
+      
       Widget::TouchTapPerformed();
     }
     
     void Button::TouchEnded() {
       SetState("normal");
+      
+      if (fontPress != NULL) {
+        label->Enable();
+        labelPress->Disable();
+      }
     }
     
     void Button::Invalidate() {
       label->Invalidate();
+      labelPress->Invalidate();
       
       Widget::Invalidate();
       
@@ -614,6 +652,17 @@ namespace machete {
       float y = (size.y - tSize.y) / 2.0f - label->GetMaxPivot();
       
       label->SetPosition(x, y);
+      
+      tSize = labelPress->GetTextSize();
+      
+      x = (size.x - tSize.x) / 2.0f;
+      y = (size.y - tSize.y) / 2.0f - labelPress->GetMaxPivot();
+      
+      labelPress->SetPosition(x, y);
+    }
+    
+    void Button::SetPressedFont(machete::draw::Font *font) {
+      fontPress = font;
     }
 
     Scroll::Scroll(int width, int height) {

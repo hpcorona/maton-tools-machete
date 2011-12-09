@@ -382,13 +382,22 @@ namespace machete {
       //! Invalidates the size.
       void Invalidate();
       
+      //! Font to use when Pressed.
+      void SetPressedFont(Font *font);
+      
     protected:
 
       //! Font to be used with this button.
       Font *font;
       
+      //! Font to be used when this button is pressed.
+      Font *fontPress;
+      
       //! The label for the button.
       Text *label;
+      
+      //! The label for the button when pressed.
+      Text *labelPress;
       
     };
 
