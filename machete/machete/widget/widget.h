@@ -735,6 +735,19 @@ namespace machete {
       bool allowDragX;
     };
 
+    enum TextPosition {
+      TextPosHLeft = 1,
+      TextPosHCenter = 2,
+      TextPosHRight = 4,
+      
+      TextPosVTop = 32,
+      TextPosVCenter = 64,
+      TextPosVBottom = 128,
+      TextPosVTopBaseline = 256,
+      TextPosVBottomBaseline = 512,
+      TextPosVCenterBaseline = 1024
+    };
 
+    void PositionText(Text *text, Vec2 & position, unsigned long positionFlags);
   }
 }

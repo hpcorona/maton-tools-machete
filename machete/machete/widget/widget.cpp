@@ -640,25 +640,21 @@ namespace machete {
     }
     
     void Button::Invalidate() {
-      label->Invalidate();
-      labelPress->Invalidate();
+      if (label != NULL) {
+        label->Invalidate();
+      }
+      
+      if (labelPress != NULL) {
+        labelPress->Invalidate();
+      }
       
       Widget::Invalidate();
       
-      Vec2 tSize = label->GetTextSize();
-      Vec2 size = GetSize();
+      Vec2 midPos = GetSize() / 2.0f;
       
-      float x = (size.x - tSize.x) / 2.0f;
-      float y = (size.y - tSize.y) / 2.0f - label->GetMaxPivot();
-      
-      label->SetPosition(x, y);
-      
-      tSize = labelPress->GetTextSize();
-      
-      x = (size.x - tSize.x) / 2.0f;
-      y = (size.y - tSize.y) / 2.0f - labelPress->GetMaxPivot();
-      
-      labelPress->SetPosition(x, y);
+      unsigned long flag = TextPosHCenter | TextPosVCenter;
+      PositionText(label, midPos, flag);
+      PositionText(labelPress, midPos, flag);
     }
     
     void Button::SetPressedFont(machete::draw::Font *font) {
@@ -1326,6 +1322,39 @@ namespace machete {
       touchProc.Update(time);
       
       Container::Update(time);
+    }
+    
+    void PositionText(Text *text, Vec2 & position, unsigned long positionFlags) {
+      if (text == NULL) return;
+      
+      float x = position.x;
+      float y = position.y;
+      Vec2 tSize = text->GetTextSize();
+      float pivot = text->GetMaxPivot();
+
+      if (positionFlags & TextPosHLeft) {
+        // Nothing to do :)
+      } else if (positionFlags & TextPosHCenter) {
+        x -= tSize.x * 0.5f;
+      } else if (positionFlags & TextPosHRight) {
+        x -= tSize.x;
+      }
+      
+      if (positionFlags & TextPosVTop) {
+        y -= pivot;
+      } else if (positionFlags & TextPosVCenter) {
+        y += (tSize.y + 0.5f) + pivot;
+      } else if (positionFlags & TextPosVBottom) {
+        y -= tSize.y + pivot;
+      } else if (positionFlags & TextPosVTopBaseline) {
+        y -= pivot;
+      } else if (positionFlags & TextPosVBottomBaseline) {
+        // Nothing to do :)
+      } else if (positionFlags & TextPosVCenterBaseline) {
+        y += (tSize.y + 0.5f) + pivot;
+      }
+      
+      text->SetPosition(x, y);
     }
 
   }
