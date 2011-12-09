@@ -79,13 +79,17 @@ namespace machete {
           }
         }
         
-        int ttl = ov_streams(&oggStream);
-        
-        if (section >= ttl) {
-          ov_raw_seek(&oggStream, 0);
+        if (size == 0)  {
+          int ttl = ov_streams(&oggStream);
+          
+          if (section >= ttl) {
+            ov_raw_seek(&oggStream, 0);
+            
+            return Enqueue(count + 1);
+          }
+
+          return oneLoaded; 
         }
-        
-        if (size == 0) return oneLoaded;
         
         unsigned int buff = buffers[currBuffer];
         
@@ -104,6 +108,12 @@ namespace machete {
         currBuffer = (currBuffer + 1) % MAX_MUSIC_BUFFERS;
         
         oneLoaded = true;
+        
+        int ttl = ov_streams(&oggStream);
+        
+        if (section >= ttl) {
+          ov_raw_seek(&oggStream, 0);
+        }
       }
       
       int queued;
