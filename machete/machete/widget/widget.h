@@ -119,6 +119,12 @@ namespace machete {
     class WidgetEventAdapter {
     public:
       
+      //! The touch event was cancelled.
+      /*!
+       \param widget The widget that was involved in the touch event.
+       */
+      virtual void WidgetTouchCancelled(Element *widget) {}
+      
       //! A widget was tapped.
       /*!
        \param widget The widget that was tapped.
@@ -231,6 +237,9 @@ namespace machete {
        \return The size of the widget.
        */
       inline Vec2 & GetSize();
+      
+      //! The touch was cancelled.
+      virtual void TouchCancelled();
       
       //! The widget accepts tap.
       virtual bool TouchAcceptTap();
@@ -367,6 +376,9 @@ namespace machete {
        */
       void SetFont(Font *font);
       
+      //! The touch was cancelled.
+      virtual void TouchCancelled();
+      
       //! The button was pressed but not released.
       virtual bool TouchTapIntent();
       
@@ -457,6 +469,9 @@ namespace machete {
        \param hScroll The horizontal scrollbar.
        */
       void SetDecorators(Widget *frame, Widget *vScroll, Widget *hScroll);
+      
+      //! The touch was cancelled.
+      virtual void TouchCancelled();
       
       //! The widget accepts tap intent when alive.
       virtual bool TouchTapIntent();
@@ -647,6 +662,9 @@ namespace machete {
       
       //! Destructor.
       ~TouchContainer();
+      
+      //! The touch was cancelled.
+      virtual void TouchCancelled();
       
       //! See if it accepts taps.
       virtual bool TouchAcceptTap();

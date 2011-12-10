@@ -444,13 +444,23 @@ namespace machete {
     }
     
     bool Widget::TouchEvent(machete::input::Touch *touch) {
-      if (Container::TouchEvent(touch) == true) {
-        return true;
+      if (touch->owner != this) {
+        if (Container::TouchEvent(touch) == true) {
+          return true;
+        }
       }
       
       Rect2D bounds = GetGlobalBounds();
       
       return touchProc.Gather(touch, bounds);
+    }
+    
+    void Widget::TouchCancelled() {
+      if (event != NULL) {
+        event->WidgetTouchCancelled(this);
+      }
+      
+      touchProc.Release();
     }
     
     bool Widget::TouchAcceptTap() {
@@ -593,6 +603,21 @@ namespace machete {
     
     void Button::SetFont(Font *font) {
       this->font = font;
+    }
+    
+    void Button::TouchCancelled() {
+      SetState("normal");
+      
+      if (event != NULL) {
+        event->WidgetTouchCancelled(this);
+      }
+      
+      if (fontPress != NULL) {
+        label->Enable();
+        labelPress->Disable();
+      }
+      
+      touchProc.Release();
     }
     
     bool Button::TouchTapIntent() {
@@ -984,6 +1009,14 @@ namespace machete {
       }
     }
     
+    void Scroll::TouchCancelled() {
+      if (event != NULL) {
+        event->WidgetTouchCancelled(this);
+      }
+      
+      touchProc.Release();
+    }
+    
     bool Scroll::TouchTapIntent() {
       if (touchProc.IsAlive()) {
         touchProc.Acquiere(this);
@@ -1006,24 +1039,26 @@ namespace machete {
       Rect2D bounds = GetGlobalBounds();
       bool contained = bounds.Contains(touch->current);
       
-      if (!touchProc.IsAlive()) {
-        if (!touchProc.IsTracking() && !contained) {
-          return false;
-        }
-      } else {
-        if (contained) {
-          if (touchProc.Gather(touch, bounds)) {
-            return true;
+      if (touch->owner != this) {
+        if (!touchProc.IsAlive()) {
+          if (!touchProc.IsTracking() && !contained) {
+            return false;
+          }
+        } else {
+          if (contained) {
+            if (touchProc.Gather(touch, bounds)) {
+              return true;
+            }
           }
         }
-      }
       
-      if (touch->phase == machete::input::TouchStart && !contained) {
-        return false;
-      }
+        if (touch->phase == machete::input::TouchStart && !contained) {
+          return false;
+        }
       
-      if (container->TouchEvent(touch) == true) {
-        return true;
+        if (container->TouchEvent(touch) == true) {
+          return true;
+        }
       }
       
       return touchProc.Gather(touch, bounds);
@@ -1239,6 +1274,14 @@ namespace machete {
     TouchContainer::~TouchContainer() {
       
     }
+    
+    void TouchContainer::TouchCancelled() {
+      if (event != NULL) {
+        event->WidgetTouchCancelled(this);
+      }
+      
+      touchProc.Release();
+    }
 
     bool TouchContainer::TouchAcceptTap() {
       return allowTap;
@@ -1299,10 +1342,12 @@ namespace machete {
     }
     
     bool TouchContainer::TouchEvent(machete::input::Touch *touch) {
-      if (!active || !visible) return false;
+      if (touch->owner != this) {
+        if (!active || !visible) return false;
       
-      if (Container::TouchEvent(touch) == true) {
-        return true;
+        if (Container::TouchEvent(touch) == true) {
+          return true;
+        }
       }
       
       Rect2D bounds = GetGlobalBounds();

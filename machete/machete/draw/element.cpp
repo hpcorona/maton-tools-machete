@@ -138,12 +138,14 @@ namespace machete {
     }
     
     bool Container::TouchEvent(machete::input::Touch *touch) {
-      if (!active || !visible) return false;
+      if (touch->owner != this) {
+        if (!active || !visible) return false;
       
-      childs.Reset();
-      while (childs.Previous()) {
-        if (childs.GetCurrent()->GetValue()->TouchEvent(touch)) {
-          return true;
+        childs.Reset();
+        while (childs.Previous()) {
+          if (childs.GetCurrent()->GetValue()->TouchEvent(touch)) {
+            return true;
+          }
         }
       }
       

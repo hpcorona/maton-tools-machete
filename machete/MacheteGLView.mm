@@ -103,8 +103,11 @@ CAEAGLLayer *eaglLayer = NULL;
 - (void)sendTouches:(NSSet *)touches withType:(TouchPhase) state {
   float scale = self.contentScaleFactor;
 
+  int count = 0;
+  
   for (UITouch *touch in touches) {
-    Touch *t = TheTouchInput->GetTouch(0);
+    Touch *t = TheTouchInput->GetTouch(count++);
+    
     CGPoint pos = [touch locationInView:self];
     CGPoint prev = [touch previousLocationInView:self];
       
@@ -132,6 +135,7 @@ CAEAGLLayer *eaglLayer = NULL;
     }
   }
   
+  TheTouchInput->SetTouchCount(count);
   TheTouchInput->MarkAvailable();
 }
 

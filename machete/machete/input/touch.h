@@ -131,6 +131,9 @@ namespace machete {
       //! Check if there is information available.
       inline bool IsAvailable() const { return !invalid; }
       
+      //! Cancel all touch events.
+      void CancelTouchEvents();
+      
     protected:
       
       //! Touch array.
@@ -146,6 +149,9 @@ namespace machete {
     //! An event listener. Receives updates about how the user is touching the device on a Widget.
     class TouchListener {
     public:
+      
+      //! The touch was cancelled.
+      virtual void TouchCancelled() = 0;
       
       //! See if it accepts taps.
       virtual bool TouchAcceptTap() = 0;

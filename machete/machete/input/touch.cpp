@@ -25,6 +25,9 @@ namespace machete {
     TouchInput::~TouchInput() {
       for (int i = 0; i < 10; i++) {
         delete touches[i];
+    }
+    
+    void TouchInput::CancelTouchEvents() {
       }
       
       delete[] touches;
@@ -41,6 +44,11 @@ namespace machete {
     bool TouchProcessor::Gather(Touch *touch, const machete::math::Rect2D & bounds) {
       
       if (listener == NULL) return false;
+      
+      if (touch->phase == TouchCancelled) {
+        listener->TouchCancelled();
+        return true;
+      }
       
       this->touch = touch;
       
