@@ -25,12 +25,18 @@ namespace machete {
     TouchInput::~TouchInput() {
       for (int i = 0; i < 10; i++) {
         delete touches[i];
-    }
-    
-    void TouchInput::CancelTouchEvents() {
       }
       
       delete[] touches;
+    }
+    
+    void TouchInput::CancelTouchEvents() {
+      for (int i = 0; i < 10; i++) {
+        if (touches[i]->owner != NULL) {
+          touches[i]->phase = TouchCancelled;
+          touches[i]->owner->TouchEvent(touches[i]);
+        }
+      }
     }
     
     TouchProcessor::TouchProcessor(TouchListener *listener) {
