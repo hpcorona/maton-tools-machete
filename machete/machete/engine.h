@@ -120,6 +120,7 @@ namespace machete {
     graphics::TheShaderMgr = new graphics::ShaderMgr();
     graphics::TheTextureMgr = new graphics::TextureMgr();
     sound::TheSoundMgr = new sound::SoundManager();
+    sound::TheMusicMgr = new sound::MusicManager();
   }
   
 }

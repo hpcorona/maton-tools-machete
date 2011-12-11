@@ -32,7 +32,7 @@ using namespace machete::platform;
 
 #define MAX_SOUNDS  5
 #define MAX_MUSIC_BUFFERS   3
-#define MUSIC_BUFFER_SIZE   128000
+#define MUSIC_BUFFER_SIZE   64000
 
 namespace machete {
   
@@ -43,10 +43,7 @@ namespace machete {
     class Music {
     public:
       //! Creates a new music object.
-      /*!
-       \param name Name of the music file.
-       */
-      Music(const char* name);
+      Music();
       
       //! Destructor.
       ~Music();
@@ -72,6 +69,9 @@ namespace machete {
       //! Stop the sound.
       void Stop();
       
+      //! Change the volume.
+      void SetVolume(float volume);
+      
       //! Check if it's playing.
       /*!
        \return True if it's playing.
@@ -81,7 +81,21 @@ namespace machete {
       //! Check if the music was loaded.
       bool IsLoaded() const;
       
+      //! Prepare a music file for playing.
+      /*!
+       \param name Name of the music file.
+       \param preload Preload the music with 3 buffers.
+       \return True if everything was ok.
+       */
+      bool PrepareMusic(const char *name, bool preload);
+      
     protected:
+      
+      //! Close the current ogg.
+      void CloseOgg();
+      
+      //! Create the sound buffers.
+      void CreateBuffers();
       
       //! Enqueue next packets.
       /*!
@@ -281,8 +295,80 @@ namespace machete {
       
     };
     
+    enum MusicFlag {
+      PlayInstant = 0,
+      PlayFade = 1
+    };
+    
+    //! A music manager.
+    class MusicManager {
+    public:
+      
+      //! Create a new Music Manager.
+      MusicManager();
+      
+      //! Destructor.
+      ~MusicManager();
+      
+      //! Play a music file on stream mode.
+      /*!
+       \param file File name to play.
+       \param flags Music flags.
+       \param fade Fade time.
+       */
+      void Play(const char *file, unsigned int flags, float fade);
+      
+      //! Change the global music volume.
+      /*!
+       \param volume The new music volume.
+       */
+      void SetVolume(float volume);
+      
+      //! Get the current volume.
+      /*!
+       \return The current volume.
+       */
+      float GetVolume();
+      
+      //! Update the music.
+      /*!
+       \param time The time differential.
+       */
+      void Update(float time);
+      
+    protected:
+      
+      //! The current volume.
+      float volume;
+      
+      //! Music Buffer 1.
+      Music* buff1;
+      
+      //! Music Buffer 2.
+      Music* buff2;
+      
+      //! Current playing Music.
+      Music* current;
+      
+      //! Fading music.
+      Music* fading;
+      
+      //! Current elapsed time used for fading.
+      float time;
+      
+      //! Maximum fade time.
+      float maxTime;
+      
+      //! Current music name.
+      Str currentMusicName;
+      
+    };
+    
     //! Global sound manager.
     extern SoundManager* TheSoundMgr;
+    
+    //! Global music manager.
+    extern MusicManager* TheMusicMgr;
     
   }
   

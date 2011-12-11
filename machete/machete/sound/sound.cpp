@@ -26,34 +26,61 @@ namespace machete {
       return;
     }
     
-    Music::Music(const char *name) {
+    Music::Music() {
       audioData = NULL;
       firstRun = true;
       soundLoaded = false;
       
       this->name = new char[80];
-      machete::data::Str n = name;
-      n.GetChars(this->name, 80);
+      this->name[0] = 0;
+      
+      CreateBuffers();
     }
     
     Music::~Music() {
       delete name;
       
-      if (soundLoaded) {
-        ov_clear(&oggStream);
-        ThePlatform->CloseFile(handle);
-        
-        if (audioData != NULL) {
-          for (int i = 0; i < MAX_MUSIC_BUFFERS; i++) {
-            delete audioData[i];
-          }
-        
-          delete [] audioData;
+      CloseOgg();
+      
+      if (audioData != NULL) {
+        for (int i = 0; i < MAX_MUSIC_BUFFERS; i++) {
+          delete audioData[i];
         }
-
-        alDeleteBuffers(MAX_MUSIC_BUFFERS, buffers);
-        alDeleteSources(1, &source);
+        
+        delete [] audioData;
       }
+
+      alDeleteBuffers(MAX_MUSIC_BUFFERS, buffers);
+      alDeleteSources(1, &source);
+    }
+    
+    void Music::CloseOgg() {
+      if (!soundLoaded) return;
+      
+      Stop();
+      
+      ov_clear(&oggStream);
+      ThePlatform->CloseFile(handle);
+      
+      soundLoaded = false;
+      firstRun = true;
+    }
+    
+    bool Music::PrepareMusic(const char *name, bool preload) {
+      CloseOgg();
+      
+      machete::data::Str n = name;
+      n.GetChars(this->name, 80);
+
+      firstRun = true;
+      
+      if (!preload) {
+        return true;
+      }
+      
+      LoadOgg();
+      
+      return soundLoaded;
     }
     
     bool Music::Enqueue(int count) {
@@ -94,14 +121,14 @@ namespace machete {
         unsigned int buff = buffers[currBuffer];
         
         alBufferDataStatic(buff, format, data, size, vorbisInfo->rate);
-        if (alGetError() != AL_NO_ERROR) {
-          int err = alGetError();
+        int err = alGetError();
+        if (err != AL_NO_ERROR) {
           std::cout << err << std::endl;
         }
           
         alSourceQueueBuffers(source, 1, &buff);
-        if (alGetError() != AL_NO_ERROR) {
-          int err = alGetError();
+        err = alGetError();
+        if (err != AL_NO_ERROR) {
           std::cout << err << std::endl;
         }
         
@@ -173,6 +200,10 @@ namespace machete {
       Rewind();
     }
     
+    void Music::SetVolume(float volume) {
+       alSourcef(source, AL_GAIN, volume);
+    }
+    
     bool Music::IsPlaying() {
       if (!soundLoaded) return false;
       
@@ -202,6 +233,7 @@ namespace machete {
     
     void Music::LoadOgg() {
       if (!firstRun) return;
+      if (name[0] == 0) return;
       
       firstRun = false;
       soundLoaded = false;
@@ -228,24 +260,28 @@ namespace machete {
       
       soundLoaded = true;
       
+      pause = true;
+      
+      Enqueue(MAX_MUSIC_BUFFERS);
+    }
+    
+    void Music::CreateBuffers() {
       alGenBuffers(MAX_MUSIC_BUFFERS, buffers);
       currBuffer = 0;
-        
+      
       alGenSources(1, &source);
       alSourcef(source, AL_PITCH, 1.0f);
       alSourcef(source, AL_GAIN, 0.25f);
       alSourcei(source, AL_LOOPING, 0);
       alSource3f(source, AL_POSITION, 0, 0, 0);
       alSource3f(source, AL_VELOCITY, 0, 0, 0);
-        
+      
       pause = true;
-        
+      
       audioData = new char*[MAX_MUSIC_BUFFERS];
       for (int i = 0; i < MAX_MUSIC_BUFFERS; i++) {
         audioData[i] = new char[MUSIC_BUFFER_SIZE];
       }
-        
-      Enqueue(MAX_MUSIC_BUFFERS);
     }
     
     Sound::Sound(ALuint buffer, unsigned int cat) {
@@ -477,7 +513,8 @@ namespace machete {
     Music* SoundManager::LoadMusic(const char* name) {
       Tree<Str, Music*>* node = musics.Seek(name);
       if (node == NULL) {
-        Music* music = new Music(name);
+        Music* music = new Music();
+        music->PrepareMusic(name, true);
         
         musics.Add(name, music);
         return music;
@@ -486,7 +523,93 @@ namespace machete {
       return node->GetValue();
     }
     
+    MusicManager::MusicManager() {
+      volume = 0.4f;
+      current = NULL;
+      fading = NULL;
+      time = 0;
+      
+      buff1 = NULL;
+      buff2 = NULL;
+    }
+    
+    MusicManager::~MusicManager() {
+      delete buff1;
+      delete buff2;
+    }
+    
+    void MusicManager::Play(const char *file, unsigned int flags, float fade) {
+      if (currentMusicName == file) {
+        return;
+      }
+      
+      if (buff1 == NULL || buff2 == NULL) {
+        buff1 = new Music();
+        buff2 = new Music();
+        
+        current = buff1;
+        fading = buff2;
+      }
+      
+      currentMusicName = file;
+      
+      fading->PrepareMusic(file, true);
+      
+      if (flags == PlayInstant) {
+        current->Stop();
+        fading->SetVolume(volume);
+        fading->Play();
+        
+        maxTime = 0;
+        time = 0;
+      } else {
+        maxTime = fade;
+        time = fade;
+        
+        current->SetVolume(volume);
+        fading->SetVolume(0);
+        fading->Play();
+      }
+      
+      Music* mid = current;
+      current = fading;
+      fading = mid;
+    }
+    
+    void MusicManager::SetVolume(float volume) {
+      this->volume = volume;
+      
+      if (time == 0 && current != NULL) {
+        current->SetVolume(volume);
+      }
+    }
+    
+    float MusicManager::GetVolume() {
+      return volume;
+    }
+    
+    void MusicManager::Update(float time) {
+      if (buff1 == NULL || buff2 == NULL) return;
+      
+      if (this->time > 0) {
+        this->time -= time;
+        if (this->time < 0) {
+          this->time = 0;
+        }
+        
+        float factor = time / maxTime;
+        
+        current->SetVolume(volume * (1 - factor));
+        fading->SetVolume(volume * factor);
+      }
+      
+      current->Update(time);
+      fading->Update(time);
+    }
+    
     SoundManager* TheSoundMgr = NULL;
+    
+    MusicManager* TheMusicMgr = NULL;
     
   }
 }
