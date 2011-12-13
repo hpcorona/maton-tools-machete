@@ -638,10 +638,18 @@ namespace machete {
     }
     
     void MusicManager::SetVolume(float volume) {
+      if (this->volume == 0 && volume != 0 && current != NULL && current->IsPlaying() == false) {
+        current->Play();
+      }
+      
       this->volume = volume;
       
       if (time == 0 && current != NULL) {
         current->SetVolume(volume);
+        
+        if (volume == 0) {
+          current->Stop();
+        }
       }
     }
     
