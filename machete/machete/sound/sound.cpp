@@ -555,7 +555,7 @@ namespace machete {
       
       fading->PrepareMusic(file, true);
       
-      if (flags == PlayInstant) {
+      if (flags == PlayInstant || fade <= 0) {
         current->Stop();
         fading->SetVolume(volume);
         fading->Play();
@@ -593,18 +593,22 @@ namespace machete {
       
       if (this->time > 0) {
         this->time -= time;
-        if (this->time < 0) {
+        if (this->time <= 0) {
           this->time = 0;
+          fading->Stop();
         }
         
-        float factor = time / maxTime;
+        float factor = this->time / maxTime;
         
         current->SetVolume(volume * (1 - factor));
         fading->SetVolume(volume * factor);
       }
       
       current->Update(time);
-      fading->Update(time);
+      
+      if (fading->IsPlaying()) {
+        fading->Update(time);
+      }
     }
     
     SoundManager* TheSoundMgr = NULL;
