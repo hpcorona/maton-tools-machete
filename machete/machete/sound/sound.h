@@ -196,6 +196,9 @@ namespace machete {
        */
       inline unsigned int GetCategory() const;
 
+      //! Change the volume.
+      void SetVolume(float volume);
+
     private:
       
       //! Category flag.
@@ -260,6 +263,21 @@ namespace machete {
        */
       Music* LoadMusic(const char* name);
       
+      //! Change the global music volume.
+      /*!
+       \param volume The new music volume.
+       \param category Category of the volume.
+       */
+      void SetVolume(float volume, unsigned int category);
+      
+      //! Get the current volume.
+      /*!
+       \param category Category of the volume.
+       \return The current volume.
+       */
+      float GetVolume(unsigned int category);
+
+      
     protected:
       
       //! Loads a new sound buffer.
@@ -292,6 +310,9 @@ namespace machete {
       
       //! Music cache.
       Hash<Str, Music*> musics;
+      
+      //! Categories volumes.
+      Hash<unsigned int, float> volumes;
       
     };
     

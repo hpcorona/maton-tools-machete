@@ -105,6 +105,14 @@ namespace machete {
         return value;
       }
       
+      //! Set the value of this node.
+      /*!
+       \param value The new value.
+       */
+      void SetValue(T value) {
+        this->value = value;
+      }
+      
       //! Seek for a key on this node or on the childs of this node.
       /*!
        Usually this method will be called on the root node only, because it will

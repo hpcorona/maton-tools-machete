@@ -350,6 +350,10 @@ namespace machete {
       return category;
     }
     
+    void Sound::SetVolume(float volume) {
+      alSourcef(source, AL_GAIN, volume);
+    }
+    
     SoundManager::SoundManager() {
       device = NULL;
       context = NULL;
@@ -440,13 +444,19 @@ namespace machete {
         return NULL;
       }
       
+      float volume = GetVolume(category);
+      
       Tree<Str, Sound*>* node = singletons.Seek(name);
       if (node == NULL) {
         Sound* snd = new Sound(buff, category);
         
         singletons.Add(name, snd);
         
-        snd->Play();
+        snd->SetVolume(volume);
+        
+        if (volume > 0) {
+          snd->Play();
+        }
         
         return snd;
       }
@@ -454,7 +464,11 @@ namespace machete {
       Sound *snd = node->GetValue();
       
       snd->Rewind();
-      snd->Play();
+      snd->SetVolume(volume);
+      
+      if (volume > 0) {
+        snd->Play();
+      }
       
       return snd;
     }
@@ -465,6 +479,8 @@ namespace machete {
         return NULL;
       }
       
+      float volume = GetVolume(category);
+      
       if (sounds.Count() < MAX_SOUNDS) {
         if (available.Count() > 0) {
           Sound *snd = available.GetRoot()->GetValue();
@@ -474,7 +490,12 @@ namespace machete {
           
           sounds.Append(snd);
           
-          snd->Play();
+          snd->SetVolume(volume);
+          
+          if (volume > 0) {
+            snd->Play();
+          }
+          
           return snd;
         }
         
@@ -482,7 +503,12 @@ namespace machete {
         
         sounds.Append(snd);
         
-        snd->Play();
+        snd->SetVolume(volume);
+        
+        if (volume > 0) {
+          snd->Play();
+        }
+        
         return snd;
       } else {
         Sound* snd = sounds.GetRoot()->GetValue();
@@ -492,7 +518,12 @@ namespace machete {
 
         sounds.Append(snd);
         
-        snd->Play();
+        snd->SetVolume(volume);
+        
+        if (volume > 0) {
+          snd->Play();
+        }
+        
         return snd;
       }
     }
@@ -522,6 +553,36 @@ namespace machete {
       
       return node->GetValue();
     }
+    
+    void SoundManager::SetVolume(float volume, unsigned int category) {
+      Tree<unsigned int, float> *node = volumes.Seek(category);
+      if (node == NULL) {
+        volumes.Add(category, volume);
+      } else {
+        node->SetValue(volume);
+      }
+      
+      sounds.Reset();
+      while (sounds.Next()) {
+        Sound* snd = sounds.GetCurrent()->GetValue();
+        
+        if (snd->GetCategory() != category) {
+          continue;
+        }
+        
+        snd->SetVolume(volume);
+      }
+    }
+    
+    float SoundManager::GetVolume(unsigned int category) {
+      Tree<unsigned int, float> *node = volumes.Seek(category);
+      if (node == NULL) {
+        return 0;
+      } else {
+        return node->GetValue();
+      }
+    }
+
     
     MusicManager::MusicManager() {
       volume = 0.4f;
@@ -603,6 +664,8 @@ namespace machete {
         current->SetVolume(volume * (1 - factor));
         fading->SetVolume(volume * factor);
       }
+      
+      if (volume == 0) return;
       
       current->Update(time);
       
