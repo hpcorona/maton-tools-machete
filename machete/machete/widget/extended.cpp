@@ -202,5 +202,52 @@ namespace machete {
       changeListener = listener;
     }
     
+    ActorButton::ActorButton(Actor *actor) {
+      this->actor = actor;
+      
+      allowTap = true;
+      allowDragX = false;
+      allowDragY = false;
+      
+      Add(actor);
+      
+      actor->Play("normal", false);
+      actor->Invalidate();
+    }
+    
+    ActorButton::~ActorButton() {
+      delete actor;
+    }
+    
+    void ActorButton::TouchCancelled() {
+      actor->Play("normal", false);
+      
+      TouchContainer::TouchCancelled();
+    }
+    
+    bool ActorButton::TouchTapIntent() {
+      actor->Play("pressed", false);
+      
+      return TouchContainer::TouchTapIntent();
+    }
+    
+    void ActorButton::TouchTapCancelled() {
+      actor->Play("normal", false);
+      
+      TouchContainer::TouchTapCancelled();
+    }
+    
+    void ActorButton::TouchTapPerformed() {
+      actor->Play("normal", false);
+      
+      TouchContainer::TouchTapPerformed();
+    }
+    
+    void ActorButton::TouchEnded() {
+      actor->Play("normal", false);
+      
+      TouchContainer::TouchEnded();
+    }
+    
   }
 }

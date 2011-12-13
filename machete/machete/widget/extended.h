@@ -213,5 +213,40 @@ namespace machete {
       
     };
     
+    //! An button based on an animation.
+    class ActorButton : public TouchContainer {
+    public:
+      
+      //! Create a new actor button.
+      /*!
+       \param actor The actor.
+       */
+      ActorButton(Actor *actor);
+      
+      //! Destructor.
+      ~ActorButton();
+      
+      //! The touch was cancelled.
+      virtual void TouchCancelled();
+      
+      //! The user may be making a tap.
+      virtual bool TouchTapIntent();
+      
+      //! The user is definitely not making a tap.
+      virtual void TouchTapCancelled();
+      
+      //! The user has performed a tap.
+      virtual void TouchTapPerformed();
+      
+      //! The touch has ended.
+      virtual void TouchEnded();
+      
+    protected:
+      
+      //! The actor.
+      Actor *actor;
+      
+    };
+    
   }
 }

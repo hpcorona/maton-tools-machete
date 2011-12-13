@@ -14,7 +14,7 @@
 #include "element.h"
 #include "../data/mbd.h"
 #include "font.h"
-#include "../widget/widget.h"
+#include "../widget/extended.h"
 
 using namespace machete::widget;
 using namespace machete::data;
@@ -248,6 +248,13 @@ namespace machete {
        \return A new Button.
        */
       Button* NewButton(struct BdlWidget *bwdg) const;
+      //! Create a new Button based on an actor.
+      /*!
+       \brief The actor must have the 'normal' and 'pressed' animations.
+       \param name The name of the actor.
+       \return A new Button based on an actor.
+       */
+      ActorButton* NewActorButton(const char* name) const;
       
     protected:
       

@@ -477,5 +477,9 @@ namespace machete {
       }
     }
     
+    ActorButton* Bundle::NewActorButton(const char* name) const {
+      return new ActorButton(NewActor(name));
+    }
+    
   }
 }
