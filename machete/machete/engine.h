@@ -11,6 +11,7 @@
 
 #pragma once
 
+#include "thread/thread.h"
 #include "draw/bundle.h"
 #include "platform/platform.h"
 #include "graphics/shader.h"
@@ -115,6 +116,8 @@ namespace machete {
 
   //! Start the Engine. This is called automatically by each platform's glue code.
   static void Start(IPlatform *platf) {
+    thread::TheThreadMgr = new thread::ThreadManager();
+    
     platform::ThePlatform = new platform::Platform(platf);
     
     graphics::TheShaderMgr = new graphics::ShaderMgr();

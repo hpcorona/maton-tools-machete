@@ -55,6 +55,8 @@
 		A8A8D06B140AB2EC005C9E2B /* sound.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A8A8D06A140AB2EC005C9E2B /* sound.cpp */; };
 		A8CD9A9F141714A600270862 /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A8CD9A9E141714A600270862 /* CoreAudio.framework */; };
 		A8CD9AA41417156100270862 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A8CD9AA31417156100270862 /* AudioToolbox.framework */; };
+		A8D62E9E149833B100E5DB12 /* thread.h in Headers */ = {isa = PBXBuildFile; fileRef = A8D62E9D149833B100E5DB12 /* thread.h */; };
+		A8D62EA0149833DC00E5DB12 /* thread.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A8D62E9F149833DC00E5DB12 /* thread.cpp */; };
 		A8DF994213A9E05F008A27CA /* iOSPlatform.mm in Sources */ = {isa = PBXBuildFile; fileRef = A84955ED13A89014002BB310 /* iOSPlatform.mm */; };
 		A8E4DD8413A93A5B00A27214 /* platform.h in Headers */ = {isa = PBXBuildFile; fileRef = A8E4DD8313A93A5B00A27214 /* platform.h */; };
 		A8E4DD8713A93BB300A27214 /* draw.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A8E4DD8513A93BB300A27214 /* draw.cpp */; };
@@ -116,6 +118,8 @@
 		A8A8D06A140AB2EC005C9E2B /* sound.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = sound.cpp; sourceTree = "<group>"; };
 		A8CD9A9E141714A600270862 /* CoreAudio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreAudio.framework; path = System/Library/Frameworks/CoreAudio.framework; sourceTree = SDKROOT; };
 		A8CD9AA31417156100270862 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
+		A8D62E9D149833B100E5DB12 /* thread.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = thread.h; sourceTree = "<group>"; };
+		A8D62E9F149833DC00E5DB12 /* thread.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = thread.cpp; sourceTree = "<group>"; };
 		A8E4DD8313A93A5B00A27214 /* platform.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = platform.h; sourceTree = "<group>"; };
 		A8E4DD8513A93BB300A27214 /* draw.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = draw.cpp; sourceTree = "<group>"; };
 		A8E4DD8613A93BB300A27214 /* draw.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = draw.h; sourceTree = "<group>"; };
@@ -320,6 +324,7 @@
 		A888581A135CB1FC00F7732C /* machete */ = {
 			isa = PBXGroup;
 			children = (
+				A8D62E9B1498335D00E5DB12 /* thread */,
 				A8315184147981070036D4BB /* storage */,
 				A829396C13DE7418005D0D64 /* anim */,
 				A801E0DD13A06127002FA9E8 /* common */,
@@ -334,6 +339,15 @@
 				A8885829135CB1FC00F7732C /* engine.h */,
 			);
 			path = machete;
+			sourceTree = "<group>";
+		};
+		A8D62E9B1498335D00E5DB12 /* thread */ = {
+			isa = PBXGroup;
+			children = (
+				A8D62E9D149833B100E5DB12 /* thread.h */,
+				A8D62E9F149833DC00E5DB12 /* thread.cpp */,
+			);
+			path = thread;
 			sourceTree = "<group>";
 		};
 		A8E4DD7A13A91C5C00A27214 /* platform */ = {
@@ -418,6 +432,7 @@
 				A847011E1471E9800046FC3F /* os_types.h in Headers */,
 				A831518814798DA60036D4BB /* sql.h in Headers */,
 				A82BF6F7148F1684005DB0D3 /* extended.h in Headers */,
+				A8D62E9E149833B100E5DB12 /* thread.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -484,6 +499,7 @@
 				A8A8D06B140AB2EC005C9E2B /* sound.cpp in Sources */,
 				A831518614798D9B0036D4BB /* sql.cpp in Sources */,
 				A82BF6FA148F1E8F005DB0D3 /* extended.cpp in Sources */,
+				A8D62EA0149833DC00E5DB12 /* thread.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
