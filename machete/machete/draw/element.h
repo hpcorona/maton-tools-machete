@@ -500,6 +500,12 @@ namespace machete {
        */
       void Draw(DrawContext *ctx);
       
+      //! Set the drawing context of the element.
+      /*!
+       \param ctx The drawing context.
+       */
+      void SetDrawContext(DrawContext *ctx);
+      
       //! Get the texture MetaSprite.
       /*!
        \return The texture MetaSprite.

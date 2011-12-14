@@ -475,5 +475,9 @@ namespace machete {
       }
     }
     
+    void Dynamic::SetDrawContext(machete::graphics::DrawContext *ctx) {
+      Root::context = ctx;
+    }
+    
   }
 }
