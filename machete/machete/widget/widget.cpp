@@ -900,7 +900,9 @@ namespace machete {
         ElasticMovement(strength);
       }
       
-      CalculateElastic(time);
+      if (freeDrag) {
+        CalculateElastic(time);
+      }
       
       if (centering == false && (touchProc.IsAlive() == false || elastic.LengthSquared() == 0) && touchProc.IsTracking() == false) {
         if (autoVScroll && vScroll != NULL) {
