@@ -34,6 +34,7 @@ namespace machete {
     
     const float Pi = 4 * catan(1.0f);
     const float TwoPi = 2 * Pi;
+    const float PiTwo = Pi * 0.5f;
     
     template <typename T>
     struct Vector2 {
