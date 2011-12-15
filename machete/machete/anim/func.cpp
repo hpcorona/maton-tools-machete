@@ -12,246 +12,177 @@
 namespace machete {
   namespace anim {
     
-    float TweenLinear(float time) {
-      return time;
+    static float b = 0;
+    static float c = 1;
+    static float d = 1;
+    
+    float TweenLinear(float t) {
+      return t;
     }
     
-    float TweenEaseInQuad(float time) {
-      return time * time;
+    float TweenEaseInQuad(float t) {
+      return t * t;
     }
     
-    float TweenEaseOutQuad(float time) {
-      return - (time * (time - 2));
+    float TweenEaseOutQuad(float t) {
+      return - (t * (t - 2));
     }
     
-    float TweenEaseInOutQuad(float time) {
-      time = time / 2.0f;
+    float TweenEaseInOutQuad(float t) {
+      if ((t/=d/2) < 1) return ((c/2)*(t*t)) + b;
+      return -c/2 * (((--t)*(t-2)) - 1) + b;
+    }
+    
+    float TweenEaseInCubic(float t) {
+      return c*(t/=d)*t*t + b;
+    }
+    
+    float TweenEaseOutCubic(float t) {
+      return c*((t=t/d-1)*t*t + 1) + b;
+    }
+    
+    float TweenEaseInOutCubic(float t) {
+      if ((t/=d/2) < 1) return c/2*t*t*t + b;
+      return c/2*((t-=2)*t*t + 2) + b;
+    }
+    
+    float TweenEaseInQuart(float t) {
+      return c*(t/=d)*t*t*t + b;
+    }
+    
+    float TweenEaseOutQuart(float t) {
+      return -c * ((t=t/d-1)*t*t*t - 1) + b;
+    }
+    
+    float TweenEaseInOutQuart(float t) {
+      if ((t/=d/2) < 1) return c/2*t*t*t*t + b;
+      return -c/2 * ((t-=2)*t*t*t - 2) + b;
+    }
+    
+    float TweenEaseInQuint(float t) {
+      return c*(t/=d)*t*t*t*t + b;
+    }
+    
+    float TweenEaseOutQuint(float t) {
+      return c*((t=t/d-1)*t*t*t*t + 1) + b;
+    }
+    
+    float TweenEaseInOutQuint(float t) {
+      if ((t/=d/2) < 1) return c/2*t*t*t*t*t + b;
+      return c/2*((t-=2)*t*t*t*t + 2) + b;
+    }
+    
+    float TweenEaseInSine(float t) {
+      return -c * cos(t/d * (machete::math::PiTwo)) + c + b;
+    }
+    
+    float TweenEaseOutSine(float t) {
+      return c * sin(t/d * (machete::math::PiTwo)) + b;
+    }
+    
+    float TweenEaseInOutSine(float t) {
+      return -c/2 * (cos(machete::math::Pi*t/d) - 1) + b;
+    }
+    
+    float TweenEaseInExpo(float t) {
+      return (t==0) ? b : c * pow(2, 10 * (t/d - 1)) + b;    
+    }
+    
+    float TweenEaseOutExpo(float t) {
+      return (t==d) ? b+c : c * (-pow(2, -10 * t/d) + 1) + b;
+    }
+    
+    float TweenEaseInOutExpo(float t) {
+      if (t==0) return b;
+      if (t==d) return b+c;
+      if ((t/=d/2) < 1) return c/2 * pow(2, 10 * (t - 1)) + b;
+      return c/2 * (-pow(2, -10 * --t) + 2) + b;
+    }
+    
+    float TweenEaseInCirc(float t) {
+      return -c * (sqrt(1 - (t/=d)*t) - 1) + b;
+    }
+    
+    float TweenEaseOutCirc(float t) {
+      return c * sqrt(1 - (t=t/d-1)*t) + b;
+    }
+    
+    float TweenEaseInOutCirc(float t) {
+      if ((t/=d/2) < 1) return -c/2 * (sqrt(1 - t*t) - 1) + b;
+      return c/2 * (sqrt(1 - (t-=2)*t) + 1) + b;
+    }
+    
+    float TweenEaseInElastic(float t) {
+      if (t==0) return b;  if ((t/=d)==1) return b+c;
+      float p=d*.3f;
+      float a=c;
+      float s=p/4;
+      float postFix =a*pow(2,10*(t-=1)); // this is a fix, again, with post-increment operators
+      return -(postFix * sin((t*d-s)*(machete::math::TwoPi)/p )) + b;
+    }
+    
+    float TweenEaseOutElastic(float t) {
+      if (t==0) return b;  if ((t/=d)==1) return b+c;
+      float p=d*.3f;
+      float a=c;
+      float s=p/4;
+      return (a*pow(2,-10*t) * sin( (t*d-s)*(machete::math::TwoPi)/p ) + c + b);
+    }
+    
+    float TweenEaseInOutElastic(float t) {
+      if (t==0) return b;  if ((t/=d/2)==2) return b+c;
+      float p=d*(.3f*1.5f);
+      float a=c;
+      float s=p/4;
       
-      if (time < 1) return time * time * 0.5f;
-      
-      time -= 1.0f;
-      return (- (time * (time - 2)) - 1) * 0.5f;
+      if (t < 1) {
+        float postFix =a*pow(2,10*(t-=1)); // postIncrement is evil
+        return -.5f*(postFix* sin( (t*d-s)*(machete::math::TwoPi)/p )) + b;
+      }
+      float postFix =  a*pow(2,-10*(t-=1)); // postIncrement is evil
+      return postFix * sin( (t*d-s)*(machete::math::TwoPi)/p )*.5f + c + b;
     }
     
-    float TweenEaseInCubic(float time) {
-      return time * time * time;
+    float TweenEaseInBack(float t) {
+      float s = 1.70158f;
+      float postFix = t/=d;
+      return c*(postFix)*t*((s+1)*t - s) + b;
     }
     
-    float TweenEaseOutCubic(float time) {
-      time = time - 1;
-      
-      return (time * time * time) + 1;
+    float TweenEaseOutBack(float t) {
+      float s = 1.70158f;
+      return c*((t=t/d-1)*t*((s+1)*t + s) + 1) + b;
     }
     
-    float TweenEaseInOutCubic(float time) {
-      time = time * 0.5f;
-      
-      if (time < 1) {
-        return (time * time * time) * 0.5f;
+    float TweenEaseInOutBack(float t) {
+      float s = 1.70158f;
+      if ((t/=d/2) < 1) return c/2*(t*t*(((s*=(1.525f))+1)*t - s)) + b;
+      float postFix = t-=2;
+      return c/2*((postFix)*t*(((s*=(1.525f))+1)*t + s) + 2) + b;
+    }
+    
+    float TweenEaseInBounce(float t) {
+      return c - TweenEaseOutBounce(d-t) + b;
+    }
+    
+    float TweenEaseOutBounce(float t) {
+      if ((t/=d) < (1/2.75f)) {
+        return c*(7.5625f*t*t) + b;
+      } else if (t < (2/2.75f)) {
+        float postFix = t-=(1.5f/2.75f);
+        return c*(7.5625f*(postFix)*t + .75f) + b;
+      } else if (t < (2.5/2.75)) {
+        float postFix = t-=(2.25f/2.75f);
+        return c*(7.5625f*(postFix)*t + .9375f) + b;
       } else {
-        time = time - 2;
-        
-        return 0.5f * ((time * time * time) + 2);
+        float postFix = t-=(2.625f/2.75f);
+        return c*(7.5625f*(postFix)*t + .984375f) + b;
       }
     }
     
-    float TweenEaseInQuart(float time) {
-      return time * time * time * time;
-    }
-    
-    float TweenEaseOutQuart(float time) {
-      time = time - 1;
-      
-      return - ((time * time * time * time) - 1);
-    }
-    
-    float TweenEaseInOutQuart(float time) {
-      time = time * 0.5f;
-      
-      if (time < 1) {
-        return 0.5f * (time * time * time * time);
-      } else {
-        time = time * 0.5f;
-        
-        return -0.5f * ((time * time * time * time) - 2);
-      }
-    }
-    
-    float TweenEaseInQuint(float time) {
-      return time * time * time * time * time;
-    }
-    
-    float TweenEaseOutQuint(float time) {
-      time = time - 1;
-      
-      return (time * time * time * time * time) + 1;
-    }
-    
-    float TweenEaseInOutQuint(float time) {
-      time = time * 0.5f;
-      
-      if (time < 1) {
-        return 0.5f * (time * time * time * time * time);
-      } else {
-        time = time - 2.0f;
-        
-        return 0.5f * ((time * time * time * time * time) + 2);
-      }
-    }
-    
-    float TweenEaseInSine(float time) {
-      return 1 - cos(time * machete::math::PiTwo);
-    }
-    
-    float TweenEaseOutSine(float time) {
-      return sin(time * machete::math::PiTwo);
-    }
-    
-    float TweenEaseInOutSine(float time) {
-      return 1 - cos(machete::math::Pi * time);
-    }
-    
-    float TweenEaseInExpo(float time) {
-      float v = 10 * (time - 1);
-      return v * v;
-    }
-    
-    float TweenEaseOutExpo(float time) {
-      float v = -10 * time;
-      return - (v * v) + 1;
-    }
-    
-    float TweenEaseInOutExpo(float time) {
-      time = time * 0.5f;
-      if (time < 1) {
-        float v = 10 * (time - 1);
-        return 0.5f * v * v;
-      } else {
-        float v = -10 * (time - 1);
-        return 0.5f * ((-v * v) + 2);
-      }
-    }
-    
-    float TweenEaseInCirc(float time) {
-      return 1 - sqrt(1 - time * time);
-    }
-    
-    float TweenEaseOutCirc(float time) {
-      time = time - 1;
-      
-      return sqrt(1 - time * time);
-    }
-    
-    float TweenEaseInOutCirc(float time) {
-      time = time * 0.5f;
-      
-      if (time < 1) {
-        return 0.5f * (1 - sqrt(1 - time * time));
-      } else {
-        time = time - 2;
-        
-        return 0.5f * (sqrt(1 - time * time) + 1);
-      }
-    }
-    
-    float TweenEaseInElastic(float time) {
-      if (time == 0) return 0; if (time == 1) return 1;
-      
-      static float p = 0.3f;
-      static float a = 1.0f;
-      static float s = p / 4;
-      
-      float v = 10 * time;
-      time -= 1;
-      float postFix = a * v * v;
-      return -(postFix * sin((time - s) * machete::math::TwoPi / p));
-    }
-    
-    float TweenEaseOutElastic(float time) {
-      if (time == 0) return 0; if (time == 1) return 1;
-      
-      static float p = 0.3f;
-      static float a = 1.0f;
-      static float s = p / 4;
-      
-      float v = -10 * time;
-      
-      return a * v * v * sin((time - s) * machete::math::TwoPi / p) + 1;
-    }
-    
-    float TweenEaseInOutElastic(float time) {
-      if (time == 0) return 0; if (time == 1) return 1;
-      
-      static float p = 0.3f * 1.5f;
-      static float a = 1.0f;
-      static float s = p / 4;
-      
-      time = time * 0.5f;
-      
-      if (time < 1) {
-        float v = 10 * time;
-        time = time - 1;
-        float postFix = a * v * v;
-        return -0.5f * (postFix * sin( (time - s) * machete::math::TwoPi / p));
-      } else {
-        float v = -10 * time;
-        time = time - 1;
-        float postFix = a * v * v;
-        return postFix * sin( (time - s) * machete::math::TwoPi / p ) * 0.5f + 1;
-      }
-    }
-    
-    float TweenEaseInBack(float time) {
-      static float s = 1.70158f;
-      return time * time * ((s + 1) * time - s);
-    }
-    
-    float TweenEaseOutBack(float time) {
-      static float s = 1.70158f;
-      
-      time = time - 1;
-      
-      return (time * time * ((s + 1) * time + s)) + 1;
-    }
-    
-    float TweenEaseInOutBack(float time) {
-      float s = 1.70158f * 1.525f;
-
-      time = time * 0.5f;
-      
-      if (time < 1) {
-        return 0.5f * (time * time * ((s + 1) * time - s));
-      } else {
-        time -= 2;
-        return 0.5f * time * time * ((s + 1) * time + s) + 2;
-      }
-    }
-    
-    float TweenEaseInBounce(float time) {
-      return 1 - TweenEaseOutBounce(1 - time);
-    }
-    
-    float TweenEaseOutBounce(float time) {
-      if (time < (1 / 2.75f)) {
-        return 7.5625f * time * time;
-      } else if (time < (2 / 2.75f)) {
-        float postFix = time;
-        time -= 1.5f / 2.75f;
-        return 7.5625f * postFix * time + 0.75f;
-      } else if (time < (2.5f / 2.75f)) {
-        float postFix = time;
-        time -= 2.25f / 2.75f;
-        return 7.5625f * postFix * time * 0.9375f;
-      } else {
-        float postFix = time;
-        time -= (2.625f / 2.75f);
-        return 7.5625f * postFix * time + 0.984375f;
-      }
-    }
-    
-    float TweenEaseInOutBounce(float time) {
-      if (time < 0.5f) return TweenEaseInBounce(time * 2) * 0.5f;
-      return TweenEaseOutBounce(time * 2 - 1) * 0.5f + 0.5f;
+    float TweenEaseInOutBounce(float t) {
+      if (t < d/2) return TweenEaseInBounce(t*2) * .5f + b;
+      else return TweenEaseOutBounce(t*2-d) * .5f + c*.5f + b;
     }
     
   }
