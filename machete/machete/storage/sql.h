@@ -10,7 +10,16 @@
 
 #pragma once
 
+#ifdef TARGET_IOS
+
 #include <sqlite3.h>
+
+#elif TARGET_ANDROID
+
+#include "sqlite3.h"
+
+#endif
+
 #include "../data/str.h"
 #include "../platform/platform.h"
 

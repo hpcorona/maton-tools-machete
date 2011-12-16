@@ -17,3 +17,6 @@ zip* loadAPK (const char* apkPath);
 
 //Filename will be looked up in the apk (should start with assets/ or res/
 png_byte* loadTextureFromPNG (zip* APKArchive, const char* filename, int &width, int &height);
+
+unsigned int loadFile(zip* APKArchive, const char* filename, void **data);
+

@@ -37,7 +37,6 @@ namespace machete {
         glGetShaderInfoLog(shader, sizeof(messages), 0, &messages[0]);
         
         Log(messages);
-        exit(1);
         
         return false;
       }
@@ -65,8 +64,6 @@ namespace machete {
         glGetProgramInfoLog(program, sizeof(messages), 0, &messages[0]);
         
         Log(messages);
-        
-        exit(1);
         
         return false;
       }

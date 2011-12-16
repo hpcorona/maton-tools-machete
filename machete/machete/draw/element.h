@@ -104,7 +104,12 @@ namespace machete {
        \param ctx DrawContext to draw the elements.
        */
       void Draw(const Mat4 & matrix, Vec2 & pos, Vec4 & color, DrawContext *ctx);
-      Iterator<Element*> *Iterator();
+
+      //! Get a new iterator for the child elements.
+      /*!
+       \return A new iterator (you must delete it).
+       */
+      Iterator<Element*>* ChildIterator();
       
       //! Send a touch event to this element.
       /*!

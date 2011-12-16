@@ -11,13 +11,26 @@
 
 #pragma once
 
+#ifdef TARGET_IOS
+
 #include <OpenAL/al.h>
 #include <OpenAL/alc.h>
 #include <OpenAL/oalStaticBufferExtension.h>
-
 #include <Tremor/ogg.h>
 #include <Tremor/ivorbiscodec.h>
 #include <Tremor/ivorbisfile.h>
+
+#elif TARGET_ANDROID
+
+#include <AL/al.h>
+#include <AL/alc.h>
+#include <tremor/ogg.h>
+#include <tremor/ivorbiscodec.h>
+#include <tremor/ivorbisfile.h>
+#define alBufferDataStatic alBufferData
+
+#endif
+
 
 #include "../data/tree.h"
 #include "../data/str.h"

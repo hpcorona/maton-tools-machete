@@ -13,6 +13,7 @@
 namespace machete {
   namespace sound {
     
+#ifdef TARGET_IOS
     ALvoid  alBufferDataStatic(const ALint bid, ALenum format, ALvoid* data, ALsizei size, ALsizei freq) {
       static	alBufferDataStaticProcPtr	proc = NULL;
       
@@ -25,6 +26,7 @@ namespace machete {
       
       return;
     }
+#endif
     
     Music::Music() {
       audioData = NULL;

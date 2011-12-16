@@ -19,13 +19,18 @@
 #define cos(a) cosf(a)
 #define sin(a) sinf(a)
 
-#else
+#elif TARGET_ANDROID
 
 #include <math.h>
-#include <GLES/gl.h>
+#include <GLES2/gl2.h>
 #define cmin(a,b) fmin(a,b)
 #define cmax(a,b) fmax(a,b)
 #define cabs(a) fabs(a)
+#define catan(a) atanf(a)
+#define catan2(a,b) atan2f(a,b)
+#define cos(a) cosf(a)
+#define sin(a) sinf(a)
+#define abs(a) fabs(a)
 
 #endif
 

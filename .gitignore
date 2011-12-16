@@ -1,4 +1,4 @@
 machete.xcodeproj/xcuserdata/
 machete.xcodeproj/project.xcworkspace/xcuserdata/
-machete/libzip/.deps/
-machete/libzip/.libs/
+deps/libzip/.deps/
+deps/libzip/.libs/

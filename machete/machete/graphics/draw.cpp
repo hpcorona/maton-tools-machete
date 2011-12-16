@@ -150,7 +150,7 @@ namespace machete {
       GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
       if (status != GL_FRAMEBUFFER_COMPLETE) {
         machete::common::Log("Frame buffer is not ready");
-        exit(1);
+        return;
       }
       
       base = Mat4();

@@ -29,10 +29,31 @@ zip* loadAPK (const char* apkPath) {
 
 
 zip_file* file;
+struct zip_stat stats;
 
 void png_zip_read(png_structp png_ptr, png_bytep data, png_size_t length) {
   zip_fread(file, data, length);
 }
+
+unsigned int loadFile(zip* APKArchive, const char* filename, void **data) {
+  zip_stat(APKArchive, filename, ZIP_STAT_SIZE, &stats);
+
+  file = zip_fopen(APKArchive, filename, 0);
+  if (!file) {
+    LOGE("Error opening %s from APK", filename);
+    return NULL;
+  }
+
+  *data = new char[stats.size];
+  zip_fread(file, *data, stats.size);
+
+  zip_fclose(file);
+
+  return stats.size;
+}
+
+
+
 
 png_byte* loadTextureFromPNG(zip* APKArchive, const char* filename, int &width, int &height) {
   LOGI("Loading PNG %s", filename);
@@ -155,3 +176,4 @@ png_byte* loadTextureFromPNG(zip* APKArchive, const char* filename, int &width, 
 
   return image_data;
 }
+

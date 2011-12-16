@@ -798,8 +798,9 @@ namespace machete {
       float factorV = cmin(size.y / (cbounds.size.y + ey), 1);
       float factorH = cmin(size.x / (cbounds.size.x + ex), 1);
 
-      float posV = -container->position.y / cbounds.size.y;
-      float posH = -container->position.x / cbounds.size.x;
+      Vec2 cpos = container->GetPosition();
+      float posV = -cpos.y / cbounds.size.y;
+      float posH = -cpos.x / cbounds.size.x;
       
       if (posV < 0) {
         posV = 0;
@@ -858,9 +859,10 @@ namespace machete {
     }
     
     void Scroll::Update(float time) {
+      Vec2 cpos = container->GetPosition();
       if (!touchProc.IsTracking() && centering && !centered) {
-        center.x = -container->position.x + size.x * 0.5f;
-        center.y = -container->position.y + size.y * 0.5f;
+        center.x = -cpos.x + size.x * 0.5f;
+        center.y = -cpos.y + size.y * 0.5f;
         
         StepTarget(time);
       }
@@ -906,22 +908,28 @@ namespace machete {
       
       if (centering == false && (touchProc.IsAlive() == false || elastic.LengthSquared() == 0) && touchProc.IsTracking() == false) {
         if (autoVScroll && vScroll != NULL) {
-          vScroll->color.w -= time * 4.0f;
-          if (vScroll->color.w < 0) {
-            vScroll->color.w = 0;
+          Vec4 col = vScroll->GetColor();
+          col.w -= time * 4.0f;
+          if (col.w < 0) {
+            col.w = 0;
           }
+
+          vScroll->SetColor(col);
         }
 
         if (autoHScroll && hScroll != NULL) {
-          hScroll->color.w -= time * 4.0f;
-          if (hScroll->color.w < 0) {
-            hScroll->color.w = 0;
+          Vec4 col = hScroll->GetColor();
+          col.w -= time * 4.0f;
+          if (col.w < 0) {
+            col.w = 0;
           }
+
+          hScroll->SetColor(col);
         }
       }
       
-      center.x = -container->position.x + size.x * 0.5f;
-      center.y = -container->position.y + size.y * 0.5f;
+      center.x = -cpos.x + size.x * 0.5f;
+      center.y = -cpos.y + size.y * 0.5f;
 
       if (centering) {
         if (cabs(center.x - targetGlue.x) < 1.0f && cabs(center.y - targetGlue.y) < 1.0f) {
@@ -953,27 +961,31 @@ namespace machete {
       }
       
       if (allowHScroll && allowVScroll) {
-        Vec2 np = container->position + move;
+        Vec2 np = container->GetPosition() + move;
       
         container->SetPosition(np);
       } else if (allowHScroll) {
-        Vec2 np = container->position;
+        Vec2 np = container->GetPosition();
         np.x += move.x;
         
         container->SetPosition(np);
       } else if (allowVScroll) {
-        Vec2 np = container->position;
+        Vec2 np = container->GetPosition();
         np.y += move.y;
         
         container->SetPosition(np);
       }
       
       if (autoVScroll && vScroll != NULL) {
-        vScroll->color.w = 1;
+        Vec4 col = vScroll->GetColor();
+        col.w = 1;
+        vScroll->SetColor(col);
       }
 
       if (autoHScroll && hScroll != NULL) {
-        hScroll->color.w = 1;
+        Vec4 col = hScroll->GetColor();
+        col.w = 1;
+        hScroll->SetColor(col);
       }
     }
     
@@ -987,27 +999,31 @@ namespace machete {
       centered = false;
       
       if (allowHScroll && allowVScroll) {
-        Vec2 np = container->position + move;
+        Vec2 np = container->GetPosition() + move;
         
         container->SetPosition(np);
       } else if (allowHScroll) {
-        Vec2 np = container->position;
+        Vec2 np = container->GetPosition();
         np.x += move.x;
         
         container->SetPosition(np);
       } else if (allowVScroll) {
-        Vec2 np = container->position;
+        Vec2 np = container->GetPosition();
         np.y += move.y;
         
         container->SetPosition(np);
       }
       
       if (autoVScroll && vScroll != NULL) {
-        vScroll->color.w = 1;
+        Vec4 col = vScroll->GetColor();
+        col.w = 1;
+        vScroll->SetColor(col);
       }
       
       if (autoHScroll && hScroll != NULL) {
-        hScroll->color.w = 1;
+        Vec4 col = hScroll->GetColor();
+        col.w = 1;
+        hScroll->SetColor(col);
       }
     }
     
@@ -1072,14 +1088,16 @@ namespace machete {
       
       bool procX = false;
       bool procY = false;
+
+      Rect2D cbounds = container->GetBounds();
       
-      if (container->position.x >= 0) {
-        elastic.x = container->position.x;
+      if (cbounds.pos.x >= 0) {
+        elastic.x = cbounds.pos.x;
         procX = true;
       }
       
-      if (container->position.y >= 0) {
-        elastic.y = container->position.y;
+      if (cbounds.pos.y >= 0) {
+        elastic.y = cbounds.pos.y;
         procY = true;
       }
       
@@ -1087,19 +1105,17 @@ namespace machete {
         return;
       }
       
-      Rect2D cbounds = container->GetBounds();
-      
       if (procX == false) {
         float mx = cmin(0, bounds.size.x - cbounds.size.x);
-        if (container->position.x < mx) {
-          elastic.x = container->position.x - mx;
+        if (cbounds.pos.x < mx) {
+          elastic.x = cbounds.pos.x - mx;
         }
       }
       
       if (procY == false) {
         float my = cmin(0, bounds.size.y - cbounds.size.y);
-        if (container->position.y < my) {
-          elastic.y = container->position.y - my;
+        if (cbounds.pos.y < my) {
+          elastic.y = cbounds.pos.y - my;
         }
       }
     }

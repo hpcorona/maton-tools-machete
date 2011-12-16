@@ -153,7 +153,7 @@ namespace machete {
     }
 
     
-    Iterator<Element*> *Container::Iterator() {
+    Iterator<Element*>* Container::ChildIterator() {
       if (count == 0) {
         return NULL;
       }

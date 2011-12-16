@@ -13,8 +13,14 @@
 
 #define STRINGIFY(A) #A
 
+#ifdef TARGET_ANDROID
+#include <GLES2/gl2.h>
+#include <GLES2/gl2ext.h>
+#elif TARGET_IOS
 #include <OpenGLES/ES2/gl.h>
 #include <OpenGLES/ES2/glext.h>
+#endif
+
 #include "../data/str.h"
 #include "../data/tree.h"
 #include "../math/vector.h"

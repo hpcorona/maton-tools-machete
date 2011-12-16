@@ -1,14 +1,11 @@
 
-#include "GL2.h"
 #include "com_maton_machete_MacheteNative.h"
 #include "../engine.h"
-#include "ResourceManager.h"
+#include "AndroidPlatform.h"
 
-static IResourceManager* rm;
-static IRenderingEngine* renderer;
-static IGame* game;
-
-static void* opengl_es_2_handle;
+machete::IPlatform* platform;
+static machete::IGame* game;
+machete::graphics::DrawContext* renEngine;
 
 /*
  * Class:     com_maton_machete_MacheteNative
@@ -21,16 +18,14 @@ void Java_com_maton_machete_MacheteNative_initialize
 	jboolean isCopy;
 	str = env->GetStringUTFChars(apk, &isCopy);
 
-	rm = new AndroidResourceManager(str);
+	platform = new AndroidPlatform(str);
 
-	if (opengl_es_2_handle != NULL) {
-		renderer = CreateRendererAndroid1(rm);
-	} else {
-		renderer = CreateRendererAndroid1(rm);
-	}
+  machete::Start(platform);
 
-	game = CreateGame(renderer);
-	game->Initialize(w, h, DeviceOrientationPortrait);
+  renEngine = CreateDrawContext(machete::graphics::TargetScreen, w, h);
+
+	game = CreateGame();
+	game->Initialize(renEngine, w, h, machete::DeviceOrientationPortrait);
 }
 
 /*
@@ -41,7 +36,7 @@ void Java_com_maton_machete_MacheteNative_initialize
 void Java_com_maton_machete_MacheteNative_resize
   (JNIEnv *, jobject, jint w, jint h, jint o) {
 	if (game == NULL) return;
-	game->Resize(w, h, DeviceOrientationPortrait);
+	game->Resize(w, h, machete::DeviceOrientationPortrait);
 }
 
 /*
@@ -106,10 +101,6 @@ void Java_com_maton_machete_MacheteNative_start
  */
 void Java_com_maton_machete_MacheteNative_stop
   (JNIEnv *, jobject) {
-	if (opengl_es_2_handle != NULL) {
-		dlclose(opengl_es_2_handle);
-	}
-
 	if (game == NULL) return;
 	game->OnStop();
 }

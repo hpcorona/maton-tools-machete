@@ -12,7 +12,16 @@
 #pragma once
 
 #include "../data/str.h"
+
+#ifdef TARGET_IOS
+
 #include <iostream>
+
+#elif TARGET_ANDROID
+
+#include <iostream>
+
+#endif
 
 namespace machete {
 	
@@ -37,8 +46,8 @@ namespace machete {
       int size = 0;
       
       for (int i = 0; i < count; i++) {
-        float x = va_arg(li, float);
-        xs = x;
+        double x = va_arg(li, double);
+        xs = (float)x;
         size += xs.Size();
         p.Append(xs);
       }
