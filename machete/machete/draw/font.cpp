@@ -113,8 +113,11 @@ namespace machete {
         int c = str.CharAt(cidx);
         FontChar *fc = Get(c);
         
+        if (fc != NULL) {
+          txt->SetChar(tidx++, fc);
+        }
+        
         ta = str.CharSizeAt(cidx);
-        txt->SetChar(tidx++, fc);
         
         cidx += ta;
       }
