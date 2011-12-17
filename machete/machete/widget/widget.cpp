@@ -12,7 +12,7 @@ namespace machete {
   namespace widget {
     
     MetaWidget::MetaWidget(const Vec2 & size, const Vec2 & uv0, const Vec2 & uv1, const Vec2 & topLeft, const Vec2 & bottomRight, unsigned int texture) {
-
+      
       // Internal position of UV's
       Vec2 uvi0, uvi1, delta;
       delta = uv1 - uv0;
@@ -34,61 +34,61 @@ namespace machete {
       verts[1].vert.x = 0; verts[1].vert.y = -topLeft.y; verts[1].vert.z = 0;
       verts[2].vert.x = topLeft.x; verts[2].vert.y = 0; verts[2].vert.z = 0;
       verts[3].vert.x = topLeft.x; verts[3].vert.y = -topLeft.y; verts[3].vert.z = 0;
-
+      
       vertsV[0].vert.x = 0; vertsV[0].vert.y = 0; vertsV[0].vert.z = 0;
       vertsV[1].vert.x = 0; vertsV[1].vert.y = -topLeft.y; vertsV[1].vert.z = 0;
       vertsV[2].vert.x = topLeft.x; vertsV[2].vert.y = 0; vertsV[2].vert.z = 0;
       vertsV[3].vert.x = topLeft.x; vertsV[3].vert.y = -topLeft.y; vertsV[3].vert.z = 0;
-
+      
       vertsH[0].vert.x = 0; vertsH[0].vert.y = 0; vertsH[0].vert.z = 0;
       vertsH[1].vert.x = 0; vertsH[1].vert.y = -topLeft.y; vertsH[1].vert.z = 0;
       vertsH[2].vert.x = topLeft.x; vertsH[2].vert.y = 0; vertsH[2].vert.z = 0;
       vertsH[3].vert.x = topLeft.x; vertsH[3].vert.y = -topLeft.y; vertsH[3].vert.z = 0;
-
+      
       // Top Left UV
       verts[0].uv.x = uv0.x; verts[0].uv.y = uv0.y;
       verts[1].uv.x = uv0.x; verts[1].uv.y = uvi0.y;
       verts[2].uv.x = uvi0.x; verts[2].uv.y = uv0.y;
       verts[3].uv.x = uvi0.x; verts[3].uv.y = uvi0.y;
-
+      
       vertsV[0].uv.x = uv0.x; vertsV[0].uv.y = uv0.y;
       vertsV[1].uv.x = uv0.x; vertsV[1].uv.y = uvi0.y;
       vertsV[2].uv.x = uvi0.x; vertsV[2].uv.y = uv0.y;
       vertsV[3].uv.x = uvi0.x; vertsV[3].uv.y = uvi0.y;
-
+      
       vertsH[0].uv.x = uv0.x; vertsH[0].uv.y = uv0.y;
       vertsH[1].uv.x = uv0.x; vertsH[1].uv.y = uvi0.y;
       vertsH[2].uv.x = uvi0.x; vertsH[2].uv.y = uv0.y;
       vertsH[3].uv.x = uvi0.x; vertsH[3].uv.y = uvi0.y;
-
+      
       // Top Right UV
       verts[4].uv.x = uvi1.x; verts[4].uv.y = uv0.y;
       verts[5].uv.x = uvi1.x; verts[5].uv.y = uvi0.y;
       verts[6].uv.x = uv1.x; verts[6].uv.y = uv0.y;
       verts[7].uv.x = uv1.x; verts[7].uv.y = uvi0.y;
-
+      
       // Bottom Left UV
       verts[8].uv.x = uv0.x; verts[8].uv.y = uvi1.y;
       verts[9].uv.x = uv0.x; verts[9].uv.y = uv1.y;
       verts[10].uv.x = uvi0.x; verts[10].uv.y = uvi1.y;
       verts[11].uv.x = uvi0.x; verts[11].uv.y = uv1.y;
-
+      
       vertsV[4].uv.x = uv0.x; vertsV[4].uv.y = uvi1.y;
       vertsV[5].uv.x = uv0.x; vertsV[5].uv.y = uv1.y;
       vertsV[6].uv.x = uvi0.x; vertsV[6].uv.y = uvi1.y;
       vertsV[7].uv.x = uvi0.x; vertsV[7].uv.y = uv1.y;
-
+      
       // Bottom Right UV
       verts[12].uv.x = uvi1.x; verts[12].uv.y = uvi1.y;
       verts[13].uv.x = uvi1.x; verts[13].uv.y = uv1.y;
       verts[14].uv.x = uv1.x; verts[14].uv.y = uvi1.y;
       verts[15].uv.x = uv1.x; verts[15].uv.y = uv1.y;
-
+      
       vertsH[4].uv.x = uvi1.x; vertsH[4].uv.y = uvi1.y;
       vertsH[5].uv.x = uvi1.x; vertsH[5].uv.y = uv1.y;
       vertsH[6].uv.x = uv1.x; vertsH[6].uv.y = uvi1.y;
       vertsH[7].uv.x = uv1.x; vertsH[7].uv.y = uv1.y;
-
+      
       this->texture = texture;
       
       // Vertexes are aranged in this way:
@@ -119,28 +119,28 @@ namespace machete {
       elems[9] = 4;
       elems[10] = 3;
       elems[11] = 5;
-
+      
       elems[12] = 4;
       elems[13] = 5;
       elems[14] = 6;
       elems[15] = 6;
       elems[16] = 5;
       elems[17] = 7;
-
+      
       elems[18] = 1;
       elems[19] = 8;
       elems[20] = 3;
       elems[21] = 3;
       elems[22] = 8;
       elems[23] = 10;
-
+      
       elems[24] = 3;
       elems[25] = 10;
       elems[26] = 5;
       elems[27] = 5;
       elems[28] = 10;
       elems[29] = 12;
-
+      
       elems[30] = 5;
       elems[31] = 12;
       elems[32] = 7;
@@ -202,14 +202,14 @@ namespace machete {
       // 0  2    4  6
       // 1  3    5  7
       //
-
+      
       elemsH[0] = 0;
       elemsH[1] = 1;
       elemsH[2] = 2;
       elemsH[3] = 2;
       elemsH[4] = 1;
       elemsH[5] = 3;
-
+      
       elemsH[6] = 2;
       elemsH[7] = 3;
       elemsH[8] = 4;
@@ -233,13 +233,13 @@ namespace machete {
         verts[5].vert.x = drawSize.x - bottomRight.x; verts[5].vert.y = -topLeft.y; verts[5].vert.z = 0;
         verts[6].vert.x = drawSize.x; verts[6].vert.y = 0; verts[6].vert.z = 0;
         verts[7].vert.x = drawSize.x; verts[7].vert.y = -topLeft.y; verts[7].vert.z = 0;
-
+        
         // Bottom Left Box
         verts[8].vert.x = 0; verts[8].vert.y = -(drawSize.y - bottomRight.y); verts[8].vert.z = 0;
         verts[9].vert.x = 0; verts[9].vert.y = -drawSize.y; verts[9].vert.z = 0;
         verts[10].vert.x = topLeft.x; verts[10].vert.y = -(drawSize.y - bottomRight.y); verts[10].vert.z = 0;
         verts[11].vert.x = topLeft.x; verts[11].vert.y = -drawSize.y; verts[11].vert.z = 0;
-
+        
         // Bottom Right Box
         verts[12].vert.x = drawSize.x - bottomRight.x; verts[12].vert.y = -(drawSize.y - bottomRight.y); verts[12].vert.z = 0;
         verts[13].vert.x = drawSize.x - bottomRight.x; verts[13].vert.y = -drawSize.y; verts[13].vert.z = 0;
@@ -285,7 +285,7 @@ namespace machete {
         vertsV[5].vert.x = 0; vertsV[5].vert.y = -drawSize.y; vertsV[5].vert.z = 0;
         vertsV[6].vert.x = topLeft.x; vertsV[6].vert.y = -(drawSize.y - bottomRight.y); vertsV[6].vert.z = 0;
         vertsV[7].vert.x = topLeft.x; vertsV[7].vert.y = -drawSize.y; vertsV[7].vert.z = 0;
-
+        
         for (int i = 0; i < 8; i++) {
           vertsV[i].pivot.x = pivot.x; vertsV[i].pivot.y = pivot.y;
           
@@ -336,7 +336,7 @@ namespace machete {
       state = NULL;
       event = NULL;
       display = WidgetNormal;
-
+      
       allowDragY = false;
       allowDragX = false;
       allowTap = false;
@@ -490,7 +490,7 @@ namespace machete {
     bool Widget::TouchAcceptDragX() {
       return allowDragX;
     }
-
+    
     bool Widget::TouchAcceptDragY() {
       return allowDragY;
     }
@@ -502,7 +502,7 @@ namespace machete {
       
       touchProc.Acquiere(this);
     }
-
+    
     void Widget::TouchDrag(Vec2 & move) {
       if (event != NULL) {
         event->WidgetDragged(this, move);
@@ -635,7 +635,7 @@ namespace machete {
     
     void Button::TouchTapCancelled() {
       SetState("normal");
-
+      
       if (fontPress != NULL) {
         label->Enable();
         labelPress->Disable();
@@ -685,7 +685,7 @@ namespace machete {
     void Button::SetPressedFont(machete::draw::Font *font) {
       fontPress = font;
     }
-
+    
     Scroll::Scroll(int width, int height) {
       frame = NULL;
       vScroll = NULL;
@@ -699,9 +699,9 @@ namespace machete {
       container = new Container();
       viewport->Add(container);
       viewport->SetParent(this);
-
+      
       SetSize(width, height);
-
+      
       margin.x = 5;
       margin.y = 5;
       
@@ -797,10 +797,9 @@ namespace machete {
       float ey = abs(elastic.y);
       float factorV = cmin(size.y / (cbounds.size.y + ey), 1);
       float factorH = cmin(size.x / (cbounds.size.x + ex), 1);
-
-      Vec2 cpos = container->GetPosition();
-      float posV = -cpos.y / cbounds.size.y;
-      float posH = -cpos.x / cbounds.size.x;
+      
+      float posV = -container->position.y / cbounds.size.y;
+      float posH = -container->position.x / cbounds.size.x;
       
       if (posV < 0) {
         posV = 0;
@@ -818,7 +817,7 @@ namespace machete {
       
       float posX = maxH * posH;
       float width = maxH * factorH;
-
+      
       if (vScroll != NULL && drawVScroll) {
         if (posY + height > bounds.size.y - margin.y) {
           posY = bounds.size.y - margin.y - height;
@@ -834,7 +833,7 @@ namespace machete {
         if (posX + width > bounds.size.x - margin.x) {
           posX = bounds.size.x - margin.x - width;
         }
-
+        
         hScroll->SetPosition(posX, bounds.size.y - margin.y);
         hScroll->SetSize(width, margin.y);
         
@@ -859,14 +858,13 @@ namespace machete {
     }
     
     void Scroll::Update(float time) {
-      Vec2 cpos = container->GetPosition();
       if (!touchProc.IsTracking() && centering && !centered) {
-        center.x = -cpos.x + size.x * 0.5f;
-        center.y = -cpos.y + size.y * 0.5f;
+        center.x = -container->position.x + size.x * 0.5f;
+        center.y = -container->position.y + size.y * 0.5f;
         
         StepTarget(time);
       }
-
+      
       touchProc.Update(time);
       viewport->Update(time);
       
@@ -888,7 +886,7 @@ namespace machete {
             strength.x = -elastic.x;
           }
         }
-
+        
         if (elastic.y > 0) {
           if (elastic.y + strength.y < 0) {
             strength.y = -elastic.y;
@@ -898,7 +896,7 @@ namespace machete {
             strength.y = -elastic.y;
           }
         }
-
+        
         ElasticMovement(strength);
       }
       
@@ -908,29 +906,23 @@ namespace machete {
       
       if (centering == false && (touchProc.IsAlive() == false || elastic.LengthSquared() == 0) && touchProc.IsTracking() == false) {
         if (autoVScroll && vScroll != NULL) {
-          Vec4 col = vScroll->GetColor();
-          col.w -= time * 4.0f;
-          if (col.w < 0) {
-            col.w = 0;
+          vScroll->color.w -= time * 4.0f;
+          if (vScroll->color.w < 0) {
+            vScroll->color.w = 0;
           }
-
-          vScroll->SetColor(col);
         }
-
+        
         if (autoHScroll && hScroll != NULL) {
-          Vec4 col = hScroll->GetColor();
-          col.w -= time * 4.0f;
-          if (col.w < 0) {
-            col.w = 0;
+          hScroll->color.w -= time * 4.0f;
+          if (hScroll->color.w < 0) {
+            hScroll->color.w = 0;
           }
-
-          hScroll->SetColor(col);
         }
       }
       
-      center.x = -cpos.x + size.x * 0.5f;
-      center.y = -cpos.y + size.y * 0.5f;
-
+      center.x = -container->position.x + size.x * 0.5f;
+      center.y = -container->position.y + size.y * 0.5f;
+      
       if (centering) {
         if (cabs(center.x - targetGlue.x) < 1.0f && cabs(center.y - targetGlue.y) < 1.0f) {
           centering = false;
@@ -951,7 +943,7 @@ namespace machete {
       this->vScroll = vScroll;
       this->hScroll = hScroll;
     }
-
+    
     void Scroll::TouchDrag(Vec2 & move) {
       centered = false;
       centering = false;
@@ -961,37 +953,33 @@ namespace machete {
       }
       
       if (allowHScroll && allowVScroll) {
-        Vec2 np = container->GetPosition() + move;
-      
+        Vec2 np = container->position + move;
+        
         container->SetPosition(np);
       } else if (allowHScroll) {
-        Vec2 np = container->GetPosition();
+        Vec2 np = container->position;
         np.x += move.x;
         
         container->SetPosition(np);
       } else if (allowVScroll) {
-        Vec2 np = container->GetPosition();
+        Vec2 np = container->position;
         np.y += move.y;
         
         container->SetPosition(np);
       }
       
       if (autoVScroll && vScroll != NULL) {
-        Vec4 col = vScroll->GetColor();
-        col.w = 1;
-        vScroll->SetColor(col);
+        vScroll->color.w = 1;
       }
-
+      
       if (autoHScroll && hScroll != NULL) {
-        Vec4 col = hScroll->GetColor();
-        col.w = 1;
-        hScroll->SetColor(col);
+        hScroll->color.w = 1;
       }
     }
     
     void Scroll::TouchInertia(Vec2 & move) {
       lastInertia = move;
-
+      
       ElasticMovement(move);
     }
     
@@ -999,31 +987,27 @@ namespace machete {
       centered = false;
       
       if (allowHScroll && allowVScroll) {
-        Vec2 np = container->GetPosition() + move;
+        Vec2 np = container->position + move;
         
         container->SetPosition(np);
       } else if (allowHScroll) {
-        Vec2 np = container->GetPosition();
+        Vec2 np = container->position;
         np.x += move.x;
         
         container->SetPosition(np);
       } else if (allowVScroll) {
-        Vec2 np = container->GetPosition();
+        Vec2 np = container->position;
         np.y += move.y;
         
         container->SetPosition(np);
       }
       
       if (autoVScroll && vScroll != NULL) {
-        Vec4 col = vScroll->GetColor();
-        col.w = 1;
-        vScroll->SetColor(col);
+        vScroll->color.w = 1;
       }
       
       if (autoHScroll && hScroll != NULL) {
-        Vec4 col = hScroll->GetColor();
-        col.w = 1;
-        hScroll->SetColor(col);
+        hScroll->color.w = 1;
       }
     }
     
@@ -1069,11 +1053,11 @@ namespace machete {
             }
           }
         }
-      
+        
         if (touch->phase == machete::input::TouchStart && !contained) {
           return false;
         }
-      
+        
         if (container->TouchEvent(touch) == true) {
           return true;
         }
@@ -1088,16 +1072,14 @@ namespace machete {
       
       bool procX = false;
       bool procY = false;
-
-      Rect2D cbounds = container->GetBounds();
       
-      if (cbounds.pos.x >= 0) {
-        elastic.x = cbounds.pos.x;
+      if (container->position.x >= 0) {
+        elastic.x = container->position.x;
         procX = true;
       }
       
-      if (cbounds.pos.y >= 0) {
-        elastic.y = cbounds.pos.y;
+      if (container->position.y >= 0) {
+        elastic.y = container->position.y;
         procY = true;
       }
       
@@ -1105,17 +1087,19 @@ namespace machete {
         return;
       }
       
+      Rect2D cbounds = container->GetBounds();
+      
       if (procX == false) {
         float mx = cmin(0, bounds.size.x - cbounds.size.x);
-        if (cbounds.pos.x < mx) {
-          elastic.x = cbounds.pos.x - mx;
+        if (container->position.x < mx) {
+          elastic.x = container->position.x - mx;
         }
       }
       
       if (procY == false) {
         float my = cmin(0, bounds.size.y - cbounds.size.y);
-        if (cbounds.pos.y < my) {
-          elastic.y = cbounds.pos.y - my;
+        if (container->position.y < my) {
+          elastic.y = container->position.y - my;
         }
       }
     }
@@ -1207,7 +1191,7 @@ namespace machete {
         }
         
         if (still == false && cabs(targetAngle - thisAngle) > 0.2f) continue;
-
+        
         if (plen < len || found == false) {
           found = true;
           current = p;
@@ -1243,9 +1227,9 @@ namespace machete {
       if (!centering) return;
       
       Vec2 diff = targetGlue - center;
-
+      
       Vec2 strength(-diff.x * SCROLL_ELASTICITY * time, -diff.y * SCROLL_ELASTICITY * time);
-
+      
       if (diff.x > 0) {
         if (diff.x + strength.x < 0) {
           strength.x = -diff.x;
@@ -1280,7 +1264,7 @@ namespace machete {
     bool Scroll::IsCentering() const {
       return centering;
     }
-
+    
     TouchContainer::TouchContainer() : touchProc(this) {
       Container();
       
@@ -1300,11 +1284,11 @@ namespace machete {
       
       touchProc.Release();
     }
-
+    
     bool TouchContainer::TouchAcceptTap() {
       return allowTap;
     }
-
+    
     bool TouchContainer::TouchTapIntent() {
       if (allowTap) {
         touchProc.Acquiere(this);
@@ -1328,7 +1312,7 @@ namespace machete {
     bool TouchContainer::TouchAcceptDragY() {
       return allowDragY;
     }
-
+    
     bool TouchContainer::TouchAcceptDragX() {
       return allowDragX;
     }
@@ -1339,7 +1323,7 @@ namespace machete {
       }
       touchProc.Acquiere(this);
     }
-
+    
     void TouchContainer::TouchDrag(machete::math::Vec2 &move) {
       if (event != NULL) {
         event->WidgetDragged(this, move);
@@ -1362,7 +1346,7 @@ namespace machete {
     bool TouchContainer::TouchEvent(machete::input::Touch *touch) {
       if (touch->owner != this) {
         if (!active || !visible) return false;
-      
+        
         if (Container::TouchEvent(touch) == true) {
           return true;
         }
@@ -1394,7 +1378,7 @@ namespace machete {
       float y = position.y;
       Vec2 tSize = text->GetTextSize();
       float pivot = text->GetMaxPivot();
-
+      
       if (positionFlags & TextPosHLeft) {
         // Nothing to do :)
       } else if (positionFlags & TextPosHCenter) {
@@ -1419,6 +1403,6 @@ namespace machete {
       
       text->SetPosition(x, y);
     }
-
+    
   }
 }
