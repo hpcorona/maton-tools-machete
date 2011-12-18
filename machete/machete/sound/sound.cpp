@@ -177,6 +177,7 @@ namespace machete {
       delete worker;
       
       for (int i = 0; i < MAX_MUSIC_BUFFERS; i++) {
+        alSourceUnqueueBuffers(source, 1, &(buffers[i].buffer));
         alDeleteBuffers(1, &buffers[i].buffer);
         delete buffers[i].data;
       }
@@ -184,7 +185,7 @@ namespace machete {
       alDeleteSources(1, &source);
     }
     
-    bool Music::PrepareMusic(const char *name, bool preload) {
+    bool Music::PrepareMusic(const char *name) {
       Stop();
       
       soundLoaded = worker->PrepareMusic(name);
@@ -192,13 +193,29 @@ namespace machete {
       format = worker->GetFormat();
       firstRun = true;
       
-      if (!preload) {
-        return soundLoaded;
+      return soundLoaded;
+    }
+    
+    void Music::Unload() {
+      while (worker->TryLock()) {}
+      while (worker->GetDoneResource()->TryLock()) {}
+      
+      worker->GetDoneTasks()->RemoveAll();
+      
+      for (int i = 0; i < MAX_MUSIC_BUFFERS; i++) {
+        if (buffers[i].loaded) {
+          unsigned int unbuff = buffers[i].buffer;
+          alSourceUnqueueBuffers(source, 1, &unbuff);
+          int err = alGetError();
+          if (err != AL_NO_ERROR) {
+            std::cout << "UNLOAD " << err << std::endl;
+          }
+          buffers[i].loaded = false;
+        }
       }
       
-      Preload();
-      
-      return soundLoaded;
+      worker->GetDoneResource()->Unlock();
+      worker->Unlock();
     }
     
     void Music::Preload() {
@@ -214,8 +231,9 @@ namespace machete {
       alSourceQueueBuffers(source, 1, &(buff->buffer));
       int err = alGetError();
       if (err != AL_NO_ERROR) {
-        std::cout << err << std::endl;
+        std::cout << "ENQUEUE " << err << std::endl;
       }
+      buff->loaded = true;
       
       if (pause == false && !IsPlaying()) {
         Play();
@@ -235,13 +253,18 @@ namespace machete {
     void Music::Play() {
       if (!soundLoaded) return;
 
-      alSourcePlay(source);
-      if (alGetError() != AL_NO_ERROR) {
-        int err = alGetError();
-        std::cout << err << std::endl;
-      }
-      
       pause = false;
+
+      int queued;
+      alGetSourcei(source, AL_BUFFERS_QUEUED, &queued);
+      
+      if (queued > 0) {
+        alSourcePlay(source);
+        int err = alGetError();
+        if (err != AL_NO_ERROR) {
+          std::cout << "PLAY " << err << std::endl;
+        }
+      }
     }
     
     void Music::Pause() {
@@ -296,8 +319,10 @@ namespace machete {
         
           for (int i = 0; i < MAX_MUSIC_BUFFERS; i++) {
             if (buffers[i].buffer == unbuff) {
+              buffers[i].loaded = false;
               MusicBuffer* buff = &buffers[i];
               worker->Push(buff);
+              break;
             }
           }
         }
@@ -332,6 +357,7 @@ namespace machete {
       for (int i = 0; i < MAX_MUSIC_BUFFERS; i++) {
         alGenBuffers(1, &buffers[i].buffer);
         buffers[i].data = new char[MUSIC_BUFFER_SIZE];
+        buffers[i].loaded = false;
       }
     }
     
@@ -596,7 +622,7 @@ namespace machete {
       Tree<Str, Music*>* node = musics.Seek(name);
       if (node == NULL) {
         Music* music = new Music();
-        music->PrepareMusic(name, true);
+        music->PrepareMusic(name);
         
         musics.Add(name, music);
         return music;
@@ -665,11 +691,15 @@ namespace machete {
       
       currentMusicName = file;
       
-      fading->PrepareMusic(file, true);
+      fading->Stop();
+      fading->Unload();
+      fading->PrepareMusic(file);
       
       if (flags == PlayInstant || fade <= 0) {
         current->Stop();
+        current->Unload();
         fading->SetVolume(volume);
+        fading->Preload();
         fading->Play();
         
         maxTime = 0;
@@ -680,6 +710,7 @@ namespace machete {
         
         current->SetVolume(volume);
         fading->SetVolume(0);
+        fading->Preload();
         fading->Play();
       }
       
@@ -716,6 +747,7 @@ namespace machete {
         if (this->time <= 0) {
           this->time = 0;
           fading->Stop();
+          fading->Unload();
         }
         
         float factor = this->time / maxTime;

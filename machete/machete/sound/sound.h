@@ -57,6 +57,8 @@ namespace machete {
       
       char* data;               //! Audio data.
       
+      bool loaded;              //! If the buffer is loaded.
+      
     };
     
     //! Internal class to manage background music streaming.
@@ -156,18 +158,20 @@ namespace machete {
       //! Prepare a music file for playing.
       /*!
        \param name Name of the music file.
-       \param preload Preload the music with 3 buffers.
        \return True if everything was ok.
        */
-      bool PrepareMusic(const char *name, bool preload);
+      bool PrepareMusic(const char *name);
+      
+      //! Unload buffers.
+      void Unload();
+      
+      //! Preload all buffers.
+      void Preload();
       
     protected:
       
       //! Create the sound buffers.
       void CreateBuffers();
-      
-      //! Preload all buffers.
-      void Preload();
       
       //! Enqueue next packets.
       /*!
