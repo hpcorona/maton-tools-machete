@@ -76,7 +76,7 @@ CAEAGLLayer *eaglLayer = NULL;
     timestamp = displayLink.timestamp;
   }
   
-  if (elapsedSeconds >= 0.1f) return;
+  if (elapsedSeconds >= 0.3f) return;
   
   game->Update((float)elapsedSeconds);
   game->Render();

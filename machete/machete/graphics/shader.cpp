@@ -121,16 +121,28 @@ namespace machete {
     }
     
     TextureMgr::~TextureMgr() {
-      // TODO: Destruir Texturas
+      machete::data::Iterator< machete::data::Tree<machete::data::Str, struct Tex*>* >* iter = textures.Enumerate();
+      
+      iter->Reset();
+      
+      while (iter->Next()) {
+        struct Tex *tex = iter->GetCurrent()->GetValue()->GetValue();
+        
+        glDeleteTextures(1, &tex->id);
+      }
+      
+      delete iter;
     }
     
     struct Tex* TextureMgr::LoadTexture(const char *name) {
       machete::data::Tree<machete::data::Str, struct Tex*> *txNode = textures.Seek(name);
       
-      struct Tex *tex = new struct Tex();
+      struct Tex *tex = NULL;
       GLuint texId;
       
       if (txNode == NULL) {
+        tex = new struct Tex();
+        
         glGenTextures(1, &texId);
         
         glActiveTexture(GL_TEXTURE0);
@@ -167,6 +179,7 @@ namespace machete {
     }
     
     struct Tex* TextureMgr::CreateTexture(int width, int height) {
+      std::cout << "New Texture " << width << "x" << height << std::endl;
       struct Tex *t = new struct Tex();
       t->width = width;
       t->height = height;
@@ -250,6 +263,7 @@ namespace machete {
       glDisableVertexAttribArray(colorSlot);
       glDisableVertexAttribArray(scaleSlot);
       glDisableVertexAttribArray(rotationSlot);
+      glDisableVertexAttribArray(projectionSlot);
 
       Program::Unuse();
     }

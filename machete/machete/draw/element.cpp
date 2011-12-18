@@ -13,6 +13,7 @@ namespace machete {
     
     Container::Container() {
       count = 0;
+      culled = false;
     }
     
     void Container::Add(Element *child) {
@@ -123,6 +124,14 @@ namespace machete {
         Element *current = childs.GetCurrent()->GetValue();
         
         if (current->IsVisible()) {
+          if (culled) {
+            Rect2D bnds = current->GetGlobalBounds();
+            
+            if (!cullViewport.Intersects(bnds)) {
+              continue;
+            }
+          }
+          
           if (changed) {
             current->Draw(mat, ZERO2, NewColor, ctx);
           } else {
@@ -151,7 +160,18 @@ namespace machete {
       
       return false;
     }
-
+    
+    void Container::SetCulling(bool culling) {
+      this->culled = culling;
+    }
+    
+    bool Container::IsCulling() const {
+      return culled;
+    }
+    
+    void Container::SetCullViewport(Rect2D & viewport) {
+      cullViewport = viewport;
+    }
     
     Iterator<Element*>* Container::ChildIterator() {
       if (count == 0) {

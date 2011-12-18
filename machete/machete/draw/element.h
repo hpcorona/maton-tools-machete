@@ -118,6 +118,20 @@ namespace machete {
        */
       virtual bool TouchEvent(machete::input::Touch *touch);
 
+      //! Change the culling method.
+      /*!
+       \param culling True to test rectangle hits against a viewport.
+       */
+      void SetCulling(bool culling);
+      
+      //! Detect if the culling is enabled.
+      bool IsCulling() const;
+      
+      //! Sets the culling viewport.
+      /*!
+       \param viewport The culling viewport.
+       */
+      void SetCullViewport(Rect2D & viewport);
       
     protected:
       
@@ -126,6 +140,12 @@ namespace machete {
       
       //! Childs.
       machete::data::Iterator<Element*> childs;
+      
+      //! Culled drawing.
+      bool culled;
+      
+      //! Culling viewport.
+      Rect2D cullViewport;
     };
     
     //! The root container.

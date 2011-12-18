@@ -677,7 +677,7 @@ namespace machete {
       
       Vec2 midPos = GetSize() / 2.0f;
       
-      unsigned long flag = TextPosHCenter | TextPosVCenter;
+      unsigned long flag = TextPosHCenter | TextPosVCenterBaseline;
       PositionText(label, midPos, flag);
       PositionText(labelPress, midPos, flag);
     }
@@ -697,6 +697,7 @@ namespace machete {
       viewport->SetUsingTexture(true);
       
       container = new Container();
+      container->SetCulling(true);
       viewport->Add(container);
       viewport->SetParent(this);
       
@@ -868,6 +869,8 @@ namespace machete {
       touchProc.Update(time);
       viewport->Update(time);
       
+      Rect2D cullView = GetGlobalBounds();
+      container->SetCullViewport(cullView);
       viewport->Draw();
       
       if (centering == false && touchProc.IsTracking() == false && (touchProc.IsAlive() || (elastic.x != 0 || elastic.y != 0))) {

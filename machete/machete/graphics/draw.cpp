@@ -162,6 +162,7 @@ namespace machete {
       glViewport(0, 0, size.x, size.y);
 
       renderer.ApplyOrtho(size.x, size.y);
+      renderer.Unuse();
     }
     
     void DrawContext::Use() {
