@@ -28,131 +28,201 @@ namespace machete {
     }
 #endif
     
+    MusicStreamWorker::MusicStreamWorker() {
+      name = new char[80];
+      name[0] = 0;
+      
+      loaded = false;
+    }
+    
+    MusicStreamWorker::~MusicStreamWorker() {
+      delete name;
+      
+      CloseOgg();
+    }
+    
+    void MusicStreamWorker::Service() {
+      
+      while (alive) {
+        while (!TryLock()) { if (!alive) return; }
+        Wait();
+        if (!alive) return;
+        SwapQueues();
+        Unlock();
+        
+        toDo->Reset();
+        while (toDo->Next()) {
+          MusicBuffer* buff = toDo->GetCurrent()->GetValue();
+          LoadPart(buff);
+
+          while(!workDone->TryLock()) {}
+          done->Append(buff);
+          workDone->NotifyAll();
+          workDone->Unlock();
+        }
+        
+        while (toDo->Count() > 0) {
+          toDo->RemoveRoot();
+        }
+      }
+      
+      finished = true;
+      
+    }
+    
+    void MusicStreamWorker::LoadPart(MusicBuffer* buff) {
+      int size;
+      int section;
+      char *data = buff->data;
+      
+      size = 0;
+      while (size < MUSIC_BUFFER_SIZE) {
+        int result = ov_read(&oggStream, data + size, MUSIC_BUFFER_SIZE - size, &section);
+        
+        if (result > 0) {
+          size += result;
+        } else if (result == 0) {
+          break;
+        } else {
+          LoadPart(buff);
+          return;
+        }
+      }
+      
+      if (size == 0)  {
+        ov_raw_seek(&oggStream, 0);
+          
+        LoadPart(buff);
+        return;
+      }
+      
+      alBufferDataStatic(buff->buffer, format, data, size, vorbisInfo->rate);
+      int err = alGetError();
+      if (err != AL_NO_ERROR) {
+        std::cout << "THREAD " << err << std::endl;
+      }
+    }
+    
+    bool MusicStreamWorker::PrepareMusic(const char *name) {
+      while (!TryLock()) {}
+      
+      CloseOgg();
+
+      loaded = false;
+      
+      machete::data::Str n = name;
+      n.GetChars(this->name, 80);
+      
+      LoadOgg();
+      
+      Unlock();
+      
+      return loaded;
+    }
+    
+    void MusicStreamWorker::CloseOgg() {
+      if (!loaded) return;
+      
+      ov_clear(&oggStream);
+      ThePlatform->CloseFile(handle);
+      
+      loaded = false;
+    }
+    
+    ALenum MusicStreamWorker::GetFormat() const {
+      return format;
+    }
+    
+    void MusicStreamWorker::LoadOgg() {
+      if (name[0] == 0) return;
+      
+      loaded = false;
+      
+      handle = ThePlatform->OpenFile(name);
+      if (handle <= 0) {
+        return;
+      }
+      
+      int result;
+      result = ov_open(handle, &oggStream, NULL, 0);
+      if (result < 0) {
+        ThePlatform->CloseFile(handle);
+        return;
+      }
+      
+      vorbisInfo = ov_info(&oggStream, -1);
+      
+      if (vorbisInfo->channels == 1) {
+        format = AL_FORMAT_MONO16;
+      } else {
+        format = AL_FORMAT_STEREO16;
+      }
+      
+      loaded = true;
+    }
+
+    
     Music::Music() {
-      audioData = NULL;
       firstRun = true;
       soundLoaded = false;
       
-      this->name = new char[80];
-      this->name[0] = 0;
+      worker = new MusicStreamWorker();
+      machete::thread::TheThreadMgr->Start(worker);
       
       CreateBuffers();
     }
     
     Music::~Music() {
-      delete name;
+      worker->Shutdown();
+      delete worker;
       
-      CloseOgg();
-      
-      if (audioData != NULL) {
-        for (int i = 0; i < MAX_MUSIC_BUFFERS; i++) {
-          delete audioData[i];
-        }
-        
-        delete [] audioData;
+      for (int i = 0; i < MAX_MUSIC_BUFFERS; i++) {
+        alDeleteBuffers(1, &buffers[i].buffer);
+        delete buffers[i].data;
       }
 
-      alDeleteBuffers(MAX_MUSIC_BUFFERS, buffers);
       alDeleteSources(1, &source);
     }
     
-    void Music::CloseOgg() {
-      if (!soundLoaded) return;
-      
+    bool Music::PrepareMusic(const char *name, bool preload) {
       Stop();
       
-      ov_clear(&oggStream);
-      ThePlatform->CloseFile(handle);
-      
-      soundLoaded = false;
-      firstRun = true;
-    }
-    
-    bool Music::PrepareMusic(const char *name, bool preload) {
-      CloseOgg();
-      
-      machete::data::Str n = name;
-      n.GetChars(this->name, 80);
+      soundLoaded = worker->PrepareMusic(name);
 
+      format = worker->GetFormat();
       firstRun = true;
       
       if (!preload) {
-        return true;
+        return soundLoaded;
       }
       
-      LoadOgg();
+      Preload();
       
       return soundLoaded;
     }
     
-    bool Music::Enqueue(int count) {
-      if (!soundLoaded) return false;
-      
-      bool oneLoaded = false;
-      
-      while (count-- > 0) {
-        int size;
-        int section;
-        char *data = audioData[currBuffer];
-        
-        size = 0;
-        while (size < MUSIC_BUFFER_SIZE) {
-          int result = ov_read(&oggStream, data + size, MUSIC_BUFFER_SIZE - size, &section);
-          
-          if (result > 0) {
-            size += result;
-          } else if (result == 0) {
-            break;
-          } else {
-            return oneLoaded;
-          }
-        }
-        
-        if (size == 0)  {
-          int ttl = ov_streams(&oggStream);
-          
-          if (section >= ttl) {
-            ov_raw_seek(&oggStream, 0);
-            
-            return Enqueue(count + 1);
-          }
-
-          return oneLoaded; 
-        }
-        
-        unsigned int buff = buffers[currBuffer];
-        
-        alBufferDataStatic(buff, format, data, size, vorbisInfo->rate);
-        int err = alGetError();
-        if (err != AL_NO_ERROR) {
-          std::cout << err << std::endl;
-        }
-          
-        alSourceQueueBuffers(source, 1, &buff);
-        err = alGetError();
-        if (err != AL_NO_ERROR) {
-          std::cout << err << std::endl;
-        }
-        
-        currBuffer = (currBuffer + 1) % MAX_MUSIC_BUFFERS;
-        
-        oneLoaded = true;
-        
-        int ttl = ov_streams(&oggStream);
-        
-        if (section >= ttl) {
-          ov_raw_seek(&oggStream, 0);
-        }
+    void Music::Preload() {
+      for (int i = 0; i < MAX_MUSIC_BUFFERS; i++) {
+        MusicBuffer* buff = &buffers[i];
+        worker->Push(buff);
       }
       
-      int queued;
-      alGetSourcei(source, AL_BUFFERS_QUEUED, &queued);
+      worker->Work();
+    }
+    
+    void Music::Enqueue(MusicBuffer *buff) {
+      alSourceQueueBuffers(source, 1, &(buff->buffer));
+      int err = alGetError();
+      if (err != AL_NO_ERROR) {
+        std::cout << err << std::endl;
+      }
       
-      return true;
+      if (pause == false && !IsPlaying()) {
+        Play();
+      }
     }
     
     void Music::Rewind() {
-      LoadOgg();
       if (!soundLoaded) return;
       
       alSourceStop(source);
@@ -163,7 +233,6 @@ namespace machete {
     }
     
     void Music::Play() {
-      LoadOgg();
       if (!soundLoaded) return;
 
       alSourcePlay(source);
@@ -184,7 +253,6 @@ namespace machete {
     }
     
     void Music::Resume() {
-      LoadOgg();
       if (!soundLoaded) return;
       
       alSourcePlay(source);
@@ -221,56 +289,37 @@ namespace machete {
       int processed;
       
       alGetSourcei(source, AL_BUFFERS_PROCESSED, &processed);
-      
       if (processed > 0) {
-        alSourceUnqueueBuffers(source, processed, unbuff);
-      
-        Enqueue(processed);
+        while (processed-- > 0) {
+          unsigned int unbuff;
+          alSourceUnqueueBuffers(source, 1, &unbuff);
+        
+          for (int i = 0; i < MAX_MUSIC_BUFFERS; i++) {
+            if (buffers[i].buffer == unbuff) {
+              MusicBuffer* buff = &buffers[i];
+              worker->Push(buff);
+            }
+          }
+        }
+        
+        worker->Work();
       }
+      
+      while (!worker->GetDoneResource()->TryLock()) {}
+      machete::data::Iterator<MusicBuffer*> *done = worker->GetDoneTasks();
+      done->Reset();
+      while (done->Next()) {
+        Enqueue(done->GetCurrent()->GetValue());
+      }
+      done->RemoveAll();
+      worker->GetDoneResource()->Unlock();
     }
     
     bool Music::IsLoaded() const {
       return soundLoaded;
     }
     
-    void Music::LoadOgg() {
-      if (!firstRun) return;
-      if (name[0] == 0) return;
-      
-      firstRun = false;
-      soundLoaded = false;
-      
-      handle = ThePlatform->OpenFile(name);
-      if (handle <= 0) {
-        return;
-      }
-      
-      int result;
-      result = ov_open(handle, &oggStream, NULL, 0);
-      if (result < 0) {
-        ThePlatform->CloseFile(handle);
-        return;
-      }
-      
-      vorbisInfo = ov_info(&oggStream, -1);
-      
-      if (vorbisInfo->channels == 1) {
-        format = AL_FORMAT_MONO16;
-      } else {
-        format = AL_FORMAT_STEREO16;
-      }
-      
-      soundLoaded = true;
-      
-      pause = true;
-      
-      Enqueue(MAX_MUSIC_BUFFERS);
-    }
-    
     void Music::CreateBuffers() {
-      alGenBuffers(MAX_MUSIC_BUFFERS, buffers);
-      currBuffer = 0;
-      
       alGenSources(1, &source);
       alSourcef(source, AL_PITCH, 1.0f);
       alSourcef(source, AL_GAIN, 0.25f);
@@ -280,9 +329,9 @@ namespace machete {
       
       pause = true;
       
-      audioData = new char*[MAX_MUSIC_BUFFERS];
       for (int i = 0; i < MAX_MUSIC_BUFFERS; i++) {
-        audioData[i] = new char[MUSIC_BUFFER_SIZE];
+        alGenBuffers(1, &buffers[i].buffer);
+        buffers[i].data = new char[MUSIC_BUFFER_SIZE];
       }
     }
     

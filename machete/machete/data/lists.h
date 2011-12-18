@@ -401,6 +401,13 @@ namespace machete {
         return count;
       }
       
+      //! Remove all the elements.
+      void RemoveAll() {
+        while (count > 0) {
+          RemoveRoot();
+        }
+      }
+      
     private:
 			//! Current node
       LinkedList<T> *current;

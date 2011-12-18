@@ -32,6 +32,7 @@
 #include "../data/tree.h"
 #include "../data/str.h"
 #include "../platform/platform.h"
+#include "../thread/thread.h"
 
 #ifndef NULL
 #define NULL 0
@@ -48,6 +49,67 @@ namespace machete {
   
   //! Classes related to sound management.
   namespace sound {
+    
+    //! A music buffer.
+    struct MusicBuffer {
+      
+      unsigned int buffer;      //! OpenAL buffer.
+      
+      char* data;               //! Audio data.
+      
+    };
+    
+    //! Internal class to manage background music streaming.
+    class MusicStreamWorker : public machete::thread::SequenceWorker<MusicBuffer*> {
+    public:
+      
+      MusicStreamWorker();
+      
+      ~MusicStreamWorker();
+      
+      //! Prepare a music file for playing.
+      /*!
+       \param name Name of the music file.
+       \param preload Preload the music with 3 buffers.
+       \return True if everything was ok.
+       */
+      bool PrepareMusic(const char *name);
+      
+      void Service();
+      
+      //! Get the music format;
+      ALenum GetFormat() const;
+      
+    protected:
+      
+      //! Load a buffer part.
+      void LoadPart(MusicBuffer* buff);
+      
+      //! Load Ogg file.
+      void LoadOgg();
+      
+      //! Close the current ogg.
+      void CloseOgg();
+
+      //! File handle.
+      FILE* handle;
+      
+      //! Vorbis Stream.
+      OggVorbis_File oggStream;
+      
+      //! Formatting data.
+      vorbis_info* vorbisInfo;
+      
+      //! Audio file name.
+      char *name;
+      
+      //! If the file is loaded.
+      bool loaded;
+      
+      //! Music format.
+      ALenum format;
+
+    };
     
     //! Represent a buffered ogg sound.
     class Music {
@@ -101,33 +163,17 @@ namespace machete {
       
     protected:
       
-      //! Close the current ogg.
-      void CloseOgg();
-      
       //! Create the sound buffers.
       void CreateBuffers();
       
+      //! Preload all buffers.
+      void Preload();
+      
       //! Enqueue next packets.
       /*!
-       \param count Number of packets to enqueue.
-       \return True if no problem.
+       \param buff The buffer to enqueue.
        */
-      bool Enqueue(int count);
-      
-      //! Load Ogg file.
-      void LoadOgg();
-      
-      //! File handle.
-      FILE* handle;
-      
-      //! Vorbis Stream.
-      OggVorbis_File oggStream;
-      
-      //! Formatting data.
-      vorbis_info* vorbisInfo;
-      
-      //! Audio file name.
-      char *name;
+      void Enqueue(MusicBuffer* buff);
       
       //! The ALuint source.
       unsigned int source;
@@ -145,17 +191,11 @@ namespace machete {
       bool firstRun;
       
       //! Music buffers.
-      unsigned int buffers[MAX_MUSIC_BUFFERS];
+      MusicBuffer buffers[MAX_MUSIC_BUFFERS];
       
-      //! Unbufferer.
-      unsigned int unbuff[MAX_MUSIC_BUFFERS];
+      //! Music stream worker.
+      MusicStreamWorker *worker;
       
-      //! Current local music buffer.
-      unsigned int currBuffer;
-      
-      //! Audio data temporal buffer.
-      char** audioData;
-
     };
     
     //! Represents a single sound.

@@ -11,6 +11,68 @@
 namespace machete {
   namespace thread {
     
+    Resource::Resource() {
+      pthread_cond_init(&condition, NULL);
+      pthread_mutex_init(&mutex, NULL);
+    }
+    
+    Resource::~Resource() {
+      pthread_cond_destroy(&condition);
+      pthread_mutex_destroy(&mutex);
+    }
+    
+    bool Resource::TryLock() {
+      return pthread_mutex_trylock(&mutex) == 0;
+    }
+    
+    void Resource::Unlock() {
+      pthread_mutex_unlock(&mutex);
+    }
+    
+    void Resource::Notify() {
+      pthread_cond_signal(&condition);
+    }
+    
+    void Resource::NotifyAll() {
+      pthread_cond_broadcast(&condition);
+    }
+    
+    void Resource::Wait() {
+      pthread_cond_wait(&condition, &mutex);
+    }
+    
+    bool BackgroundWorker::IsFinished() const {
+      return finished;
+    }
+    
+    bool BackgroundWorker::IsAlive() const {
+      return alive;
+    }
+    
+    bool BackgroundWorker::Start(pthread_attr_t *attr) {
+      finished = false;
+      alive = true;
+      
+      int v = pthread_create(&threadId, attr, &WorkerRunnerRoutine, this);
+      
+      if (v != 0) {
+        finished = true;
+        alive = false;
+      }
+      
+      return v == 0;
+    }
+    
+    void BackgroundWorker::Shutdown() {
+      while (!TryLock()) {}
+      
+      alive = false;
+      
+      NotifyAll();
+      
+      Unlock();
+    }
+    
     Thread::Thread(HeavyWork *work) {
       this->work = work;
       finished = false;
@@ -36,6 +98,18 @@ namespace machete {
       
       thread->finished = true;
       
+      pthread_exit(NULL);
+      
+      return NULL;
+    }
+    
+    void* WorkerRunnerRoutine(void* data) {
+      BackgroundWorker* worker = static_cast<BackgroundWorker*>(data);
+      
+      worker->Service();
+      
+      pthread_exit(NULL);
+      
       return NULL;
     }
     
@@ -57,6 +131,8 @@ namespace machete {
         
         pool.RemoveCurrent(true);
       }
+      
+      pthread_exit(NULL);
     }
     
     bool ThreadManager::Launch(HeavyWork *work) {
@@ -71,6 +147,10 @@ namespace machete {
       pool.Append(thread);
       
       return true;
+    }
+    
+    bool ThreadManager::Start(BackgroundWorker *work) {
+      return work->Start(&attr);
     }
     
     void ThreadManager::Update(float time) {
