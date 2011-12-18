@@ -187,6 +187,10 @@ namespace machete {
     }
     
     void Root::Draw() {
+      Draw(context);
+    }
+    
+    void Root::Draw(DrawContext *context) {
       context->Use();
       context->StartFrame();
       

@@ -165,6 +165,12 @@ namespace machete {
       //! Draw the childs using the context specified in the constructor.
       void Draw();
       
+      //! Draw this element to a specific drawing context.
+      /*!
+       \param ctx DrawContext to draw the elements.
+       */
+      void Draw(DrawContext *ctx);
+      
     protected:
       
       //! The target DrawContext.

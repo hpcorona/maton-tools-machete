@@ -179,7 +179,6 @@ namespace machete {
     }
     
     struct Tex* TextureMgr::CreateTexture(int width, int height) {
-      std::cout << "New Texture " << width << "x" << height << std::endl;
       struct Tex *t = new struct Tex();
       t->width = width;
       t->height = height;

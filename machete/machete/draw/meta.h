@@ -125,6 +125,13 @@ namespace machete {
       
     };
     
+    //! Create a new Meta Sprite based on a drawing context.
+    /*!
+     \param ctx Basic drawing context.
+     \return The meta sprite.
+     */
+    MetaSprite* MetaSpriteFromDrawContext(DrawContext *ctx);
+    
     //! Abstract element prividing the basic functionality for scene management.
     class Element : public machete::input::TouchReceiver {
     public:

@@ -107,6 +107,10 @@ namespace machete {
       ctx->Draw(verts, 4, elems, 6, texture);
     }
     
+    MetaSprite* MetaSpriteFromDrawContext(DrawContext *ctx) {
+      return new MetaSprite(ctx->GetSize(), Vec2(0, 1), Vec2(1, 0), ctx->GetRenderTexture());
+    }
+    
     Vec2 Element::ZERO2(0, 0);
     Vec2 Element::ONE2(1, 1);
     unsigned long Element::NEXT_ID = 0;
