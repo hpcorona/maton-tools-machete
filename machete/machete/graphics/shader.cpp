@@ -217,12 +217,12 @@ namespace machete {
       offsetSlot = glGetAttribLocation(program, "Offset");
       positionSlot = glGetAttribLocation(program, "Position");
       textureSlot = glGetAttribLocation(program, "TextureCoord");
-      colorSlot = glGetAttribLocation(program, "SourceColor");
       scaleSlot = glGetAttribLocation(program, "Scale");
       rotationSlot = glGetAttribLocation(program, "Rotation");
       
       baseSlot = glGetUniformLocation(program, "Base");
       modelviewSlot = glGetUniformLocation(program, "Modelview");
+      destColorSlot = glGetUniformLocation(program, "DestinationColor");
       
       samplerSlot = glGetUniformLocation(program, "Sampler");
       
@@ -248,7 +248,6 @@ namespace machete {
       glEnableVertexAttribArray(offsetSlot);
       glEnableVertexAttribArray(positionSlot);
       glEnableVertexAttribArray(textureSlot);
-      glEnableVertexAttribArray(colorSlot);
       glEnableVertexAttribArray(scaleSlot);
       glEnableVertexAttribArray(rotationSlot);
       glEnableVertexAttribArray(projectionSlot);
@@ -259,7 +258,6 @@ namespace machete {
       glDisableVertexAttribArray(offsetSlot);
       glDisableVertexAttribArray(positionSlot);
       glDisableVertexAttribArray(textureSlot);
-      glDisableVertexAttribArray(colorSlot);
       glDisableVertexAttribArray(scaleSlot);
       glDisableVertexAttribArray(rotationSlot);
       glDisableVertexAttribArray(projectionSlot);
@@ -267,10 +265,11 @@ namespace machete {
       Program::Unuse();
     }
     
-    void VtxRender::Upload(Vtx *verts, int vcount, unsigned short *elems, int ecount) {
+    void VtxRender::Upload(Vtx *verts, int vcount, unsigned short *elems, int ecount, const machete::math::Vec4 & color) {
       
       using namespace machete::data;
       
+      glUniform4f(destColorSlot, color.x, color.y, color.z, color.w);
       glUniform1i(samplerSlot, 0);
       
       Vtx* POSITION = NULL;
@@ -283,7 +282,6 @@ namespace machete {
       glVertexAttribPointer(positionSlot, 3, GL_FLOAT, GL_FALSE, sizeof(struct Vtx), POSITION);
       glVertexAttribPointer(textureSlot, 2, GL_FLOAT, GL_FALSE, sizeof(struct Vtx), &POSITION[0].uv);
       glVertexAttribPointer(scaleSlot, 2, GL_FLOAT, GL_FALSE, sizeof(struct Vtx), &POSITION[0].scale);
-      glVertexAttribPointer(colorSlot, 4, GL_FLOAT, GL_FALSE, sizeof(struct Vtx), &POSITION[0].color);
       glVertexAttribPointer(rotationSlot, 1, GL_FLOAT, GL_FALSE, sizeof(struct Vtx), &POSITION[0].rotation);
       
       glDrawElements(GL_TRIANGLES, ecount, GL_UNSIGNED_SHORT, POSITION);

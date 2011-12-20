@@ -104,7 +104,7 @@ namespace machete {
 
     BufferMgr *TheBufferMgr = NULL;
     
-    DrawContext::DrawContext(RenderTarget t) : color(0.5f, 0.5f, 0.5f, 1.0f) {
+    DrawContext::DrawContext(RenderTarget t) : color(0.5f, 0.5f, 0.5f, 1.0f), tint(1, 1, 1, 1) {
       if (TheBufferMgr == NULL) {
         TheBufferMgr = new BufferMgr();
       }
@@ -120,7 +120,6 @@ namespace machete {
       idxCount = 0;
       vtxCount = 0;
       lastTexBind = 0;
-      
       
       glGenFramebuffers(1, &framebuffer);
       glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
@@ -198,13 +197,14 @@ namespace machete {
       renderer.SetModelView(mv);
     }
     
-    void DrawContext::Draw(Vtx *verts, int vcount, unsigned short* elems, int ecount, GLuint texId) {
+    void DrawContext::Draw(Vtx *verts, int vcount, unsigned short* elems, int ecount, const machete::math::Vec4 & tint, GLuint texId) {
       
-      if (texId != lastTexBind || vtxCount + vcount > MAX_VTX || idxCount + ecount > MAX_IDX) {
+      if (texId != lastTexBind || vtxCount + vcount > MAX_VTX || idxCount + ecount > MAX_IDX || this->tint.x != tint.x || this->tint.y != tint.y || this->tint.z != tint.z || this->tint.w != tint.w) {
         Draw();
       }
 
       lastTexBind = texId;
+      this->tint = tint;
 
       unsigned int vtxBase = vtxCount;
       
@@ -226,11 +226,11 @@ namespace machete {
       glActiveTexture(GL_TEXTURE0);
       glBindTexture(GL_TEXTURE_2D, lastTexBind);
       
-      renderer.Upload(vertexes, vtxCount, indices, idxCount);
+      renderer.Upload(vertexes, vtxCount, indices, idxCount, tint);
       
       NextBuffers();
     }
-    
+
     void DrawContext::EndFrame() {
       Draw();
       

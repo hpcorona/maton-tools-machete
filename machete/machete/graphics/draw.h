@@ -194,7 +194,7 @@ namespace machete {
        \param ecount Numer of elements to send.
        \param texId Texture to use.
        */
-      void Draw(Vtx *verts, int vcount, unsigned short* elems, int ecount, GLuint texId);
+      void Draw(Vtx *verts, int vcount, unsigned short* elems, int ecount, const machete::math::Vec4 & tint, GLuint texId);
       
       //! Force a flush of the current batch into hardware.
       void Draw();
@@ -262,6 +262,9 @@ namespace machete {
       
       //! Clear color.
       machete::math::Vec4 color;
+      
+      //! Tint color.
+      machete::math::Vec4 tint;
       
       //! The last texture used.
       GLuint lastTexBind;

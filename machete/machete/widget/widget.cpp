@@ -251,14 +251,12 @@ namespace machete {
           
           verts[i].offset.x = pos.x; verts[i].offset.y = pos.y;
           
-          verts[i].color.x = color.x; verts[i].color.y = color.y; verts[i].color.z = color.z; verts[i].color.w = color.w;
-          
           verts[i].scale.x = scale.x; verts[i].scale.y = scale.y;
           
           verts[i].rotation = rotation;
         }
         
-        ctx->Draw(verts, 16, elems, 54, texture);
+        ctx->Draw(verts, 16, elems, 54, color, texture);
       } else if (flipX && !flipY) {
         // Top Box
         vertsH[4].vert.x = drawSize.x - bottomRight.x; vertsH[4].vert.y = 0; vertsH[4].vert.z = 0;
@@ -271,14 +269,12 @@ namespace machete {
           
           vertsH[i].offset.x = pos.x; vertsH[i].offset.y = pos.y;
           
-          vertsH[i].color.x = color.x; vertsH[i].color.y = color.y; vertsH[i].color.z = color.z; vertsH[i].color.w = color.w;
-          
           vertsH[i].scale.x = scale.x; vertsH[i].scale.y = scale.y;
           
           vertsH[i].rotation = rotation;
         }
         
-        ctx->Draw(vertsH, 8, elemsH, 18, texture);
+        ctx->Draw(vertsH, 8, elemsH, 18, color, texture);
       } else if (flipY && !flipX) {
         // Bottom Box
         vertsV[4].vert.x = 0; vertsV[4].vert.y = -(drawSize.y - bottomRight.y); vertsV[4].vert.z = 0;
@@ -291,14 +287,12 @@ namespace machete {
           
           vertsV[i].offset.x = pos.x; vertsV[i].offset.y = pos.y;
           
-          vertsV[i].color.x = color.x; vertsV[i].color.y = color.y; vertsV[i].color.z = color.z; vertsV[i].color.w = color.w;
-          
           vertsV[i].scale.x = scale.x; vertsV[i].scale.y = scale.y;
           
           vertsV[i].rotation = rotation;
         }
         
-        ctx->Draw(vertsV, 8, elemsV, 18, texture);
+        ctx->Draw(vertsV, 8, elemsV, 18, color, texture);
       }
     }
     

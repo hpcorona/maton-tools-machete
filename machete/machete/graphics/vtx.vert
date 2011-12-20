@@ -13,7 +13,6 @@ attribute vec2 TextureCoord;
 attribute vec2 Scale;
 attribute float Rotation;
 
-varying vec4 DestinationColor;
 varying vec2 TextureCoordOut;
 
 void main(void) {
@@ -54,7 +53,6 @@ void main(void) {
   
   gl_Position = Projection * Base * Modelview * Pos;
   
-  DestinationColor = SourceColor;
   TextureCoordOut.x = TextureCoord.x;
 	TextureCoordOut.y = TextureCoord.y;
 }

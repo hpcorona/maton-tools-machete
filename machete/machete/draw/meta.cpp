@@ -89,11 +89,6 @@ namespace machete {
       verts[2].offset.x = pos.x; verts[2].offset.y = pos.y;
       verts[3].offset.x = pos.x; verts[3].offset.y = pos.y;
       
-      verts[0].color.x = color.x; verts[0].color.y = color.y; verts[0].color.z = color.z; verts[0].color.w = color.w;
-      verts[1].color.x = color.x; verts[1].color.y = color.y; verts[1].color.z = color.z; verts[1].color.w = color.w;
-      verts[2].color.x = color.x; verts[2].color.y = color.y; verts[2].color.z = color.z; verts[2].color.w = color.w;
-      verts[3].color.x = color.x; verts[3].color.y = color.y; verts[3].color.z = color.z; verts[3].color.w = color.w;
-      
       verts[0].scale.x = scale.x; verts[0].scale.y = scale.y;
       verts[1].scale.x = scale.x; verts[1].scale.y = scale.y;
       verts[2].scale.x = scale.x; verts[2].scale.y = scale.y;
@@ -104,7 +99,7 @@ namespace machete {
       verts[2].rotation = rotation;
       verts[3].rotation = rotation;
       
-      ctx->Draw(verts, 4, elems, 6, texture);
+      ctx->Draw(verts, 4, elems, 6, color, texture);
     }
     
     MetaSprite* MetaSpriteFromDrawContext(DrawContext *ctx) {

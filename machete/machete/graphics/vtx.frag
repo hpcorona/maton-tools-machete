@@ -1,7 +1,7 @@
 
 const char* VtxFragmentShader = STRINGIFY(
 
-varying lowp vec4 DestinationColor;
+uniform lowp vec4 DestinationColor;
 varying highp vec2 TextureCoordOut;
 
 uniform sampler2D Sampler;

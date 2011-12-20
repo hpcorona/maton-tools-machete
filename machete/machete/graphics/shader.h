@@ -205,7 +205,7 @@ namespace machete {
     //! Represents a Vertex to be Uploaded to the Graphics Hardware.
     struct Vtx {
       //! Creates a new Vertex.
-      Vtx() : color(1, 1, 1, 1), scale(1, 1) { rotation = 0; }
+      Vtx() : scale(1, 1) { rotation = 0; }
       
       //! Vertex position.
       machete::math::Vec3 vert;
@@ -221,9 +221,6 @@ namespace machete {
       
       //! Scaling.
       machete::math::Vec2 scale;
-      
-      //! Tint of this vertex.
-      machete::math::Vec4 color;
       
       //! Rotation in degrees.
       float rotation;
@@ -252,7 +249,7 @@ namespace machete {
       void Unuse();
       
       //! Upload vertexes to the hardware.
-      void Upload(Vtx *verts, int vcount, unsigned short* elems, int ecount);
+      void Upload(Vtx *verts, int vcount, unsigned short* elems, int ecount, const machete::math::Vec4 & color);
       
       //! Changes the base transformation.
       /*!
@@ -284,9 +281,6 @@ namespace machete {
       //! Texture Slot.
       GLuint textureSlot;
       
-      //! Color Slot.
-      GLuint colorSlot;
-      
       //! Scale Slot.
       GLuint scaleSlot;
       
@@ -301,6 +295,9 @@ namespace machete {
       
       //! Sampler Slot.
       GLuint samplerSlot;
+      
+      //! Destination Color Slot.
+      GLuint destColorSlot;
       
       //! Base transformation matrix.
       machete::math::Mat4 base;
