@@ -74,7 +74,7 @@ namespace machete {
       
       glDisable(GL_DITHER);
       glDisable(GL_DEPTH_TEST);
-      glEnable(GL_TEXTURE_2D);
+      // glEnable(GL_TEXTURE_2D); // OpenGL ES 1.1
       glEnable(GL_BLEND);
       glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
