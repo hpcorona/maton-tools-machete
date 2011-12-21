@@ -446,6 +446,14 @@ namespace machete {
         delete array;
       }
       
+      //! Remove all the elements.
+      /*!
+       Will just set size to 0.
+       */
+      void RemoveAll() {
+        size = 0;
+      }
+      
 			//! Add a new item to the list.
 			/*!
 			 \param v The item to be added at the end of the list.
@@ -500,6 +508,14 @@ namespace machete {
 			 \return The number of items in the list.
 			 */
       inline int GetSize() const {
+        return size;
+      }
+      
+      //! Get the total items in the list.
+      /*!
+       Same as GetSize, but this naming convention is more widely used in machete.
+       */
+      inline int Count() const {
         return size;
       }
       
