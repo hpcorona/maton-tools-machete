@@ -142,20 +142,13 @@ CAEAGLLayer *eaglLayer = NULL;
 @end
 
 machete::graphics::DrawContext* CreateDrawContext(machete::graphics::RenderTarget target, int width, int height) {
-  bool force = false;
-  
   if (context == NULL) {
-    EAGLRenderingAPI api = kEAGLRenderingAPIOpenGLES2;
-    if (force) {
-      api = kEAGLRenderingAPIOpenGLES1;
-    }
-    context = [[EAGLContext alloc] initWithAPI:api];
-    if (!context && api == kEAGLRenderingAPIOpenGLES2) {
-      api = kEAGLRenderingAPIOpenGLES1;
-      context = [[EAGLContext alloc] initWithAPI:api];
+    context = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES2];
+    if (!context) {
+      return NULL;
     }
     
-    if (!context || ![EAGLContext setCurrentContext:context]) {
+    if (![EAGLContext setCurrentContext:context]) {
       return NULL;
     }
   }

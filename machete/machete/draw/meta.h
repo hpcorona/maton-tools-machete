@@ -19,6 +19,11 @@ using namespace machete::graphics;
 using namespace machete::math;
 using namespace machete::data;
 
+//! Non-iOS compiler...
+#ifndef TARGET_IOS
+namespace machete { namespace widget { class Scroll; } }
+#endif
+
 namespace machete {
   
   //! High Level drawing elements, it's purpose is containe easy to use scene elements.
@@ -135,6 +140,10 @@ namespace machete {
     //! Abstract element prividing the basic functionality for scene management.
     class Element : public machete::input::TouchReceiver {
     public:
+      
+#ifndef TARGET_IOS
+      friend class machete::widget::Scroll;
+#endif
       
       //! Create a new Element. This is abstract, you need to use other specialiced classes.
       Element();
