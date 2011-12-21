@@ -196,6 +196,10 @@ namespace machete {
       } else {
         knob->Play("normal");
       }
+      
+      if (changeListener != NULL) {
+        changeListener->WidgetFocusLost(this);
+      }
     }
     
     void Trackbar::SetChangeListener(machete::widget::WidgetChangedAdapter *listener) {

@@ -25,6 +25,12 @@ namespace machete {
        */
       virtual void WidgetValueChanged(Element *widget) {};
       
+      //! The widget has lost focus.
+      /*!
+       \param widget The widget.
+       */
+      virtual void WidgetFocusLost(Element *widget) {};
+      
     };
     
     //! A simple class to display configurable Progress bars.
