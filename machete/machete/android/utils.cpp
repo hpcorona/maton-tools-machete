@@ -1,5 +1,6 @@
 
 #include "utils.h"
+#include <zipint.h>
 
 #define TEXTURE_LOAD_ERROR 0
 
@@ -36,23 +37,20 @@ void png_zip_read(png_structp png_ptr, png_bytep data, png_size_t length) {
 }
 
 unsigned int loadFile(zip* APKArchive, const char* filename, void **data) {
-  return 0;
-  /*
-  zip_stat(APKArchive, filename, ZIP_STAT_SIZE, &stats);
-
   file = zip_fopen(APKArchive, filename, 0);
   if (!file) {
     LOGE("Error opening %s from APK", filename);
     return NULL;
   }
 
-  *data = new char[stats.size];
-  zip_fread(file, *data, stats.size);
+  unsigned int size = file->bytes_left;
+
+  *data = new char[size];
+  zip_fread(file, *data, size);
 
   zip_fclose(file);
 
-  return stats.size;
-  */
+  return size;
 }
 
 

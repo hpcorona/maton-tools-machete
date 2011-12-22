@@ -21,6 +21,12 @@
 
 #include <iostream>
 
+#include <android/log.h>
+
+#define  LOG_TAG    "machete"
+#define  LOGI(...)  __android_log_print(ANDROID_LOG_INFO,LOG_TAG,__VA_ARGS__)
+#define  LOGE(...)  __android_log_print(ANDROID_LOG_ERROR,LOG_TAG,__VA_ARGS__)
+
 #endif
 
 namespace machete {
@@ -63,7 +69,11 @@ namespace machete {
       char c[200];
       base.GetChars(c, 200);
       
+#ifdef TARGET_ANDROID
+      LOGI(c);
+#else
       std::cout << c << std::endl;
+#endif
     }
     
   }
