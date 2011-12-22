@@ -105,9 +105,9 @@ void Java_com_maton_machete_MacheteNative_stop
 	game->OnStop();
 }
 
-jint JNI_OnLoad(JavaVM* vm, void* reserved) {
-	return JNI_VERSION_1_6;
-}
+//jint JNI_OnLoad(JavaVM* vm, void* reserved) {
+//	return JNI_VERSION_1_6;
+//}
 
 void JNI_OnUnload(JavaVM* vm, void* reserved) {
 

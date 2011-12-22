@@ -2,7 +2,7 @@ package com.maton.machete;
 
 public class MacheteNative {
 	static {
-		System.loadLibrary("machete");
+		System.loadLibrary("game");
 	}
 	
 	public native void initialize(String apkpath, int w, int h, int o, int opengles);

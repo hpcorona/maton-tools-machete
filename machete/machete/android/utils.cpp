@@ -36,6 +36,8 @@ void png_zip_read(png_structp png_ptr, png_bytep data, png_size_t length) {
 }
 
 unsigned int loadFile(zip* APKArchive, const char* filename, void **data) {
+  return 0;
+  /*
   zip_stat(APKArchive, filename, ZIP_STAT_SIZE, &stats);
 
   file = zip_fopen(APKArchive, filename, 0);
@@ -50,6 +52,7 @@ unsigned int loadFile(zip* APKArchive, const char* filename, void **data) {
   zip_fclose(file);
 
   return stats.size;
+  */
 }
 
 

@@ -1,8 +1,10 @@
 LIBZIP_PATH := $(MACHETE_PATH)/deps/libzip
 LIBPNG_PATH := $(MACHETE_PATH)/deps/libpng
-OPENAL_PATH := $(MACHETE_PATH)/deps/openal
+LIBOPENAL_PATH := $(MACHETE_PATH)/deps/openal
+#LIBOPENAL_PATH := $(MACHETE_PATH)/deps/libopenal
 LIBTREMOR_PATH := $(MACHETE_PATH)/deps/libtremor
 
+#include $(MACHETE_PATH)/deps/libopenal/Android.mk
 include $(MACHETE_PATH)/deps/libzip/Android.mk
 include $(MACHETE_PATH)/deps/libpng/Android.mk
 include $(MACHETE_PATH)/deps/libtremor/Android.mk
@@ -10,8 +12,8 @@ include $(MACHETE_PATH)/deps/libtremor/Android.mk
 LOCAL_PATH := $(MACHETE_PATH)/machete/machete
 include $(CLEAR_VARS)
 LOCAL_MODULE := machete
-LOCAL_C_INCLUDES := $(MACHETE_PATH)/deps/libzip/ $(MACHETE_PATH)/deps/libpng/ $(MACHETE_PATH)/deps/libtremor/ $(OPENAL_PATH)
-LOCAL_STATIC_LIBRARIES := zip png tremor
+LOCAL_C_INCLUDES := $(MACHETE_PATH)/deps/libzip/ $(MACHETE_PATH)/deps/libpng/ $(MACHETE_PATH)/deps/libtremor/ $(LIBOPENAL_PATH)
+LOCAL_STATIC_LIBRARIES := zip png tremor openal
 LOCAL_SRC_FILES := \
 	widget/extended.cpp \
 	widget/widget.cpp \
@@ -32,7 +34,6 @@ LOCAL_SRC_FILES := \
 	android/com_maton_machete_MacheteNative.cpp \
 	android/utils.cpp \
 	android/AndroidPlatform.cpp
-#LOCAL_ALLOW_UNDEFINED_SYMBOLS := true
-LOCAL_LDLIBS := -lopenal -lGLESv2 -ldl -llog -lz
-include $(BUILD_SHARED_LIBRARY)
+LOCAL_LDLIBS := -lOpenSLES -lGLESv2 -ldl -llog -lz -lopenal
+include $(BUILD_STATIC_LIBRARY)
 

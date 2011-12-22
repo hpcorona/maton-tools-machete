@@ -10,17 +10,18 @@ import android.content.pm.PackageManager.NameNotFoundException;
 import android.opengl.GLSurfaceView;
 import android.opengl.GLSurfaceView.Renderer;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Window;
 import android.view.WindowManager;
 
-public class MacheteActivity extends Activity {
+public abstract class MacheteActivity extends Activity {
 
 	private TickGenerator tick;
 	private MacheteNative engine;
 	private boolean initialized = false;
+	private String baseAssets;
 	
-	public MacheteActivity() {
+	protected MacheteActivity(String baseAssets) {
+		this.baseAssets = baseAssets;
 		engine = new MacheteNative();
 		tick = new TickGenerator();
 	}
@@ -47,7 +48,7 @@ public class MacheteActivity extends Activity {
 					PackageManager packMgmr = getPackageManager();
 					try {
 						appInfo = packMgmr.getApplicationInfo(
-								"com.maton.machete", 0);
+								baseAssets, 0);
 					} catch (NameNotFoundException e) {
 						e.printStackTrace();
 						throw new RuntimeException(

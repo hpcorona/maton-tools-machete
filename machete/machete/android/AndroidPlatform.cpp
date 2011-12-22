@@ -58,7 +58,7 @@ unsigned int AndroidPlatform::LoadFile(const char* name, char** data) {
   strcat(fname, "assets/");
   strcat(fname, name);
 
-  return loadFile(name, data);
+  return loadFile(APKArchive, name, (void**)data);
 }
 
 unsigned int AndroidPlatform::LoadAudio(const char* name) {
