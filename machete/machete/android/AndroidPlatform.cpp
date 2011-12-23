@@ -1,4 +1,6 @@
 #include "AndroidPlatform.h"
+#include <AL/al.h>
+#include <AL/alc.h>
 
 __BEGIN_DECLS
 extern unsigned int arc4random(void);
@@ -76,10 +78,87 @@ unsigned int AndroidPlatform::LoadFile(const char* name, char** data) {
   return total;
 }
 
+short ShortLE(char *data, int padding) {
+  short v = *((short*)(data + padding));
+
+//  v = (v>>8) | (v<<8);
+  return v;
+}
+
+int IntLE(char *data, int padding) {
+  int v = *((int*)(data + padding));
+//  v = __builtin_bswap32(v);
+  return v;
+}
+
 unsigned int AndroidPlatform::LoadAudio(const char* name) {
+  char* data = NULL;
+  unsigned int size = LoadFile(name, &data);
+
+  if (size == 0) return 0;
+
+
+
   LOGI("LoadAudio UNIMPLEMENTED");
 
-  return 0;
+  short audioFormat = ShortLE(data, 20);
+  short channels = ShortLE(data, 22);
+  int sampleRate = IntLE(data, 24);
+  int byteRate = IntLE(data, 28);
+  short bitsPerSample = ShortLE(data, 34);
+  int dataSize = IntLE(data, 40);
+
+  float duration = float(dataSize) / byteRate;
+
+  unsigned char* buffData = (unsigned char*)(data + 44);
+
+  ALuint buff;
+  alGenBuffers(1, &buff);
+  alBufferData(buff, channels == 1 ? AL_FORMAT_MONO16 : AL_FORMAT_STEREO16, buffData, dataSize, sampleRate);
+
+  //delete data;
+
+  LOGI("Format: %d, %d, %d, %d, %d", audioFormat, channels, sampleRate, byteRate, bitsPerSample);
+  /*
+FILE* f = fopen("audio.wav", "fb");
+char xbuffer[5];
+xbuffer[5] = '\0';
+if (fread(xbuffer, sizeof(char), 4, file) != 4 || strcmp(xbuffer, "RIFF") != 0)
+	throw "Not a WAV file";
+
+file_read_int32_le(xbuffer, file);
+
+if (fread(xbuffer, sizeof(char), 4, file) != 4 || strcmp(xbuffer, "WAVE") != 0)
+	throw "Not a WAV file";
+
+if (fread(xbuffer, sizeof(char), 4, file) != 4 || strcmp(xbuffer, "fmt ") != 0)
+	throw "Invalid WAV file";
+
+file_read_int32_le(xbuffer, file);
+short audioFormat = file_read_int16_le(xbuffer, file);
+short channels = file_read_int16_le(xbuffer, file);
+int sampleRate = file_read_int32_le(xbuffer, file);
+int byteRate = file_read_int32_le(xbuffer, file);
+file_read_int16_le(xbuffer, file);
+short bitsPerSample = file_read_int16_le(xbuffer, file);
+
+if (audioFormat != 16) {
+	short extraParams = file_read_int16_le(xbuffer, file);
+	file_ignore_bytes(file, extraParams);
+}
+
+if (fread(xbuffer, sizeof(char), 4, file) != 4 || strcmp(xbuffer, "data") != 0)
+	throw "Invalid WAV file";
+
+int dataChunkSize = file_read_int32_le(xbuffer, file);
+unsigned char* bufferData = file_allocate_and_read_bytes(file, (size_t) dataChunkSize);
+
+float duration = float(dataChunkSize) / byteRate;
+alBufferData(buffer, GetFormatFromInfo(channels, bitsPerSample), bufferData, dataChunkSize, sampleRate);
+free(bufferData);
+fclose(f);
+*/
+  return buff;
 }
 
 inline unsigned int AndroidPlatform::Random() {
