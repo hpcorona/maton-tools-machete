@@ -32,5 +32,6 @@ private:
     zip* APKArchive;
     png_byte* imageData;
     char* apkName;
+    machete::data::Iterator<char*> mems;
 };
 

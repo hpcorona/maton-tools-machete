@@ -29,6 +29,14 @@ AndroidPlatform::AndroidPlatform(const char* APKfile) {
 AndroidPlatform::~AndroidPlatform() {
 	zip_close(APKArchive);
   delete apkName;
+
+  mems.Reset();
+  while (mems.Next()) {
+    char* m = mems.GetCurrent()->GetValue();
+    delete m;
+  }
+
+  mems.RemoveAll();
 }
 
 const char* AndroidPlatform::GetResourcePath() const {
@@ -118,7 +126,12 @@ unsigned int AndroidPlatform::LoadAudio(const char* name) {
   int sampleRate = IntLE(data, 24);
   int byteRate = IntLE(data, 28);
   short bitsPerSample = ShortLE(data, 34);
-  int dataSize = IntLE(data, 40);
+
+  // By some weird bug of mine, IntLE(data, 40) is
+  // not working, but i'm calculating the data size,
+  // wich is: total data size - header size
+  // where header size is 44
+  int dataSize = size - 44;
 
   float duration = float(dataSize) / byteRate;
 
@@ -128,9 +141,11 @@ unsigned int AndroidPlatform::LoadAudio(const char* name) {
   alGenBuffers(1, &buff);
   alBufferData(buff, channels == 1 ? AL_FORMAT_MONO16 : AL_FORMAT_STEREO16, buffData, dataSize, sampleRate);
 
-  //delete data;
-
-  LOGI("Audio: %s, %d, %d, %d, %d, %d, %d, %f", name, audioFormat, channels, sampleRate, byteRate, bitsPerSample, dataSize, duration);
+  // I cannot delete the buffer, because apparently
+  // it is linked to OpenAL (it crashes if i delete it)
+  // So, i'm appending it to a mems iterator so i
+  // can unload it when the game is closing
+  mems.Append(data);
 
   return buff;
 }
