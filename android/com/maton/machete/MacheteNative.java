@@ -1,7 +1,12 @@
 package com.maton.machete;
 
+import android.util.Log;
+
 public class MacheteNative {
 	static {
+		Log.i("machete", "Loading OpenAL...");
+		System.loadLibrary("openal");
+		Log.i("machete", "Loading Game...");
 		System.loadLibrary("game");
 	}
 	

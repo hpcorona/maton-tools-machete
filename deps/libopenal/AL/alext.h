@@ -61,23 +61,17 @@ extern "C" {
 #define AL_FORMAT_STEREO_DOUBLE_EXT              0x10013
 #endif
 
-#ifndef AL_EXT_MULAW
-#define AL_EXT_MULAW 1
-#define AL_FORMAT_MONO_MULAW_EXT                 0x10014
-#define AL_FORMAT_STEREO_MULAW_EXT               0x10015
-#endif
-
-#ifndef AL_EXT_ALAW
-#define AL_EXT_ALAW 1
-#define AL_FORMAT_MONO_ALAW_EXT                  0x10016
-#define AL_FORMAT_STEREO_ALAW_EXT                0x10017
-#endif
-
 #ifndef ALC_LOKI_audio_channel
 #define ALC_LOKI_audio_channel 1
 #define ALC_CHAN_MAIN_LOKI                       0x500001
 #define ALC_CHAN_PCM_LOKI                        0x500002
 #define ALC_CHAN_CD_LOKI                         0x500003
+#endif
+
+#ifndef ALC_ENUMERATE_ALL_EXT
+#define ALC_ENUMERATE_ALL_EXT 1
+#define ALC_DEFAULT_ALL_DEVICES_SPECIFIER        0x1012
+#define ALC_ALL_DEVICES_SPECIFIER                0x1013
 #endif
 
 #ifndef AL_EXT_MCFORMATS
@@ -147,45 +141,6 @@ ALC_API ALCcontext* ALC_APIENTRY alcGetThreadContext(void);
 #ifndef AL_EXT_source_distance_model
 #define AL_EXT_source_distance_model 1
 #define AL_SOURCE_DISTANCE_MODEL                 0x200
-#endif
-
-#ifndef AL_SOFT_buffer_sub_data
-#define AL_SOFT_buffer_sub_data 1
-#define AL_BYTE_RW_OFFSETS_SOFT                  0x1031
-#define AL_SAMPLE_RW_OFFSETS_SOFT                0x1032
-typedef ALvoid (AL_APIENTRY*PFNALBUFFERSUBDATASOFTPROC)(ALuint,ALenum,const ALvoid*,ALsizei,ALsizei);
-#ifdef AL_ALEXT_PROTOTYPES
-AL_API ALvoid AL_APIENTRY alBufferSubDataSOFT(ALuint buffer,ALenum format,const ALvoid *data,ALsizei offset,ALsizei length);
-#endif
-#endif
-
-#ifndef AL_SOFT_loop_points
-#define AL_SOFT_loop_points 1
-#define AL_LOOP_POINTS_SOFT                      0x2015
-#endif
-
-#ifndef AL_EXT_FOLDBACK
-#define AL_EXT_FOLDBACK 1
-#define AL_EXT_FOLDBACK_NAME                     "AL_EXT_FOLDBACK"
-#define AL_FOLDBACK_EVENT_BLOCK                  0x4112
-#define AL_FOLDBACK_EVENT_START                  0x4111
-#define AL_FOLDBACK_EVENT_STOP                   0x4113
-#define AL_FOLDBACK_MODE_MONO                    0x4101
-#define AL_FOLDBACK_MODE_STEREO                  0x4102
-typedef void (AL_APIENTRY*LPALFOLDBACKCALLBACK)(ALenum,ALsizei);
-typedef void (AL_APIENTRY*LPALREQUESTFOLDBACKSTART)(ALenum,ALsizei,ALsizei,ALfloat*,LPALFOLDBACKCALLBACK);
-typedef void (AL_APIENTRY*LPALREQUESTFOLDBACKSTOP)(void);
-#ifdef AL_ALEXT_PROTOTYPES
-AL_API void AL_APIENTRY alRequestFoldbackStart(ALenum mode,ALsizei count,ALsizei length,ALfloat *mem,LPALFOLDBACKCALLBACK callback);
-AL_API void AL_APIENTRY alRequestFoldbackStop(void);
-#endif
-#endif
-
-#ifndef ALC_EXT_DEDICATED
-#define ALC_EXT_DEDICATED 1
-#define AL_DEDICATED_GAIN                        0x0001
-#define AL_EFFECT_DEDICATED_DIALOGUE             0x9001
-#define AL_EFFECT_DEDICATED_LOW_FREQUENCY_EFFECT 0x9000
 #endif
 
 #ifdef __cplusplus

@@ -97,9 +97,21 @@ unsigned int AndroidPlatform::LoadAudio(const char* name) {
 
   if (size == 0) return 0;
 
+  if (data[0] != 'R' || data[1] != 'I' || data[2] != 'F' || data[3] != 'F') {
+    LOGI("Invalid File Format, not a RIFF WAV file %s", name);
+    delete data;
 
+    return 0;
+  }
 
-  LOGI("LoadAudio UNIMPLEMENTED");
+  short chunkSize = ShortLE(data, 16);
+
+  if (chunkSize != 16) {
+    LOGI("Should be 16 bytes PCM %s", name);
+    delete data;
+
+    return 0;
+  }
 
   short audioFormat = ShortLE(data, 20);
   short channels = ShortLE(data, 22);
@@ -118,46 +130,8 @@ unsigned int AndroidPlatform::LoadAudio(const char* name) {
 
   //delete data;
 
-  LOGI("Format: %d, %d, %d, %d, %d", audioFormat, channels, sampleRate, byteRate, bitsPerSample);
-  /*
-FILE* f = fopen("audio.wav", "fb");
-char xbuffer[5];
-xbuffer[5] = '\0';
-if (fread(xbuffer, sizeof(char), 4, file) != 4 || strcmp(xbuffer, "RIFF") != 0)
-	throw "Not a WAV file";
+  LOGI("Audio: %s, %d, %d, %d, %d, %d, %d, %f", name, audioFormat, channels, sampleRate, byteRate, bitsPerSample, dataSize, duration);
 
-file_read_int32_le(xbuffer, file);
-
-if (fread(xbuffer, sizeof(char), 4, file) != 4 || strcmp(xbuffer, "WAVE") != 0)
-	throw "Not a WAV file";
-
-if (fread(xbuffer, sizeof(char), 4, file) != 4 || strcmp(xbuffer, "fmt ") != 0)
-	throw "Invalid WAV file";
-
-file_read_int32_le(xbuffer, file);
-short audioFormat = file_read_int16_le(xbuffer, file);
-short channels = file_read_int16_le(xbuffer, file);
-int sampleRate = file_read_int32_le(xbuffer, file);
-int byteRate = file_read_int32_le(xbuffer, file);
-file_read_int16_le(xbuffer, file);
-short bitsPerSample = file_read_int16_le(xbuffer, file);
-
-if (audioFormat != 16) {
-	short extraParams = file_read_int16_le(xbuffer, file);
-	file_ignore_bytes(file, extraParams);
-}
-
-if (fread(xbuffer, sizeof(char), 4, file) != 4 || strcmp(xbuffer, "data") != 0)
-	throw "Invalid WAV file";
-
-int dataChunkSize = file_read_int32_le(xbuffer, file);
-unsigned char* bufferData = file_allocate_and_read_bytes(file, (size_t) dataChunkSize);
-
-float duration = float(dataChunkSize) / byteRate;
-alBufferData(buffer, GetFormatFromInfo(channels, bitsPerSample), bufferData, dataChunkSize, sampleRate);
-free(bufferData);
-fclose(f);
-*/
   return buff;
 }
 
