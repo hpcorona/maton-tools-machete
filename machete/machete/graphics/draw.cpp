@@ -172,14 +172,12 @@ namespace machete {
 #endif
       }
       
-//#ifdef TARGET_IOS
       GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
       CheckGLError("glCheckFramebufferStatus");
       if (status != GL_FRAMEBUFFER_COMPLETE) {
         machete::common::Log("Frame buffer is not ready");
         return;
       }
-//#endif
       
       base = Mat4();
       base = base.Translate(-this->size.x / 2, this->size.y / 2, 0);
