@@ -35,15 +35,12 @@ const char* AndroidPlatform::GetResourcePath() const {
 
 void AndroidPlatform::LoadImage(const char* filename, void **data, machete::math::IVec2 & size) {
   UnloadImage();
-  LOGI("LoadImage");
-  LOGI(filename);
 
   char pngfile[100];
 	pngfile[0] = 0;
 	strcat(pngfile, "assets/");
 	strcat(pngfile, filename);
 
-	LOGI("open %s", filename);
 	imageData = loadTextureFromPNG(APKArchive, pngfile, size.x, size.y);
 
   *data = (void*)imageData;
@@ -51,8 +48,6 @@ void AndroidPlatform::LoadImage(const char* filename, void **data, machete::math
 
 void AndroidPlatform::UnloadImage() {
   if (imageData == NULL) return;
-
-  LOGI("UnloadImage");
 
 	delete[] imageData;
 	imageData = NULL;
@@ -64,27 +59,19 @@ unsigned int AndroidPlatform::LoadFile(const char* name, char** data) {
   strcpy(mname, name);
   char* ext = mname + len - 4;
 
-  LOGI("LoadFile");
   if (len > 4) {
-    LOGI(ext);
     if (strcmp(".xml", ext) == 0 || strcmp(".pos", ext) == 0 || strcmp(".fnt", ext) == 0) {
-      LOGI("REPLACED! %s", ext);
       strcpy(ext, ".mbd");
     }
   }
 
-  LOGI(name);
-  LOGI(mname);
   char fname[100];
   fname[0] = 0;
   strcat(fname, "assets/");
   strcat(fname, mname);
   delete mname;
-  LOGI(fname);
 
   unsigned int total = loadFile(APKArchive, fname, (void**)data);
-
-  LOGI("Loaded: %d", total);
 
   return total;
 }
@@ -96,12 +83,11 @@ unsigned int AndroidPlatform::LoadAudio(const char* name) {
 }
 
 inline unsigned int AndroidPlatform::Random() {
-  LOGI("Random()");
   return arc4random();
 }
 
 FILE* AndroidPlatform::OpenFile(const char* name) {
-  LOGI("OpenFile");
+  LOGI("OpenFile FROM APK pending");
   LOGI(name);
   char fname[100];
   fname[0] = 0;
@@ -112,7 +98,7 @@ FILE* AndroidPlatform::OpenFile(const char* name) {
 }
 
 void AndroidPlatform::CloseFile(FILE* handle) {
-  LOGI("CloseFile");
+  LOGI("CloseFile FROM APK pending");
   fclose(handle);
 }
 
@@ -124,7 +110,7 @@ char* AndroidPlatform::WritableFile(const char* name) {
   //strcat(path, apkName);
   strcat(path, name);
 
-  LOGI("WritableFile ");
+  LOGI("WritableFile IN REAL FOLDER SDCARD PENDING");
   LOGI(path);
 
   return path;

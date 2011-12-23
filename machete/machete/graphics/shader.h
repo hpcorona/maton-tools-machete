@@ -33,29 +33,40 @@ namespace machete {
   namespace graphics {
     
     //! Check for OpenGL errors and display the error on the console.
-    static void CheckGLError() {
+    static void CheckGLError(const char *func) {
       GLenum status = glGetError();
       
       switch (status) {
         case 1280:
+          machete::common::Log(func);
           machete::common::Log("1280 GL_INVALID_ENUM");
           break;
         case 1281:
+          machete::common::Log(func);
           machete::common::Log("1281 GL_INVALID_VALUE");
           break;
         case 1282:
+          machete::common::Log(func);
           machete::common::Log("1282 GL_INVALID_OPERATION");
           break;
         case 1283:
+          machete::common::Log(func);
           machete::common::Log("1283 GL_STACK_OVERFLOW");
           break;
         case 1284:
+          machete::common::Log(func);
           machete::common::Log("1284 GL_STACK_UNDERFLOW");
           break;
         case 1285:
+          machete::common::Log(func);
           machete::common::Log("1285 GL_OUT_OF_MEMORY");
           break;
       }
+    }
+    
+    //! Check for OpenGL errors and display the error on the console.
+    static void CheckGLError() {
+      CheckGLError("");
     }
     
     //! Basic Shader functionality.

@@ -20,21 +20,27 @@ namespace machete {
     Shader::~Shader() {
       if (shader != 0) {
         glDeleteShader(shader);
+        CheckGLError("glDeleteShader");
       }
     }
     
     bool Shader::LoadShader(GLenum shaderType, const char *source) {
       
       shader = glCreateShader(shaderType);
+      CheckGLError("glCreateShader");
       glShaderSource(shader, 1, &source, 0);
+      CheckGLError("glShaderSource");
       glCompileShader(shader);
+      CheckGLError("glCompileShader");
       
       GLint compileSuccess;
       glGetShaderiv(shader, GL_COMPILE_STATUS, &compileSuccess);
+      CheckGLError("glGetShaderiv");
       
       if (compileSuccess == GL_FALSE) {
         GLchar messages[256];
         glGetShaderInfoLog(shader, sizeof(messages), 0, &messages[0]);
+        CheckGLError("glGetShaderInfoLog");
         
         Log(messages);
         
@@ -47,21 +53,28 @@ namespace machete {
     Program::~Program() {
       if (program != 0) {
         glDeleteProgram(program);
+        CheckGLError("glDeleteProgram");
       }
     }
     
     bool Program::CreateProgram(Shader *vtx, Shader *frag) {
       program = glCreateProgram();
+      CheckGLError("glCreateProgram");
       glAttachShader(program, vtx->GetHandle());
+      CheckGLError("glAttachShader");
       glAttachShader(program, frag->GetHandle());
+      CheckGLError("glAttachShader");
       glLinkProgram(program);
+      CheckGLError("glLinkProgram");
       
       GLint linkSuccess;
       glGetProgramiv(program, GL_LINK_STATUS, &linkSuccess);
+      CheckGLError("glGetProgramiv");
       
       if (linkSuccess == GL_FALSE) {
         GLchar messages[256];
         glGetProgramInfoLog(program, sizeof(messages), 0, &messages[0]);
+        CheckGLError("glGetProgramInfoLog");
         
         Log(messages);
         
@@ -69,16 +82,22 @@ namespace machete {
       }
       
       glUseProgram(program);
+      CheckGLError("glUseProgram");
 
       projectionSlot = glGetUniformLocation(program, "Projection");
+      CheckGLError("glGetUniformLocation");
       
       glDisable(GL_DITHER);
+      CheckGLError("glDisable DITHER");
       glDisable(GL_DEPTH_TEST);
-      // glEnable(GL_TEXTURE_2D); // OpenGL ES 1.1
+      CheckGLError("glDisable DEPTH TEST");
       glEnable(GL_BLEND);
+      CheckGLError("glDisable BLEND");
       glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+      CheckGLError("glDisable SRC");
 
       glUseProgram(0);
+      CheckGLError("glUseProgram");
       
       return true;
     }
@@ -92,6 +111,7 @@ namespace machete {
       };
       
       glUniformMatrix4fv(projectionSlot, 1, 0, &ortho[0]);
+      CheckGLError("glUniformMatrix4fv");
     }
     
     ShaderMgr::ShaderMgr() {
@@ -129,6 +149,7 @@ namespace machete {
         struct Tex *tex = iter->GetCurrent()->GetValue()->GetValue();
         
         glDeleteTextures(1, &tex->id);
+        CheckGLError("glDeleteTextures");
       }
       
       delete iter;
@@ -144,25 +165,33 @@ namespace machete {
         tex = new struct Tex();
         
         glGenTextures(1, &texId);
+        CheckGLError("glGenTextures");
         
         glActiveTexture(GL_TEXTURE0);
+        CheckGLError("glActiveTexture");
         glBindTexture(GL_TEXTURE_2D, texId);
+        CheckGLError("glBindTexture");
         
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
                         GL_LINEAR);
+        CheckGLError("glTexParameteri");
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,
                         GL_LINEAR);
+        CheckGLError("glTexParameteri");
         
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S,
                         GL_CLAMP_TO_EDGE);
+        CheckGLError("glTexParameteri");
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T,
                         GL_CLAMP_TO_EDGE);
+        CheckGLError("glTexParameteri");
         
         void* pixels = NULL;
         machete::math::IVec2 size;
         
         machete::platform::ThePlatform->LoadImage(name, &pixels, size);
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, size.x, size.y, 0, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
+        CheckGLError("glTexImage2D");
         
         machete::platform::ThePlatform->UnloadImage();
         
@@ -186,21 +215,29 @@ namespace machete {
       GLuint texId;
       
       glGenTextures(1, &texId);
+      CheckGLError("glGenTextures");
       
       glActiveTexture(GL_TEXTURE0);
+      CheckGLError("glActiveTexture");
       glBindTexture(GL_TEXTURE_2D, texId);
+      CheckGLError("glBindTexture");
 
       glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
                       GL_LINEAR);
+      CheckGLError("glTexParameteri");
       glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,
                       GL_LINEAR);
+      CheckGLError("glTexParameteri");
       
       glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S,
                       GL_CLAMP_TO_EDGE);
+      CheckGLError("glTexParameteri");
       glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T,
                       GL_CLAMP_TO_EDGE);
+      CheckGLError("glTexParameteri");
       
       glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+      CheckGLError("glTexImage2D");
       
       t->id = texId;
       
@@ -214,19 +251,27 @@ namespace machete {
       CreateProgram(vtx, frg);
       
       pivotSlot = glGetAttribLocation(program, "Pivot");
+      CheckGLError("glGetAttribLocation");
       offsetSlot = glGetAttribLocation(program, "Offset");
+      CheckGLError("glGetAttribLocation");
       positionSlot = glGetAttribLocation(program, "Position");
+      CheckGLError("glGetAttribLocation");
       textureSlot = glGetAttribLocation(program, "TextureCoord");
+      CheckGLError("glGetAttribLocation");
       scaleSlot = glGetAttribLocation(program, "Scale");
+      CheckGLError("glGetAttribLocation");
       rotationSlot = glGetAttribLocation(program, "Rotation");
+      CheckGLError("glGetAttribLocation");
       
       baseSlot = glGetUniformLocation(program, "Base");
+      CheckGLError("glGetUniformLocation");
       modelviewSlot = glGetUniformLocation(program, "Modelview");
+      CheckGLError("glGetUniformLocation");
       destColorSlot = glGetUniformLocation(program, "DestinationColor");
+      CheckGLError("glGetUniformLocation");
       
       samplerSlot = glGetUniformLocation(program, "Sampler");
-      
-      glUniform1i(samplerSlot, 0);
+      CheckGLError("glGetUniformLocation");
     }
     
     Shader *VtxRender::CreateVtxShader() {
@@ -245,22 +290,36 @@ namespace machete {
       Program::Use();
       
       glEnableVertexAttribArray(pivotSlot);
+      CheckGLError("glEnableVertexAttribArray");
       glEnableVertexAttribArray(offsetSlot);
+      CheckGLError("glEnableVertexAttribArray");
       glEnableVertexAttribArray(positionSlot);
+      CheckGLError("glEnableVertexAttribArray");
       glEnableVertexAttribArray(textureSlot);
+      CheckGLError("glEnableVertexAttribArray");
       glEnableVertexAttribArray(scaleSlot);
+      CheckGLError("glEnableVertexAttribArray");
       glEnableVertexAttribArray(rotationSlot);
+      CheckGLError("glEnableVertexAttribArray");
       glEnableVertexAttribArray(projectionSlot);
+      CheckGLError("glEnableVertexAttribArray");
     }
     
     void VtxRender::Unuse() {
       glDisableVertexAttribArray(pivotSlot);
+      CheckGLError("glDisableVertexAttribArray");
       glDisableVertexAttribArray(offsetSlot);
+      CheckGLError("glDisableVertexAttribArray");
       glDisableVertexAttribArray(positionSlot);
+      CheckGLError("glDisableVertexAttribArray");
       glDisableVertexAttribArray(textureSlot);
+      CheckGLError("glDisableVertexAttribArray");
       glDisableVertexAttribArray(scaleSlot);
+      CheckGLError("glDisableVertexAttribArray");
       glDisableVertexAttribArray(rotationSlot);
+      CheckGLError("glDisableVertexAttribArray");
       glDisableVertexAttribArray(projectionSlot);
+      CheckGLError("glDisableVertexAttribArray");
 
       Program::Unuse();
     }
@@ -270,21 +329,32 @@ namespace machete {
       using namespace machete::data;
       
       glUniform4f(destColorSlot, color.x, color.y, color.z, color.w);
+      CheckGLError("glUniform4f");
       glUniform1i(samplerSlot, 0);
+      CheckGLError("glUniform1i");
       
       Vtx* POSITION = NULL;
       
       glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(struct Vtx) * vcount, verts);
+      CheckGLError("glBufferSubData");
       glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, sizeof(unsigned short) * ecount, elems);
+      CheckGLError("glBufferSubData");
       
       glVertexAttribPointer(pivotSlot, 2, GL_FLOAT, GL_FALSE, sizeof(struct Vtx), &POSITION[0].pivot);
+      CheckGLError("glVertexAttribPointer PIVOT");
       glVertexAttribPointer(offsetSlot, 2, GL_FLOAT, GL_FALSE, sizeof(struct Vtx), &POSITION[0].offset);
+      CheckGLError("glVertexAttribPointer OFFSET");
       glVertexAttribPointer(positionSlot, 3, GL_FLOAT, GL_FALSE, sizeof(struct Vtx), POSITION);
+      CheckGLError("glVertexAttribPointer POSITION");
       glVertexAttribPointer(textureSlot, 2, GL_FLOAT, GL_FALSE, sizeof(struct Vtx), &POSITION[0].uv);
+      CheckGLError("glVertexAttribPointer UV");
       glVertexAttribPointer(scaleSlot, 2, GL_FLOAT, GL_FALSE, sizeof(struct Vtx), &POSITION[0].scale);
+      CheckGLError("glVertexAttribPointer SCALE");
       glVertexAttribPointer(rotationSlot, 1, GL_FLOAT, GL_FALSE, sizeof(struct Vtx), &POSITION[0].rotation);
+      CheckGLError("glVertexAttribPointer ROTATION");
       
       glDrawElements(GL_TRIANGLES, ecount, GL_UNSIGNED_SHORT, POSITION);
+      CheckGLError("glDrawElements");
     }
     
     ShaderMgr* TheShaderMgr = NULL;

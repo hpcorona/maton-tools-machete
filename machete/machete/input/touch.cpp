@@ -211,8 +211,10 @@ namespace machete {
     }
     
     void TouchProcessor::Release() {
-      inertia.x = 0;
-      inertia.y = 0;
+      if (!alive) {
+        inertia.x = 0;
+        inertia.y = 0;
+      }
       
       if (touch != NULL) {
         touch->owner = NULL;

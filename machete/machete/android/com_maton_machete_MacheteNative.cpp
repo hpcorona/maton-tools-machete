@@ -112,3 +112,31 @@ void Java_com_maton_machete_MacheteNative_stop
 void JNI_OnUnload(JavaVM* vm, void* reserved) {
 
 }
+
+void JNICALL Java_com_maton_machete_MacheteNative_touch(JNIEnv *vm, jobject, jint id, jint event, jfloat x, jfloat y) {
+
+  machete::input::TheTouchInput->SetTouchCount(1);
+  machete::input::Touch *t = machete::input::TheTouchInput->GetTouch(0);
+
+  if (event != machete::input::TouchStart) {
+    t->previous = t->current;
+
+    t->current.x = x;
+    t->current.y = y;
+  } else {
+    t->current.x = x;
+    t->current.y = y;
+
+    t->previous = t->current;
+    t->start = t->current;
+
+    t->owner = NULL;
+  }
+
+  t->offset = t->current - t->previous;
+  t->finger = id;
+  t->phase = (machete::input::TouchPhase)event;
+
+  machete::input::TheTouchInput->MarkAvailable();
+}
+

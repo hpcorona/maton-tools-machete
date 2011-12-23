@@ -15,10 +15,48 @@ import android.opengl.GLSurfaceView.EGLConfigChooser;
 import android.opengl.GLSurfaceView.EGLContextFactory;
 import android.opengl.GLSurfaceView.Renderer;
 import android.os.Bundle;
+import android.view.MotionEvent;
 import android.view.Window;
 import android.view.WindowManager;
 
 public abstract class MacheteActivity extends Activity {
+
+	@Override
+	public boolean onTouchEvent(MotionEvent event) {
+		dispatchTouch(event);
+		return super.onTouchEvent(event);
+	}
+
+	public void dispatchTouch(MotionEvent event) {
+		int action = event.getAction();
+		int actionCode = action & MotionEvent.ACTION_MASK;
+		
+		int touchEvent = 0;
+		if (actionCode == MotionEvent.ACTION_DOWN) {
+			touchEvent = 1;
+		} else if (actionCode == MotionEvent.ACTION_MOVE) {
+			touchEvent = 2;
+		} else if (actionCode == MotionEvent.ACTION_UP) {
+			touchEvent = 4;
+		} else if (actionCode == MotionEvent.ACTION_CANCEL) {
+			touchEvent = 5;
+		}
+		
+		int id = 0;
+		float x = 0;
+		float y = 0;
+		
+		if (event.getPointerCount() > 0) {
+			id = event.getPointerId(0);
+			
+			x = event.getX(0);
+			y = event.getY(0);
+		}
+		
+		if (id > 0) return;
+		
+		engine.touch(id, touchEvent, x, y);
+	}
 
 	private TickGenerator tick;
 	private MacheteNative engine;
@@ -72,8 +110,8 @@ public abstract class MacheteActivity extends Activity {
 
 			public EGLContext createContext(EGL10 egl, EGLDisplay display,
 					EGLConfig eglConfig) {
-				int[] attrib_list = new int[] { 0x3098 /*EGL10.EGL_VERSION*/, 2,
-						EGL10.EGL_NONE };
+				int[] attrib_list = new int[] {
+						0x3098 /* EGL10.EGL_VERSION */, 2, EGL10.EGL_NONE };
 
 				EGLContext context = egl.eglCreateContext(display, eglConfig,
 						EGL10.EGL_NO_CONTEXT, attrib_list);

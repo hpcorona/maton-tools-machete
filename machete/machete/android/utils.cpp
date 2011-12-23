@@ -23,8 +23,6 @@ zip* loadAPK (const char* apkPath) {
     LOGI("File %i : %s\n", i, name);
   }
 
-  LOGI("Load success!");
-
   return APKArchive;
 }
 

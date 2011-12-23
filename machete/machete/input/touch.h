@@ -39,12 +39,12 @@ namespace machete {
     
     //! Defines the current state of a Touch event.
     enum TouchPhase {
-      TouchStart,     //!< The touch was started.
-      TouchMove,      //!< The user is moving the finger.
-      TouchStill,     //!< The user is still touching but not moving the finger.
-      TouchEnd,       //!< The user is no longer touching the surface. Also this event can enable the tap count.
-      TouchCancelled, //!< The touch event was cancelled. Maybe a phone call was received.
-      TouchNone       //!< No touch event available.
+      TouchStart = 1,     //!< The touch was started.
+      TouchMove = 2,      //!< The user is moving the finger.
+      TouchStill = 3,     //!< The user is still touching but not moving the finger.
+      TouchEnd = 4,       //!< The user is no longer touching the surface. Also this event can enable the tap count.
+      TouchCancelled = 5, //!< The touch event was cancelled. Maybe a phone call was received.
+      TouchNone = 0       //!< No touch event available.
     };
     
     //! Represents a touch event

@@ -301,6 +301,11 @@ namespace machete {
         uv1.x = x1 / tex->width;
         uv1.y = y1 / tex->height;
         
+#ifdef TARGET_ANDROID
+        uv0.y = 1 - uv0.y;
+        uv1.y = 1 - uv1.y;
+#endif
+        
         MetaSprite *ms = new MetaSprite(Vec2(w, h), uv0, uv1, tex->id);
         
         images.Add(stName, ms);

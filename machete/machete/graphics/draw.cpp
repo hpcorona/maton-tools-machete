@@ -61,8 +61,11 @@ namespace machete {
       GLuint buff;
       
       glGenBuffers(1, &buff);
+      CheckGLError("glGenBuffers");
       glBindBuffer(GL_ARRAY_BUFFER, buff);
+      CheckGLError("glBundBuffer");
       glBufferData(GL_ARRAY_BUFFER, sizeof(Vtx) * MAX_VTX, NULL, GL_DYNAMIC_DRAW);
+      CheckGLError("glBufferData");
       
       return buff;
     }
@@ -71,14 +74,18 @@ namespace machete {
       GLuint buff;
       
       glGenBuffers(1, &buff);
+      CheckGLError("glGenBuffers");
       glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, buff);
+      CheckGLError("glBindBuffer");
       glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned short) * MAX_IDX, NULL, GL_DYNAMIC_DRAW);
+      CheckGLError("glBufferData");
       
       return buff;
     }
     
     void BufferMgr::DeleteBuffer(GLuint buffer) const {
       glDeleteBuffers(1, &buffer);
+      CheckGLError("glDeleteBuffers");
     }
     
     void BufferMgr::CreateBuffers() {
@@ -121,12 +128,27 @@ namespace machete {
       vtxCount = 0;
       lastTexBind = 0;
       
-      glGenFramebuffers(1, &framebuffer);
+#ifdef TARGET_ANDROID
+      if (target == TargetTexture) {
+#endif
+        glGenFramebuffers(1, &framebuffer);
+        CheckGLError("glGenFramebuffers");        
+#ifdef TARGET_ANDROID
+      }
+#endif
+      
       glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
+      CheckGLError("glBindFramebuffer");
 
       if (target == TargetScreen) {
+#ifdef TARGET_IOS
         glGenRenderbuffers(1, &renderbuffer);
+        CheckGLError("glGenRenderbuffers");
         glBindRenderbuffer(GL_RENDERBUFFER, renderbuffer);
+        CheckGLError("glBindRenderbuffer");
+#endif
+      } else {
+        color.x = 0; color.y = 0; color.z = 0; color.w = 0;
       }
     }
     
@@ -142,15 +164,22 @@ namespace machete {
         texture = tex->id;
         
         glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, tex->id, 0);
+        CheckGLError("glFramebufferTexture2D");
+#ifdef TARGET_IOS
       } else {
         glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, renderbuffer);
+        CheckGLError("glFramebufferRenderbuffer");
+#endif
       }
       
+//#ifdef TARGET_IOS
       GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+      CheckGLError("glCheckFramebufferStatus");
       if (status != GL_FRAMEBUFFER_COMPLETE) {
         machete::common::Log("Frame buffer is not ready");
         return;
       }
+//#endif
       
       base = Mat4();
       base = base.Translate(-this->size.x / 2, this->size.y / 2, 0);
@@ -159,6 +188,7 @@ namespace machete {
       renderer.SetBase(base);
       
       glViewport(0, 0, size.x, size.y);
+      CheckGLError("glViewport");
 
       renderer.ApplyOrtho(size.x, size.y);
       renderer.Unuse();
@@ -168,26 +198,27 @@ namespace machete {
       lastTexBind = 0;
       
       glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
+      CheckGLError("glBindFramebuffer");
 
       glViewport(0, 0, size.x, size.y);
+      CheckGLError("glViewport");
 
       renderer.Use();
       renderer.SetBase(base);
       
-      if (target == TargetScreen) {
-        glClearColor(color.x, color.y, color.z, color.w);
-      } else {
-        glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-      }
+      glClearColor(color.x, color.y, color.z, color.w);
+      CheckGLError("glClearColor");
     }
     
     void DrawContext::Unuse() {
       renderer.Unuse();
       glBindFramebuffer(GL_FRAMEBUFFER, 0);
+      CheckGLError("glBindFramebuffer");
     }
     
     void DrawContext::StartFrame() {
       glClear(GL_COLOR_BUFFER_BIT);
+      CheckGLError("glClear");
       lastTexBind = 0;
       
       NextBuffers();
@@ -221,10 +252,14 @@ namespace machete {
       if (vtxCount == 0) return;
 
       glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer);
+      CheckGLError("glBindBuffer ELEMENT");
       glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
+      CheckGLError("glBindBuffer ARRAY");
       
       glActiveTexture(GL_TEXTURE0);
+      CheckGLError("glActiveTexture");
       glBindTexture(GL_TEXTURE_2D, lastTexBind);
+      CheckGLError("glBindTexture");
       
       renderer.Upload(vertexes, vtxCount, indices, idxCount, tint);
       
@@ -236,8 +271,11 @@ namespace machete {
       
       lastTexBind = 0;
       glBindTexture(GL_TEXTURE_2D, 0);
+      CheckGLError("glBindTexture");
       glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+      CheckGLError("glBindBuffer");
       glBindBuffer(GL_ARRAY_BUFFER, 0);
+      CheckGLError("glBindBuffer");
     }
     
     void DrawContext::NextBuffers() {

@@ -141,7 +141,11 @@ namespace machete {
         float y1 = y + h;
         float xa = font->FloatValue("/font/chars[1]/char[%1]/@xadvance", cIdx);
         
+#ifdef TARGET_IOS
         FontChar *fchar = new FontChar(Vec2(px, py), Vec2(w, h), Vec2(x / texture->width, y / texture->height), Vec2(x1 / texture->width, y1 / texture->height), texture->id);
+#elif TARGET_ANDROID
+        FontChar *fchar = new FontChar(Vec2(px, py), Vec2(w, h), Vec2(x / texture->width, 1 - (y / texture->height)), Vec2(x1 / texture->width, 1 - (y1 / texture->height)), texture->id);
+#endif
         
         fchar->SetXAdvance(xa);
         fchar->SetYAdvance(height);
