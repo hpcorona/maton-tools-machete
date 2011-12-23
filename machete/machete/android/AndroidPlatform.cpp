@@ -94,7 +94,7 @@ FILE* AndroidPlatform::OpenFile(const char* name) {
   strcat(fname, "/sdcard/matongames/assets/");
   strcat(fname, name);
   LOGI(fname);
-  return fopen(name, "rb");
+  return fopen(fname, "rb");
 }
 
 void AndroidPlatform::CloseFile(FILE* handle) {

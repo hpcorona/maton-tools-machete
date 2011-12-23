@@ -7,6 +7,7 @@
 //
 
 #include "thread.h"
+#include <time.h>
 
 namespace machete {
   namespace thread {
@@ -14,6 +15,12 @@ namespace machete {
     Resource::Resource() {
       pthread_cond_init(&condition, NULL);
       pthread_mutex_init(&mutex, NULL);
+      _time_to_wait.tv_nsec = 0;
+      _time_to_wait.tv_sec = 0;
+      //towait = 1000000000L; 1 sec.
+      
+      //Polling every second
+      towait = 1000000000L;
     }
     
     Resource::~Resource() {
@@ -38,7 +45,9 @@ namespace machete {
     }
     
     void Resource::Wait() {
-      pthread_cond_wait(&condition, &mutex);
+      _time_to_wait.tv_sec = time(NULL);
+      _time_to_wait.tv_nsec = towait;
+      pthread_cond_timedwait(&condition, &mutex, &_time_to_wait);
     }
     
     bool BackgroundWorker::IsFinished() const {

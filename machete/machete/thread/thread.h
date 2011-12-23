@@ -72,6 +72,11 @@ namespace machete {
       //! Mutex.
       pthread_mutex_t mutex;
       
+      //! Time to wait.
+      struct timespec _time_to_wait;
+      
+      //! Nanoseconds to wait.
+      unsigned long towait;
     };
     
     //! Worker.

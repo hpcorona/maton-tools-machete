@@ -42,11 +42,19 @@ namespace machete {
     }
     
     void MusicStreamWorker::Service() {
-      
       while (alive) {
         while (!TryLock()) { if (!alive) return; }
         Wait();
-        if (!alive) return;
+        if (!alive) {
+          Unlock();
+          break;
+        }
+        
+        if (queue->Count() == 0) {
+          Unlock();
+          continue;
+        }
+        
         SwapQueues();
         Unlock();
         
@@ -61,13 +69,10 @@ namespace machete {
           workDone->Unlock();
         }
         
-        while (toDo->Count() > 0) {
-          toDo->RemoveRoot();
-        }
+        toDo->RemoveAll();
       }
       
       finished = true;
-      
     }
     
     void MusicStreamWorker::LoadPart(MusicBuffer* buff) {
@@ -95,7 +100,7 @@ namespace machete {
         LoadPart(buff);
         return;
       }
-      
+
       alBufferDataStatic(buff->buffer, format, data, size, vorbisInfo->rate);
       int err = alGetError();
       if (err != AL_NO_ERROR) {
