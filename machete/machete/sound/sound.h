@@ -61,9 +61,25 @@ namespace machete {
       
     };
     
+#ifdef TARGET_ANDROID
+    size_t android_fread(void *ptr, size_t size, size_t nmemb, void *datasource);
+    int android_fseek(void *datasource, ogg_int64_t offset, int whence);
+    int android_fclose(void *datasource);
+    long android_ftell(void *datasource);
+#endif
+    
     //! Internal class to manage background music streaming.
     class MusicStreamWorker : public machete::thread::SequenceWorker<MusicBuffer*> {
     public:
+      
+#ifdef TARGET_ANDROID
+      
+      friend size_t android_fread(void *ptr, size_t size, size_t nmemb, void *datasource);
+      friend int android_fseek(void *datasource, ogg_int64_t offset, int whence);
+      friend int android_fclose(void *datasource);
+      friend long android_ftell(void *datasource);
+      
+#endif
       
       MusicStreamWorker();
       
@@ -110,8 +126,19 @@ namespace machete {
       
       //! Music format.
       ALenum format;
+      
+      //! Maximum position within the file.
+      long maxPos;
 
     };
+    
+#ifdef TARGET_ANDROID
+    
+    const ov_callbacks android_ogg_callbacks = {
+      android_fread, android_fseek, android_fclose, android_ftell
+    };
+    
+#endif
     
     //! Represent a buffered ogg sound.
     class Music {

@@ -15,13 +15,21 @@ machete::graphics::DrawContext* CreateDrawContext(machete::graphics::RenderTarge
   return ctx;
 }
 
-AndroidPlatform::AndroidPlatform(const char* APKfile) {
+AndroidPlatform::AndroidPlatform(const char* APKfile, const char* name) {
 	LOGI("Initializing Android Platform with APK %s", APKfile);
 	APKArchive = loadAPK(APKfile);
-  apkName = new char[50];
+  apkFile = new char[100];
+  apkFile[0] = 0;
+  strcat(apkFile, APKfile);
+
+  apkName = new char[100];
   apkName[0] = 0;
   strcat(apkName, APKfile);
   strcat(apkName, "/assets/");
+
+  dirName = new char[100];
+  dirName[0] = 0;
+  strcat(dirName, name);
 
   imageData = NULL;
 }
@@ -29,6 +37,8 @@ AndroidPlatform::AndroidPlatform(const char* APKfile) {
 AndroidPlatform::~AndroidPlatform() {
 	zip_close(APKArchive);
   delete apkName;
+  delete dirName;
+  delete apkFile;
 
   mems.Reset();
   while (mems.Next()) {
@@ -37,6 +47,22 @@ AndroidPlatform::~AndroidPlatform() {
   }
 
   mems.RemoveAll();
+/*
+  resources.Reset();
+  while (resources.Next()) {
+    delete resources.GetCurrent()->GetValue();
+  }
+
+  resources.RemoveAll();
+*/
+}
+
+void AndroidPlatform::SetResourceData(const char* name, long offset, long length) {
+  struct AndroidResource *res = new AndroidResource();
+  res->offset = offset;
+  res->length = length;
+
+  resources.Add(name, res);
 }
 
 const char* AndroidPlatform::GetResourcePath() const {
@@ -154,19 +180,25 @@ inline unsigned int AndroidPlatform::Random() {
   return arc4random();
 }
 
-FILE* AndroidPlatform::OpenFile(const char* name) {
-  LOGI("OpenFile FROM APK pending");
-  LOGI(name);
-  char fname[100];
-  fname[0] = 0;
-  strcat(fname, "/sdcard/matongames/assets/");
-  strcat(fname, name);
-  LOGI(fname);
-  return fopen(fname, "rb");
+FILE* AndroidPlatform::OpenFile(const char* name, unsigned long &size) {
+  machete::data::Tree<machete::data::Str, struct AndroidResource*> *node = resources.Seek(name);
+  if (node == NULL) {
+    LOGI("Not Found: %s", name);
+    return NULL;
+  }
+
+  struct AndroidResource* res = node->GetValue();
+
+  FILE *handle = fopen(apkFile, "rb");
+
+  fseek(handle, res->offset, SEEK_CUR);
+
+  size = res->length;
+
+  return handle;
 }
 
 void AndroidPlatform::CloseFile(FILE* handle) {
-  LOGI("CloseFile FROM APK pending");
   fclose(handle);
 }
 
@@ -174,12 +206,9 @@ char* AndroidPlatform::WritableFile(const char* name) {
   char* path = new char[100];
   path[0] = 0;
 
-  strcat(path, "/sdcard/matongames/");
-  //strcat(path, apkName);
+  strcat(path, dirName);
+  strcat(path, "/");
   strcat(path, name);
-
-  LOGI("WritableFile IN REAL FOLDER SDCARD PENDING");
-  LOGI(path);
 
   return path;
 }

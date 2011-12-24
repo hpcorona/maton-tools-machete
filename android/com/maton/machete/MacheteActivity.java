@@ -1,5 +1,9 @@
 package com.maton.machete;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+
 import javax.microedition.khronos.egl.EGL10;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.egl.EGLContext;
@@ -10,11 +14,14 @@ import android.app.Activity;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
+import android.content.res.AssetFileDescriptor;
+import android.content.res.AssetManager;
 import android.opengl.GLSurfaceView;
 import android.opengl.GLSurfaceView.EGLConfigChooser;
 import android.opengl.GLSurfaceView.EGLContextFactory;
 import android.opengl.GLSurfaceView.Renderer;
 import android.os.Bundle;
+import android.os.Environment;
 import android.view.MotionEvent;
 import android.view.Window;
 import android.view.WindowManager;
@@ -30,7 +37,7 @@ public abstract class MacheteActivity extends Activity {
 	public void dispatchTouch(MotionEvent event) {
 		int action = event.getAction();
 		int actionCode = action & MotionEvent.ACTION_MASK;
-		
+
 		int touchEvent = 0;
 		if (actionCode == MotionEvent.ACTION_DOWN) {
 			touchEvent = 1;
@@ -41,20 +48,21 @@ public abstract class MacheteActivity extends Activity {
 		} else if (actionCode == MotionEvent.ACTION_CANCEL) {
 			touchEvent = 5;
 		}
-		
+
 		int id = 0;
 		float x = 0;
 		float y = 0;
-		
+
 		if (event.getPointerCount() > 0) {
 			id = event.getPointerId(0);
-			
+
 			x = event.getX(0);
 			y = event.getY(0);
 		}
-		
-		if (id > 0) return;
-		
+
+		if (id > 0)
+			return;
+
 		engine.touch(id, touchEvent, x, y);
 	}
 
@@ -139,7 +147,36 @@ public abstract class MacheteActivity extends Activity {
 					}
 					apkFilePath = appInfo.sourceDir;
 
-					engine.initialize(apkFilePath, width, height, 1, 1);
+					String fileExt = Environment.getExternalStorageDirectory()
+							+ "/" + appInfo.processName;
+					File f = new File(fileExt);
+					f.mkdirs();
+
+					engine.initialize(fileExt, apkFilePath, width, height, 1, 1);
+
+					AssetManager mgr = getAssets();
+					String path = "";
+					String list[];
+					try {
+						list = mgr.list(path);
+						if (list != null) {
+							for (int i = 0; i < list.length; ++i) {
+								try {
+									AssetFileDescriptor fd = mgr
+											.openFd(list[i]);
+
+									engine.resourceOffset(list[i],
+											fd.getStartOffset(), fd.getLength());
+
+									fd.close();
+								} catch (FileNotFoundException e) {
+								}
+							}
+						}
+					} catch (IOException e) {
+					}
+					
+					engine.startup();
 				}
 			}
 

@@ -42,7 +42,6 @@ LOCAL_SRC_FILES :=\
 	Alc/android.c              \
 	Alc/bs2b.c                 \
 	Alc/null.c
-	
 LOCAL_LDLIBS := -llog -Wl,-s
 
 include $(BUILD_SHARED_LIBRARY)

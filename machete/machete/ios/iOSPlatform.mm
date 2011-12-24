@@ -168,13 +168,14 @@ public:
     return arc4random();
   }
   
-  FILE* OpenFile(const char* name) {
+  FILE* OpenFile(const char* name, unsigned long &size) {
     NSString* basePath = [NSString stringWithUTF8String:name];
     
     NSString* resourcePath = [[NSBundle mainBundle] resourcePath];
     NSString* fullPath = [resourcePath stringByAppendingPathComponent:basePath];
     
     FILE* f = fopen([fullPath cStringUsingEncoding:NSASCIIStringEncoding], "rb");
+    size = 0;
     
     return f;
   }

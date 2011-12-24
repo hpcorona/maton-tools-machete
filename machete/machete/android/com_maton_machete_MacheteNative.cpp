@@ -3,9 +3,10 @@
 #include "../engine.h"
 #include "AndroidPlatform.h"
 
-machete::IPlatform* platform;
+AndroidPlatform* platform;
 static machete::IGame* game;
 machete::graphics::DrawContext* renEngine;
+int width, height;
 
 /*
  * Class:     com_maton_machete_MacheteNative
@@ -13,21 +14,34 @@ machete::graphics::DrawContext* renEngine;
  * Signature: (Ljava/lang/String;II)V
  */
 void Java_com_maton_machete_MacheteNative_initialize
-  (JNIEnv *env, jobject, jstring apk, jint w, jint h, jint o, jint osr) {
+  (JNIEnv *env, jobject, jstring name, jstring apk, jint w, jint h, jint o, jint osr) {
 	const char* str;
+  const char* cname;
 	jboolean isCopy;
 	str = env->GetStringUTFChars(apk, &isCopy);
+  cname = env->GetStringUTFChars(name, &isCopy);
 
-	platform = new AndroidPlatform(str);
+	platform = new AndroidPlatform(str, cname);
 
   machete::Start(platform);
 
   renEngine = CreateDrawContext(machete::graphics::TargetScreen, w, h);
 
-	game = CreateGame();
-	game->Initialize(renEngine, w, h, machete::DeviceOrientationPortrait);
+  width = w;
+  height = h;
 }
 
+void JNICALL Java_com_maton_machete_MacheteNative_startup(JNIEnv *, jobject) {
+	game = CreateGame();
+	game->Initialize(renEngine, width, height, machete::DeviceOrientationPortrait);
+}
+
+void JNICALL Java_com_maton_machete_MacheteNative_resourceOffset(JNIEnv *env, jobject, jstring resource, jlong offset, jlong length) {
+  jboolean isCopy;
+  const char* name = env->GetStringUTFChars(resource, &isCopy);
+
+  platform->SetResourceData(name, offset, length);
+}
 /*
  * Class:     com_maton_machete_MacheteNative
  * Method:    resize
@@ -105,9 +119,9 @@ void Java_com_maton_machete_MacheteNative_stop
 	game->OnStop();
 }
 
-//jint JNI_OnLoad(JavaVM* vm, void* reserved) {
-//	return JNI_VERSION_1_6;
-//}
+jint JNI_OnLoad(JavaVM* vm, void* reserved) {
+	return JNI_VERSION_1_6;
+}
 
 void JNI_OnUnload(JavaVM* vm, void* reserved) {
 

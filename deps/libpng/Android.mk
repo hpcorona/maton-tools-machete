@@ -36,7 +36,6 @@ LOCAL_SRC_FILES :=\
 	pngwrite.c \
 	pngwtran.c \
 	pngwutil.c 
-	
 LOCAL_LDLIBS := -lz
 
 #include $(BUILD_SHARED_LIBRARY)

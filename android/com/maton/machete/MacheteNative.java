@@ -10,7 +10,8 @@ public class MacheteNative {
 		System.loadLibrary("game");
 	}
 	
-	public native void initialize(String apkpath, int w, int h, int o, int opengles);
+	public native void initialize(String name, String apkpath, int w, int h, int o, int opengles);
+	public native void resourceOffset(String resource, long offset, long size);
 	public native void resize(int w, int h, int o);
 	public native void render();
 	public native void pause();
@@ -19,4 +20,5 @@ public class MacheteNative {
 	public native void start();
 	public native void stop();
 	public native void touch(int id, int event, float x, float y);
+	public native void startup();
 }

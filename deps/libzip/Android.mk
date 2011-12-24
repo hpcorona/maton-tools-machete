@@ -72,8 +72,6 @@ LOCAL_SRC_FILES :=\
 	zip_unchange_all.c \
 	zip_unchange_archive.c \
 	zip_unchange_data.c
-
 LOCAL_LDLIBS := -lz
 
-#include $(BUILD_SHARED_LIBRARY)
 include $(BUILD_STATIC_LIBRARY)

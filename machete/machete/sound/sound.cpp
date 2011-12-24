@@ -28,6 +28,59 @@ namespace machete {
     }
 #endif
     
+#ifdef TARGET_ANDROID
+    size_t android_fread(void *ptr, size_t size, size_t nmemb, void *datasource) {
+      MusicStreamWorker* worker = static_cast<MusicStreamWorker*>(datasource);
+      FILE* handle = worker->handle;
+      
+      long total = size * nmemb;
+      long pos = ftell(handle);
+      if (pos >= worker->maxPos) {
+        return 0;
+      }
+      
+      if (pos + total >= worker->maxPos) {
+        total = worker->maxPos - pos;
+        
+        return fread(ptr, total, 1, handle);
+      }
+      
+      return fread(ptr, size, nmemb, handle);
+    }
+    
+    int android_fseek(void *datasource, ogg_int64_t offset, int whence) {
+      MusicStreamWorker* worker = static_cast<MusicStreamWorker*>(datasource);
+      FILE* handle = worker->handle;
+      
+      if (whence == SEEK_END) {
+        return fseek(handle, worker->maxPos, SEEK_SET);
+      } else if (whence == SEEK_CUR) {
+        long pos = ftell(handle);
+        if (pos + offset > worker->maxPos) {
+          return 1;
+        }
+        
+        return fseek(handle, offset, SEEK_CUR);
+      }
+      
+      return fseek(handle, offset, whence);
+    }
+    
+    int android_fclose(void *datasource) {
+      MusicStreamWorker* worker = static_cast<MusicStreamWorker*>(datasource);
+      FILE* handle = worker->handle;
+      
+      return fclose(handle);
+    }
+    
+    long android_ftell(void *datasource) {
+      MusicStreamWorker* worker = static_cast<MusicStreamWorker*>(datasource);
+      FILE* handle = worker->handle;
+      
+      return ftell(handle);
+    }
+#endif
+    
     MusicStreamWorker::MusicStreamWorker() {
       name = new char[80];
       name[0] = 0;
@@ -143,20 +196,28 @@ namespace machete {
       
       loaded = false;
       
-      handle = ThePlatform->OpenFile(name);
+      unsigned long size;
+      handle = ThePlatform->OpenFile(name, size);
       if (handle <= 0) {
         return;
       }
       
+      if (size > 0) {
+        maxPos = ftell(handle) + size;
+      }
+      
       int result;
-      result = ov_open(handle, &oggStream, NULL, 0);
+#ifdef TARGET_ANDROID
+      result = ov_open_callbacks(this, &oggStream, NULL, 0, android_ogg_callbacks);
+#elif TARGET_IOS
+      result = ov_open(handle, &oggStream, NULL, (long)size);
+#endif
       if (result < 0) {
         ThePlatform->CloseFile(handle);
         return;
       }
       
       vorbisInfo = ov_info(&oggStream, -1);
-      
       if (vorbisInfo->channels == 1) {
         format = AL_FORMAT_MONO16;
       } else {

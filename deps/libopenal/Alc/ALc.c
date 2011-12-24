@@ -2004,6 +2004,7 @@ ALC_API ALCdevice* ALC_APIENTRY alcOpenDevice(const ALCchar *deviceName)
     device->NumUpdates = GetConfigValueInt(NULL, "periods", 4);
     //if(device->NumUpdates < 2)
         device->NumUpdates = 1;
+				//device->NumUpdates = 4;
 
     device->UpdateSize = GetConfigValueInt(NULL, "period_size", 1024);
     if(device->UpdateSize <= 0)

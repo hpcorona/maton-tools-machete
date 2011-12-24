@@ -35,8 +35,8 @@ namespace machete {
       return platf->Random();
     }
     
-    FILE* Platform::OpenFile(const char* name) {
-      return platf->OpenFile(name);
+    FILE* Platform::OpenFile(const char* name, unsigned long &size) {
+      return platf->OpenFile(name, size);
     }
     
     void Platform::CloseFile(FILE* handle) {

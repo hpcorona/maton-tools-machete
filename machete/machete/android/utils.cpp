@@ -11,7 +11,7 @@ zip* loadAPK (const char* apkPath) {
     LOGE("Error loading APK");
     return NULL;
   }
-
+/*
   //Just for debug, print APK contents
   int numFiles = zip_get_num_files(APKArchive);
   for (int i=0; i<numFiles; i++) {
@@ -22,6 +22,7 @@ zip* loadAPK (const char* apkPath) {
     }
     LOGI("File %i : %s\n", i, name);
   }
+  */
 
   return APKArchive;
 }
@@ -51,12 +52,7 @@ unsigned int loadFile(zip* APKArchive, const char* filename, void **data) {
   return size;
 }
 
-
-
-
 png_byte* loadTextureFromPNG(zip* APKArchive, const char* filename, int &width, int &height) {
-  LOGI("Loading PNG %s", filename);
-
   file = zip_fopen(APKArchive, filename, 0);
   if (!file) {
     LOGE("Error opening %s from APK", filename);

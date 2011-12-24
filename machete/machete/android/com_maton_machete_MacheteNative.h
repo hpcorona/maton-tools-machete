@@ -10,10 +10,18 @@ extern "C" {
 /*
  * Class:     com_maton_machete_MacheteNative
  * Method:    initialize
- * Signature: (Ljava/lang/String;IIII)V
+ * Signature: (Ljava/lang/String;Ljava/lang/String;IIII)V
  */
 JNIEXPORT void JNICALL Java_com_maton_machete_MacheteNative_initialize
-  (JNIEnv *, jobject, jstring, jint, jint, jint, jint);
+  (JNIEnv *, jobject, jstring, jstring, jint, jint, jint, jint);
+
+/*
+ * Class:     com_maton_machete_MacheteNative
+ * Method:    resourceOffset
+ * Signature: (Ljava/lang/String;JJ)V
+ */
+JNIEXPORT void JNICALL Java_com_maton_machete_MacheteNative_resourceOffset
+  (JNIEnv *, jobject, jstring, jlong, jlong);
 
 /*
  * Class:     com_maton_machete_MacheteNative
@@ -78,6 +86,14 @@ JNIEXPORT void JNICALL Java_com_maton_machete_MacheteNative_stop
  */
 JNIEXPORT void JNICALL Java_com_maton_machete_MacheteNative_touch
   (JNIEnv *, jobject, jint, jint, jfloat, jfloat);
+
+/*
+ * Class:     com_maton_machete_MacheteNative
+ * Method:    startup
+ * Signature: ()V
+ */
+JNIEXPORT void JNICALL Java_com_maton_machete_MacheteNative_startup
+  (JNIEnv *, jobject);
 
 #ifdef __cplusplus
 }

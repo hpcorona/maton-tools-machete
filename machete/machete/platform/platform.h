@@ -74,9 +74,10 @@ namespace machete {
     //! Open a file.
     /*!
      \param name File name.
+     \param size The file size. Zero if it's a direct file (not an archived one).
      \return The file descriptor.
      */
-    virtual FILE* OpenFile(const char* name) = 0;
+    virtual FILE* OpenFile(const char* name, unsigned long &size) = 0;
     
     //! Close a file.
     /*!
@@ -152,9 +153,10 @@ namespace machete {
       //! Open a file.
       /*!
        \param name File name.
+       \param size The file size. Zero if it's a direct file (not an archived one).
        \return The file descriptor.
        */
-      FILE* OpenFile(const char* name);
+      FILE* OpenFile(const char* name, unsigned long &size);
       
       //! Close a file.
       /*!

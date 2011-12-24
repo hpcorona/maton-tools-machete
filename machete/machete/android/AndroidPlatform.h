@@ -6,9 +6,14 @@
 #include "../platform/platform.h"
 #include "../graphics/draw.h"
 
+struct AndroidResource {
+  long offset;
+  long length;
+};
+
 class AndroidPlatform : public machete::IPlatform {
 public:
-  AndroidPlatform(const char* APKfile);
+  AndroidPlatform(const char* APKfile, const char* name);
   ~AndroidPlatform();
 
   const char* GetResourcePath() const;
@@ -22,16 +27,21 @@ public:
 
   unsigned int Random();
 
-  FILE* OpenFile(const char* name);
+  FILE* OpenFile(const char* name, unsigned long &size);
 
   void CloseFile(FILE* handle);
 
   char* WritableFile(const char* name);
 
+  void SetResourceData(const char* name, long offset, long length);
+
 private:
     zip* APKArchive;
     png_byte* imageData;
     char* apkName;
+    char* dirName;
+    char* apkFile;
     machete::data::Iterator<char*> mems;
+    machete::data::Hash<machete::data::Str, struct AndroidResource*> resources;
 };
 

@@ -22,5 +22,4 @@ LOCAL_SRC_FILES =    \
         tremor/synthesis.c  \
         tremor/vorbisfile.c \
         tremor/window.c     
-
 include $(BUILD_STATIC_LIBRARY)
