@@ -127,18 +127,18 @@ namespace machete {
       //! Music format.
       ALenum format;
       
+#ifdef TARGET_ANDROID
+      //! Ogg Vorbis Callbacks for in-APK streaming.
+      ov_callbacks *android_ogg_callbacks;
+
+      //! Start of the file.
+      long start;
+
       //! Maximum position within the file.
       long maxPos;
+#endif
 
     };
-    
-#ifdef TARGET_ANDROID
-    
-    const ov_callbacks android_ogg_callbacks = {
-      android_fread, android_fseek, android_fclose, android_ftell
-    };
-    
-#endif
     
     //! Represent a buffered ogg sound.
     class Music {

@@ -1,3 +1,7 @@
+ifndef MACHETE_PATH
+MACHETE_PATH := $(call my-dir)
+endif
+
 LIBZIP_PATH := $(MACHETE_PATH)/deps/libzip
 LIBPNG_PATH := $(MACHETE_PATH)/deps/libpng
 LIBOPENAL_PATH := $(MACHETE_PATH)/deps/libopenal
@@ -34,6 +38,6 @@ LOCAL_SRC_FILES := \
 	android/com_maton_machete_MacheteNative.cpp \
 	android/utils.cpp \
 	android/AndroidPlatform.cpp
-LOCAL_LDLIBS := -lOpenSLES -lGLESv2 -ldl -llog -lz
+LOCAL_LDLIBS := -lGLESv2 -ldl -llog -lz
 include $(BUILD_STATIC_LIBRARY)
 

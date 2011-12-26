@@ -5,6 +5,14 @@
 #include "../math/vector.h"
 #include "../platform/platform.h"
 #include "../graphics/draw.h"
+#include <AL/al.h>
+#include <AL/alc.h>
+#include <zip.h>
+#include <zipint.h>
+extern "C" {
+#include <png.h>
+}
+#include <stdio.h>
 
 struct AndroidResource {
   long offset;
@@ -35,13 +43,17 @@ public:
 
   void SetResourceData(const char* name, long offset, long length);
 
-private:
-    zip* APKArchive;
-    png_byte* imageData;
-    char* apkName;
-    char* dirName;
-    char* apkFile;
-    machete::data::Iterator<char*> mems;
-    machete::data::Hash<machete::data::Str, struct AndroidResource*> resources;
-};
+protected:
+  void OpenAPK();
+  void CloseAPK();
+  png_byte* LoadPNG(const char* filename, int &width, int &height);
 
+private:
+  zip* apk;
+  png_byte* imageData;
+  char* apkName;
+  char* dirName;
+  char* apkFile;
+  machete::data::Iterator<char*> mems;
+  machete::data::Hash<machete::data::Str, struct AndroidResource*> resources;
+};

@@ -51,7 +51,7 @@ namespace machete {
     int android_fseek(void *datasource, ogg_int64_t offset, int whence) {
       MusicStreamWorker* worker = static_cast<MusicStreamWorker*>(datasource);
       FILE* handle = worker->handle;
-      
+
       if (whence == SEEK_END) {
         return fseek(handle, worker->maxPos, SEEK_SET);
       } else if (whence == SEEK_CUR) {
@@ -63,7 +63,7 @@ namespace machete {
         return fseek(handle, offset, SEEK_CUR);
       }
       
-      return fseek(handle, offset, whence);
+      return fseek(handle, worker->start + offset, whence);
     }
     
     int android_fclose(void *datasource) {
@@ -77,7 +77,7 @@ namespace machete {
       MusicStreamWorker* worker = static_cast<MusicStreamWorker*>(datasource);
       FILE* handle = worker->handle;
       
-      return ftell(handle);
+      return ftell(handle) - worker->start;
     }
 #endif
     
@@ -85,6 +85,12 @@ namespace machete {
       name = new char[80];
       name[0] = 0;
       
+      android_ogg_callbacks = new ov_callbacks();
+      android_ogg_callbacks->read_func = android_fread;
+      android_ogg_callbacks->seek_func = android_fseek;
+      android_ogg_callbacks->close_func = android_fclose;
+      android_ogg_callbacks->tell_func = android_ftell;
+
       loaded = false;
     }
     
@@ -92,6 +98,8 @@ namespace machete {
       delete name;
       
       CloseOgg();
+
+      delete android_ogg_callbacks;
     }
     
     void MusicStreamWorker::Service() {
@@ -202,15 +210,13 @@ namespace machete {
         return;
       }
       
-      if (size > 0) {
-        maxPos = ftell(handle) + size;
-      }
-      
-      int result;
 #ifdef TARGET_ANDROID
-      result = ov_open_callbacks(this, &oggStream, NULL, 0, android_ogg_callbacks);
+      start = ftell(handle);
+      maxPos = ftell(handle) + size;
+
+      int result = ov_open_callbacks(this, &oggStream, NULL, 0, *android_ogg_callbacks);
 #elif TARGET_IOS
-      result = ov_open(handle, &oggStream, NULL, (long)size);
+      int result = ov_open(handle, &oggStream, NULL, (long)size);
 #endif
       if (result < 0) {
         ThePlatform->CloseFile(handle);
