@@ -7,8 +7,6 @@
 //
 
 #include "sound.h"
-#include <iostream>
-
 
 namespace machete {
   namespace sound {
@@ -385,6 +383,12 @@ namespace machete {
     void Music::Update(float time) {
       if (!soundLoaded) return;
       
+      if (firstRun) {
+        firstRun = false;
+        worker->Work();
+        return;
+      }
+
       int processed;
       
       alGetSourcei(source, AL_BUFFERS_PROCESSED, &processed);

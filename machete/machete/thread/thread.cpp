@@ -17,14 +17,6 @@ namespace machete {
     Resource::Resource() {
       pthread_cond_init(&condition, NULL);
       pthread_mutex_init(&mutex, NULL);
-      _time_to_wait.tv_nsec = 0;
-      _time_to_wait.tv_sec = 0;
-      
-#ifdef TARGET_ANDROID
-      towait = 1000000000L;
-#elif TARGET_IOS
-      towait = 0;
-#endif
     }
     
     Resource::~Resource() {
@@ -49,13 +41,7 @@ namespace machete {
     }
     
     void Resource::Wait() {
-      if (towait != 0) {
-        _time_to_wait.tv_sec = machete::platform::ThePlatform->AbsoluteTime();
-        _time_to_wait.tv_nsec = towait;
-        pthread_cond_timedwait(&condition, &mutex, &_time_to_wait);
-      } else {
-        pthread_cond_wait(&condition, &mutex);
-      }
+      pthread_cond_wait(&condition, &mutex);
     }
     
     bool BackgroundWorker::IsFinished() const {
