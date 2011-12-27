@@ -9,6 +9,7 @@
 #include <AL/alc.h>
 #include <zip.h>
 #include <zipint.h>
+#include <time.h>
 extern "C" {
 #include <png.h>
 }
@@ -42,6 +43,8 @@ public:
   char* WritableFile(const char* name);
 
   void SetResourceData(const char* name, long offset, long length);
+
+  double AbsoluteTime();
 
 protected:
   void OpenAPK();

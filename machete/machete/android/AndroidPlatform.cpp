@@ -232,6 +232,10 @@ char* AndroidPlatform::WritableFile(const char* name) {
   return path;
 }
 
+double AndroidPlatform::AbsoluteTime() {
+  return time(NULL);
+}
+
 void AndroidPlatform::OpenAPK() {
   apk = zip_open(apkFile, 0, NULL);
   if (apk == NULL) {
