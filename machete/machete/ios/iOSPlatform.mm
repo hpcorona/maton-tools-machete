@@ -6,6 +6,7 @@
 #import <OpenAL/al.h>
 #import <AudioToolbox/AudioToolbox.h>
 #include <stdio.h>
+#include <mach/mach_time.h>
 
 class PlatformiOS : public machete::IPlatform {
 public:
@@ -202,6 +203,10 @@ public:
     }
     
     return b;
+  }
+  
+  double AbsoluteTime() {
+    return mach_absolute_time() / 1000000000L;
   }
 
   

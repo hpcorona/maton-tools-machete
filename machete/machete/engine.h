@@ -119,7 +119,7 @@ namespace machete {
   static void Start(IPlatform *platf) {
     thread::TheThreadMgr = new thread::ThreadManager();
     
-    platform::ThePlatform = new platform::Platform(platf);
+    platform::ThePlatform = platf;
     
     graphics::TheShaderMgr = new graphics::ShaderMgr();
     graphics::TheTextureMgr = new graphics::TextureMgr();

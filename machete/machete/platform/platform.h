@@ -87,99 +87,15 @@ namespace machete {
     
     //! Get the name of a complete writable file path.
     virtual char* WritableFile(const char* name) = 0;
+    
+    virtual double AbsoluteTime() = 0;
   };
 
   //! Platform specific features.
   namespace platform {
-    
-    //! Interface or Bridge between your application and a IPlatform object.
-    class Platform {
-    public:
-      //! Create a new bridge between the specified platform.
-      /*!
-       \param p The platform specific implementation.
-       */
-      Platform(machete::IPlatform* p) { platf = p; };
-      
-      //! Get the full resource path.
-      /*!
-       All files available for the application must be contained here.
-       
-       Only one resource path is supported.
-       
-       \return A character string (null terminated) containing the resource path.
-       */
-      const char* GetResourcePath() const;
-      
-      //! Load an image form the resource path.
-      /*!
-       This method will NOT free up any resources. You must manually call UnloadImage.
-       
-       \sa UnloadImage
-       \param filename The name of the file to load.
-       \param data An address to the data pointer. A new data pointer will be created.
-       \param size The size of the loaded image.
-       */
-      void LoadImage(const char* filename, void **data, machete::math::IVec2 & size);
-
-      //! Unload the last image and free up resources.
-      void UnloadImage();
-
-      //! Load a file form the resources path.
-      /*!
-       The entire file will be loaded into memory.
-       
-       The called will need to release the memory requested.
-       
-       \param name File name to load.
-       \param data An address to the data pointer. The entire file will be loaded into memory.
-       \return The number of bytes that was loaded into memory. No additional bytes are added.
-       */
-      unsigned int LoadFile(const char* name, char** data);
-      
-      //! Load an audio file from the resources path.
-      /*!
-       \param name File name to load.
-       \return The OpenAL buffer id that was created.
-       */
-      unsigned int LoadAudio(const char* name);
-      
-      //! Generates a random integer.
-      /*!
-       \return A random integer.
-       */
-      unsigned int Random();
-      
-      //! Open a file.
-      /*!
-       \param name File name.
-       \param size The file size. Zero if it's a direct file (not an archived one).
-       \return The file descriptor.
-       */
-      FILE* OpenFile(const char* name, unsigned long &size);
-      
-      //! Close a file.
-      /*!
-       \param hande File handle.
-       */
-      void CloseFile(FILE* handle);
-
-      //! Get the name of a complete writable file path.
-      /*!
-       \brief The called must free up the memory.
-       \param name The final name.
-       \return The complete and valid file path.
-       */
-      char* WritableFile(const char* name);
-
-    private:
-      
-      //! Platform specific implementation.
-      machete::IPlatform* platf;
-    };
-    
+        
     //! Global Platform manager.
-    extern Platform* ThePlatform;
+    extern IPlatform* ThePlatform;
 
   }
 }

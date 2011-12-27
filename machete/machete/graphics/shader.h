@@ -34,6 +34,7 @@ namespace machete {
     
     //! Check for OpenGL errors and display the error on the console.
     static void CheckGLError(const char *func) {
+#ifdef MACHETE_OPENGL_DEBUG
       GLenum status = glGetError();
       
       switch (status) {
@@ -62,11 +63,14 @@ namespace machete {
           machete::common::Log("1285 GL_OUT_OF_MEMORY");
           break;
       }
+#endif
     }
     
     //! Check for OpenGL errors and display the error on the console.
     static void CheckGLError() {
+#ifdef MACHETE_OPENGL_DEBUG
       CheckGLError("");
+#endif
     }
     
     //! Basic Shader functionality.

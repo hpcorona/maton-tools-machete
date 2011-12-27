@@ -8,6 +8,8 @@
 
 #include "thread.h"
 #include <time.h>
+#include <iostream>
+#include "../platform/platform.h"
 
 namespace machete {
   namespace thread {
@@ -17,10 +19,12 @@ namespace machete {
       pthread_mutex_init(&mutex, NULL);
       _time_to_wait.tv_nsec = 0;
       _time_to_wait.tv_sec = 0;
-      //towait = 1000000000L; 1 sec.
       
-      //Polling every second
+#ifdef TARGET_ANDROID
       towait = 1000000000L;
+#elif TARGET_IOS
+      towait = 0;
+#endif
     }
     
     Resource::~Resource() {
@@ -45,9 +49,13 @@ namespace machete {
     }
     
     void Resource::Wait() {
-      _time_to_wait.tv_sec = time(NULL);
-      _time_to_wait.tv_nsec = towait;
-      pthread_cond_timedwait(&condition, &mutex, &_time_to_wait);
+      if (towait != 0) {
+        _time_to_wait.tv_sec = machete::platform::ThePlatform->AbsoluteTime();
+        _time_to_wait.tv_nsec = towait;
+        pthread_cond_timedwait(&condition, &mutex, &_time_to_wait);
+      } else {
+        pthread_cond_wait(&condition, &mutex);
+      }
     }
     
     bool BackgroundWorker::IsFinished() const {
