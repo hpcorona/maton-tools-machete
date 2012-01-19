@@ -359,6 +359,7 @@ namespace machete {
     
     ShaderMgr* TheShaderMgr = NULL;
     TextureMgr* TheTextureMgr = NULL;
+    VtxRender* TheVertexShader = NULL;
 
   }
 }

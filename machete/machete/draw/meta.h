@@ -36,6 +36,7 @@ namespace machete {
       //! Sends data to the current batch in a DrawContext.
       /*!
        \param ctx The context to wich the data will be sent.
+       \param program The program to use. Send NULL to use the default vertex shader.
        \param pivot Pivot to apply rotation and scale.
        \param pos Position offset for the vertexes.
        \param scale Scale.
@@ -44,7 +45,7 @@ namespace machete {
        \param flipX If the geometry must be flipped horizontally.
        \param flipY if the geometry must be flipped vertically.
        */
-      virtual void Draw(DrawContext *ctx, const Vec2 & pivot, const Vec2 & pos, const Vec2 & scale, const Vec4 & color, float rotation, bool flipX, bool flipY) = 0;
+      virtual void Draw(DrawContext *ctx, Program *program, const Vec2 & pivot, const Vec2 & pos, const Vec2 & scale, const Vec4 & color, float rotation, bool flipX, bool flipY) = 0;
       
       //! Get the size of the geometry.
       /*!
@@ -72,6 +73,7 @@ namespace machete {
       //! Sends data to the current batch in a DrawContext.
       /*!
        \param ctx The context to wich the data will be sent.
+       \param program The program to use. Send NULL to use the default vertex shader.
        \param pivot Pivot to apply rotation and scale.
        \param pos Position offset for the vertexes.
        \param scale Scale.
@@ -80,7 +82,7 @@ namespace machete {
        \param flipX If the geometry must be flipped horizontally.
        \param flipY if the geometry must be flipped vertically.
        */
-      void Draw(DrawContext *ctx, const Vec2 & pivot, const Vec2 & pos, const Vec2 & scale, const Vec4 & color, float rotation, bool flipX, bool flipY);
+      void Draw(DrawContext *ctx, Program* program, const Vec2 & pivot, const Vec2 & pos, const Vec2 & scale, const Vec4 & color, float rotation, bool flipX, bool flipY);
 
       //! Get the size of the geometry.
       /*!
@@ -381,6 +383,12 @@ namespace machete {
        */
       virtual bool TouchEvent(machete::input::Touch *touch) { return false; };
       
+      //! Change the vertex shader.
+      /*!
+       \param program The new program to use. Set to NULL to use the default.
+       */
+      void SetShader(Program *program);
+      
     protected:
       
       //! Object type.
@@ -418,6 +426,9 @@ namespace machete {
       
       //! Associated data.
       void *data;
+      
+      //! The vertex shader to use.
+      Program *program;
       
       //! Static zeroe'd vector.
       static Vec2 ZERO2;

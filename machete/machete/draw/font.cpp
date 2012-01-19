@@ -71,7 +71,7 @@ namespace machete {
       for (int i = 0; i < len; i++) {
         if (chars[i] == NULL) continue;
         
-        chars[i]->Draw(ctx, chars[i]->GetPivot(), Vec2(bx, by), scale, Color, rotation, false, false);
+        chars[i]->Draw(ctx, program, chars[i]->GetPivot(), Vec2(bx, by), scale, Color, rotation, false, false);
         
         bx += chars[i]->GetXAdvance();
       }

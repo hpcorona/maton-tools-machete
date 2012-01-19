@@ -233,7 +233,7 @@ namespace machete {
       Vec2 Position = position + pos;
       Vec4 Color = this->color * color;
       
-      element->Draw(ctx, pivot, Position, scale, Color, rotation, flipX, flipY);
+      element->Draw(ctx, program, pivot, Position, scale, Color, rotation, flipX, flipY);
     }
     
     Animation::Animation() {
@@ -481,7 +481,7 @@ namespace machete {
           Vec4 NewColor = this->color * color;
           Vec2 Position = position + pos;
           
-          texture->Draw(ctx, pivot, Position, scale, NewColor, rotation, false, false);
+          texture->Draw(ctx, program, pivot, Position, scale, NewColor, rotation, false, false);
         }
       } else {
         Container::Draw(matrix, pos, color, ctx);
@@ -491,7 +491,7 @@ namespace machete {
     void Dynamic::Draw(DrawContext *ctx) {
       if (usingTexture) {
         if (texture != NULL) {
-          texture->Draw(ctx, pivot, position, scale, color, rotation, false, false);
+          texture->Draw(ctx, program, pivot, position, scale, color, rotation, false, false);
         }
       } else {
         Root::context = ctx;

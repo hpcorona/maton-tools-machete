@@ -225,7 +225,7 @@ namespace machete {
       elemsH[17] = 7;
     }
     
-    void MetaWidget::Draw(DrawContext *ctx, const Vec2 & pivot, const Vec2 & pos, const Vec2 & scale, const Vec4 & color, float rotation, bool flipX, bool flipY) {
+    void MetaWidget::Draw(DrawContext *ctx, Program *program, const Vec2 & pivot, const Vec2 & pos, const Vec2 & scale, const Vec4 & color, float rotation, bool flipX, bool flipY) {
       
       if (!flipX && !flipY) {
         // Top Right Box
@@ -256,7 +256,7 @@ namespace machete {
           verts[i].rotation = rotation;
         }
         
-        ctx->Draw(verts, 16, elems, 54, color, texture);
+        ctx->Draw(program == NULL ? TheVertexShader : program, verts, 16, elems, 54, color, texture);
       } else if (flipX && !flipY) {
         // Top Box
         vertsH[4].vert.x = drawSize.x - bottomRight.x; vertsH[4].vert.y = 0; vertsH[4].vert.z = 0;
@@ -274,7 +274,7 @@ namespace machete {
           vertsH[i].rotation = rotation;
         }
         
-        ctx->Draw(vertsH, 8, elemsH, 18, color, texture);
+        ctx->Draw(program == NULL ? TheVertexShader : program, vertsH, 8, elemsH, 18, color, texture);
       } else if (flipY && !flipX) {
         // Bottom Box
         vertsV[4].vert.x = 0; vertsV[4].vert.y = -(drawSize.y - bottomRight.y); vertsV[4].vert.z = 0;
@@ -292,7 +292,7 @@ namespace machete {
           vertsV[i].rotation = rotation;
         }
         
-        ctx->Draw(vertsV, 8, elemsV, 18, color, texture);
+        ctx->Draw(program == NULL ? TheVertexShader : program, vertsV, 8, elemsV, 18, color, texture);
       }
     }
     
@@ -396,9 +396,9 @@ namespace machete {
         bool dHorz = display == WidgetHorizontal;
         
         if (changed) {
-          state->Draw(ctx, ZERO2, ZERO2, ONE2, NewColor, 0, dHorz, dVert);
+          state->Draw(ctx, program, ZERO2, ZERO2, ONE2, NewColor, 0, dHorz, dVert);
         } else {
-          state->Draw(ctx, ZERO2, Position, scale, NewColor, rotation, dHorz, dVert);
+          state->Draw(ctx, program, ZERO2, Position, scale, NewColor, rotation, dHorz, dVert);
         }
       }
       

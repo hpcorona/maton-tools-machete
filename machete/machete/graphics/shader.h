@@ -100,6 +100,30 @@ namespace machete {
       GLuint shader;
     };
     
+    //! Represents a Vertex to be Uploaded to the Graphics Hardware.
+    struct Vtx {
+      //! Creates a new Vertex.
+      Vtx() : scale(1, 1) { rotation = 0; }
+      
+      //! Vertex position.
+      machete::math::Vec3 vert;
+      
+      //! Offset (the result will be vert + offset).
+      machete::math::Vec2 offset;
+      
+      //! Pivot. The scaling and rotation will ocurr from this pivot point.
+      machete::math::Vec2 pivot;
+      
+      //! Texture U/V for this vertex.
+      machete::math::Vec2 uv;
+      
+      //! Scaling.
+      machete::math::Vec2 scale;
+      
+      //! Rotation in degrees.
+      float rotation;
+    };
+    
     //! A GLSL program. A combination of a Vertex shader and a Fragment shader.
     class Program {
     public:
@@ -111,18 +135,38 @@ namespace machete {
       ~Program();
       
       //! Prepare the program for use.
-      void Use() { glUseProgram(program); };
+      virtual void Use() { glUseProgram(program); };
       
       //! Unbinds the program.
-      void Unuse() { glUseProgram(0); };
+      virtual void Unuse() { glUseProgram(0); };
       
       //! Applies a 2D ortho matrix to the current program.
       /*!
        \param width Width of the viewport.
        \param height Height of the viewport.
        */
-      void ApplyOrtho(int width, int height);
+      virtual void ApplyOrtho(int width, int height);
       
+      //! Upload vertexes to the hardware.
+      virtual void Upload(Vtx *verts, int vcount, unsigned short* elems, int ecount, const machete::math::Vec4 & color) = 0;
+      
+      //! Changes the base transformation.
+      /*!
+       The transformation will be applied after the Projection matrix and before the Model View matrix.
+       
+       \param base The new base transformation. By default this is an identity matrix.
+       */
+      virtual void SetBase(const machete::math::Mat4 & base) = 0;
+      
+      //! Changes the model-view transformation.
+      /*!
+       The transformation will be applied after the base transformation matrix.
+       
+       \sa SetBase
+       \param modelView The new model-view transformation. By default this is an identity matrix.
+       */
+      virtual void SetModelView(const machete::math::Mat4 & modelView) = 0;
+
     protected:
       //! Links a vertex shader and a fragment shader into a program.
       /*!
@@ -216,31 +260,7 @@ namespace machete {
       //! Texture Pool.
       machete::data::Hash<machete::data::Str, struct Tex*> textures;
     };
-    
-    //! Represents a Vertex to be Uploaded to the Graphics Hardware.
-    struct Vtx {
-      //! Creates a new Vertex.
-      Vtx() : scale(1, 1) { rotation = 0; }
-      
-      //! Vertex position.
-      machete::math::Vec3 vert;
-      
-      //! Offset (the result will be vert + offset).
-      machete::math::Vec2 offset;
-      
-      //! Pivot. The scaling and rotation will ocurr from this pivot point.
-      machete::math::Vec2 pivot;
-      
-      //! Texture U/V for this vertex.
-      machete::math::Vec2 uv;
-      
-      //! Scaling.
-      machete::math::Vec2 scale;
-      
-      //! Rotation in degrees.
-      float rotation;
-    };
-    
+        
     //! Vertex Renderer. A simple vertex renderer. Draws each Vtx object as requested.
     class VtxRender : public Program {
     public:
@@ -326,6 +346,9 @@ namespace machete {
     
     //! Global Texture Manager.
     extern TextureMgr* TheTextureMgr;
+    
+    //! Global default vertex shader program.
+    extern VtxRender* TheVertexShader;
     
   }
 }

@@ -188,13 +188,14 @@ namespace machete {
       
       //! Send vertexes and elements to the current batch.
       /*!
+       \param program Program to use to draw.
        \param verts Vertexes to send. This includes pivot, position, color, scale, rotation, etc...
        \param vcount Number of vertexes to send.
        \param elems Elements to send. This includes the relation between the vertexes. We can draw any arbitrary geometry with this, not just quads.
        \param ecount Numer of elements to send.
        \param texId Texture to use.
        */
-      void Draw(Vtx *verts, int vcount, unsigned short* elems, int ecount, const machete::math::Vec4 & tint, GLuint texId);
+      void Draw(Program* program, Vtx *verts, int vcount, unsigned short* elems, int ecount, const machete::math::Vec4 & tint, GLuint texId);
       
       //! Force a flush of the current batch into hardware.
       void Draw();
@@ -221,8 +222,15 @@ namespace machete {
       void SetClearColor(machete::math::Vec4 & color);
       
     private:
+      //! Check and configure a new program.
+      /*!
+       If there's a new program, a Draw() will be issued.
+       \param program The program.
+       */
+      void CheckNewProgram(Program *program);
+      
       //! Vertex Renderer Program.
-      VtxRender renderer;
+      Program *renderer;
       
       //! Render Target.
       RenderTarget target;
@@ -259,6 +267,9 @@ namespace machete {
       
       //! The base matrix to make all look 2D.
       machete::math::Mat4 base;
+      
+      //! Modelview for rotations.
+      machete::math::Mat4 mv;
       
       //! Clear color.
       machete::math::Vec4 color;

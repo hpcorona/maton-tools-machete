@@ -127,6 +127,7 @@ namespace machete {
       idxCount = 0;
       vtxCount = 0;
       lastTexBind = 0;
+      renderer = NULL;
       
 #ifdef TARGET_ANDROID
       if (target == TargetTexture) {
@@ -155,6 +156,10 @@ namespace machete {
     IVec2 DrawContext::GetSize() const { return size; }
     
     void DrawContext::Initialize(int width, int height) {
+      if (TheVertexShader == NULL) {
+          TheVertexShader = new VtxRender();
+      }
+
       size.x = width;
       size.y = height;
       
@@ -181,15 +186,6 @@ namespace machete {
       
       base = Mat4();
       base = base.Translate(-this->size.x / 2, this->size.y / 2, 0);
-      
-      renderer.Use();
-      renderer.SetBase(base);
-      
-      glViewport(0, 0, size.x, size.y);
-      CheckGLError("glViewport");
-
-      renderer.ApplyOrtho(size.x, size.y);
-      renderer.Unuse();
     }
     
     void DrawContext::Use() {
@@ -201,20 +197,24 @@ namespace machete {
       glViewport(0, 0, size.x, size.y);
       CheckGLError("glViewport");
 
-      renderer.Use();
-      renderer.SetBase(base);
-      
       glClearColor(color.x, color.y, color.z, color.w);
       CheckGLError("glClearColor");
     }
     
     void DrawContext::Unuse() {
-      renderer.Unuse();
+      if (renderer != NULL) {
+        renderer->Unuse();
+      }
+      
       glBindFramebuffer(GL_FRAMEBUFFER, 0);
       CheckGLError("glBindFramebuffer");
+      
+      renderer = NULL;
     }
     
     void DrawContext::StartFrame() {
+      renderer = NULL;
+      
       glClear(GL_COLOR_BUFFER_BIT);
       CheckGLError("glClear");
       lastTexBind = 0;
@@ -223,13 +223,23 @@ namespace machete {
     }
     
     void DrawContext::ChangeModelView(const machete::math::Mat4 & mv) {
-      renderer.SetModelView(mv);
+      this->mv = mv;
+      
+      if (renderer != NULL) {
+        renderer->SetModelView(mv);
+      }
     }
     
-    void DrawContext::Draw(Vtx *verts, int vcount, unsigned short* elems, int ecount, const machete::math::Vec4 & tint, GLuint texId) {
+    void DrawContext::Draw(Program *program, Vtx *verts, int vcount, unsigned short* elems, int ecount, const machete::math::Vec4 & tint, GLuint texId) {
+      
+      CheckNewProgram(program);
       
       if (texId != lastTexBind || vtxCount + vcount > MAX_VTX || idxCount + ecount > MAX_IDX || this->tint.x != tint.x || this->tint.y != tint.y || this->tint.z != tint.z || this->tint.w != tint.w) {
         Draw();
+      }
+      
+      if (renderer == NULL) {
+        return;
       }
 
       lastTexBind = texId;
@@ -248,18 +258,20 @@ namespace machete {
     
     void DrawContext::Draw() {
       if (vtxCount == 0) return;
+      
+      if (renderer != NULL) {
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer);
+        CheckGLError("glBindBuffer ELEMENT");
+        glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
+        CheckGLError("glBindBuffer ARRAY");
+      
+        glActiveTexture(GL_TEXTURE0);
+        CheckGLError("glActiveTexture");
+        glBindTexture(GL_TEXTURE_2D, lastTexBind);
+        CheckGLError("glBindTexture");
 
-      glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer);
-      CheckGLError("glBindBuffer ELEMENT");
-      glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
-      CheckGLError("glBindBuffer ARRAY");
-      
-      glActiveTexture(GL_TEXTURE0);
-      CheckGLError("glActiveTexture");
-      glBindTexture(GL_TEXTURE_2D, lastTexBind);
-      CheckGLError("glBindTexture");
-      
-      renderer.Upload(vertexes, vtxCount, indices, idxCount, tint);
+        renderer->Upload(vertexes, vtxCount, indices, idxCount, tint);
+      }
       
       NextBuffers();
     }
@@ -274,6 +286,12 @@ namespace machete {
       CheckGLError("glBindBuffer");
       glBindBuffer(GL_ARRAY_BUFFER, 0);
       CheckGLError("glBindBuffer");
+      
+      if (renderer != NULL) {
+        renderer->Unuse();
+      }
+      
+      renderer = NULL;
     }
     
     void DrawContext::NextBuffers() {
@@ -291,6 +309,27 @@ namespace machete {
     
     void DrawContext::SetClearColor(machete::math::Vec4 &color) {
       this->color = color;
+    }
+    
+    void DrawContext::CheckNewProgram(machete::graphics::Program *program) {
+      if (program == renderer) {
+        return;
+      }
+      
+      if (renderer != NULL) {
+        Draw();
+        renderer->Unuse();
+      }
+      
+      renderer = program;
+      
+      renderer->Use();
+      renderer->SetBase(base);
+      renderer->ApplyOrtho(size.x, size.y);
+      renderer->SetModelView(mv);      
+      
+      glViewport(0, 0, size.x, size.y);
+      CheckGLError("glViewport");
     }
     
   }

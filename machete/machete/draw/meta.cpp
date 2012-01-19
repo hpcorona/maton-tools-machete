@@ -68,7 +68,7 @@ namespace machete {
       
     }
     
-    void MetaSprite::Draw(DrawContext *ctx, const Vec2 & pivot, const Vec2 & pos, const Vec2 & scale, const Vec4 & color, float rotation, bool flipX, bool flipY) {
+    void MetaSprite::Draw(DrawContext *ctx, Program *program, const Vec2 & pivot, const Vec2 & pos, const Vec2 & scale, const Vec4 & color, float rotation, bool flipX, bool flipY) {
       
       Vtx *verts = this->verts;
       if (flipX && flipY) {
@@ -99,7 +99,7 @@ namespace machete {
       verts[2].rotation = rotation;
       verts[3].rotation = rotation;
       
-      ctx->Draw(verts, 4, elems, 6, color, texture);
+      ctx->Draw(program == NULL ? TheVertexShader : program, verts, 4, elems, 6, color, texture);
     }
     
     MetaSprite* MetaSpriteFromDrawContext(DrawContext *ctx) {
@@ -117,6 +117,7 @@ namespace machete {
       visible = true;
       active = true;
       type = 0;
+      program = NULL;
       objId = ++Element::NEXT_ID;
     }
     
@@ -132,6 +133,10 @@ namespace machete {
       }
       
       return global;
+    }
+    
+    void Element::SetShader(Program *program) {
+      this->program = program;
     }
 
   }
