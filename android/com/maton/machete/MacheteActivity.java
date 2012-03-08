@@ -21,7 +21,7 @@ import android.opengl.GLSurfaceView.EGLConfigChooser;
 import android.opengl.GLSurfaceView.EGLContextFactory;
 import android.opengl.GLSurfaceView.Renderer;
 import android.os.Bundle;
-import android.os.Environment;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.Window;
 import android.view.WindowManager;
@@ -80,7 +80,7 @@ public abstract class MacheteActivity extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
+		
 		fullScreen();
 		hideTitle();
 
@@ -95,7 +95,8 @@ public abstract class MacheteActivity extends Activity {
 
 				int[] configSpec = { EGL10.EGL_DEPTH_SIZE, 16, EGL10.EGL_NONE };
 
-				check = egl.eglInitialize(display, new int[] { 2, 0 });
+				check = egl.eglInitialize(display, new int[] { MacheteNative.GL_VERSION, 0 });
+				Log.i("Maton", "Choosing EGL: " + MacheteNative.GL_VERSION);
 
 				if (!check)
 					return null;
@@ -118,8 +119,9 @@ public abstract class MacheteActivity extends Activity {
 
 			public EGLContext createContext(EGL10 egl, EGLDisplay display,
 					EGLConfig eglConfig) {
+				Log.i("Maton", "Creating Context with EGL Version: " + MacheteNative.GL_VERSION);
 				int[] attrib_list = new int[] {
-						0x3098 /* EGL10.EGL_VERSION */, 2, EGL10.EGL_NONE };
+						0x3098 /* EGL10.EGL_VERSION */, MacheteNative.GL_VERSION, EGL10.EGL_NONE };
 
 				EGLContext context = egl.eglCreateContext(display, eglConfig,
 						EGL10.EGL_NO_CONTEXT, attrib_list);
@@ -146,13 +148,10 @@ public abstract class MacheteActivity extends Activity {
 								"Unable to locate assets, aborting...");
 					}
 					apkFilePath = appInfo.sourceDir;
+					
+					File f = getFilesDir();
 
-					String fileExt = Environment.getExternalStorageDirectory()
-							+ "/" + appInfo.processName;
-					File f = new File(fileExt);
-					f.mkdirs();
-
-					engine.initialize(fileExt, apkFilePath, width, height, 1, 1);
+					engine.initialize(f.toString(), apkFilePath, width, height, 1, 1);
 
 					AssetManager mgr = getAssets();
 					String path = "";

@@ -246,6 +246,7 @@ namespace machete {
         verts[14].vert.x = drawSize.x; verts[14].vert.y = -(drawSize.y - bottomRight.y); verts[14].vert.z = 0;
         verts[15].vert.x = drawSize.x; verts[15].vert.y = -drawSize.y; verts[15].vert.z = 0;
         
+#ifndef OPENGL_11
         for (int i = 0; i < 16; i++) {
           verts[i].pivot.x = pivot.x; verts[i].pivot.y = pivot.y;
           
@@ -255,6 +256,7 @@ namespace machete {
           
           verts[i].rotation = rotation;
         }
+#endif
         
         ctx->Draw(program == NULL ? TheVertexShader : program, verts, 16, elems, 54, color, texture);
       } else if (flipX && !flipY) {
@@ -264,6 +266,7 @@ namespace machete {
         vertsH[6].vert.x = drawSize.x; vertsH[6].vert.y = 0; vertsH[6].vert.z = 0;
         vertsH[7].vert.x = drawSize.x; vertsH[7].vert.y = -topLeft.y; vertsH[7].vert.z = 0;
         
+#ifndef OPENGL_11
         for (int i = 0; i < 8; i++) {
           vertsH[i].pivot.x = pivot.x; vertsH[i].pivot.y = pivot.y;
           
@@ -273,6 +276,7 @@ namespace machete {
           
           vertsH[i].rotation = rotation;
         }
+#endif
         
         ctx->Draw(program == NULL ? TheVertexShader : program, vertsH, 8, elemsH, 18, color, texture);
       } else if (flipY && !flipX) {
@@ -282,6 +286,7 @@ namespace machete {
         vertsV[6].vert.x = topLeft.x; vertsV[6].vert.y = -(drawSize.y - bottomRight.y); vertsV[6].vert.z = 0;
         vertsV[7].vert.x = topLeft.x; vertsV[7].vert.y = -drawSize.y; vertsV[7].vert.z = 0;
         
+#ifndef OPENGL_11
         for (int i = 0; i < 8; i++) {
           vertsV[i].pivot.x = pivot.x; vertsV[i].pivot.y = pivot.y;
           
@@ -291,6 +296,7 @@ namespace machete {
           
           vertsV[i].rotation = rotation;
         }
+#endif
         
         ctx->Draw(program == NULL ? TheVertexShader : program, vertsV, 8, elemsV, 18, color, texture);
       }

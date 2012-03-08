@@ -79,6 +79,7 @@ namespace machete {
         verts = vertsV;
       }
 
+#ifndef OPENGL_11
       verts[0].pivot.x = pivot.x; verts[0].pivot.y = pivot.y;
       verts[1].pivot.x = pivot.x; verts[1].pivot.y = pivot.y;
       verts[2].pivot.x = pivot.x; verts[2].pivot.y = pivot.y;
@@ -98,6 +99,7 @@ namespace machete {
       verts[1].rotation = rotation;
       verts[2].rotation = rotation;
       verts[3].rotation = rotation;
+#endif
       
       ctx->Draw(program == NULL ? TheVertexShader : program, verts, 4, elems, 6, color, texture);
     }

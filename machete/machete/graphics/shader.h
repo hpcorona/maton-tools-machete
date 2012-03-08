@@ -14,8 +14,14 @@
 #define STRINGIFY(A) #A
 
 #ifdef TARGET_ANDROID
+#ifdef OPENGL_11
+#define GL_GLEXT_PROTOTYPES
+#include <GLES/gl.h>
+#include <GLES/glext.h>
+#else
 #include <GLES2/gl2.h>
 #include <GLES2/gl2ext.h>
+#endif
 #elif TARGET_IOS
 #include <OpenGLES/ES2/gl.h>
 #include <OpenGLES/ES2/glext.h>
@@ -103,25 +109,34 @@ namespace machete {
     //! Represents a Vertex to be Uploaded to the Graphics Hardware.
     struct Vtx {
       //! Creates a new Vertex.
+#ifndef OPENGL_11
       Vtx() : scale(1, 1) { rotation = 0; }
+#else
+      Vtx() {}
+#endif
       
       //! Vertex position.
       machete::math::Vec3 vert;
       
-      //! Offset (the result will be vert + offset).
-      machete::math::Vec2 offset;
-      
-      //! Pivot. The scaling and rotation will ocurr from this pivot point.
-      machete::math::Vec2 pivot;
-      
       //! Texture U/V for this vertex.
       machete::math::Vec2 uv;
+
+#ifdef OPENGL_11
+      //! Color.
+      machete::math::Vec4 color;
+#else
+      //! Offset (the result will be vert + offset). The offset is applied after the saling/rotation.
+      machete::math::Vec2 offset;
+      
+      //! Pivot. The scaling and rotation will ocour from this pivot point.
+      machete::math::Vec2 pivot;
       
       //! Scaling.
       machete::math::Vec2 scale;
       
       //! Rotation in degrees.
       float rotation;
+#endif
     };
     
     //! A GLSL program. A combination of a Vertex shader and a Fragment shader.
@@ -135,10 +150,10 @@ namespace machete {
       ~Program();
       
       //! Prepare the program for use.
-      virtual void Use() { glUseProgram(program); };
+      virtual void Use();
       
       //! Unbinds the program.
-      virtual void Unuse() { glUseProgram(0); };
+      virtual void Unuse();
       
       //! Applies a 2D ortho matrix to the current program.
       /*!
@@ -292,7 +307,7 @@ namespace machete {
        
        \param base The new base transformation. By default this is an identity matrix.
        */
-      void SetBase(const machete::math::Mat4 & base) { this->base = base; glUniformMatrix4fv(baseSlot, 1, 0, base.Pointer()); }
+      void SetBase(const machete::math::Mat4 & base);
       
       //! Changes the model-view transformation.
       /*!
@@ -301,7 +316,7 @@ namespace machete {
        \sa SetBase
        \param modelView The new model-view transformation. By default this is an identity matrix.
        */
-      void SetModelView(const machete::math::Mat4 & modelView) { this->modelView = modelView; glUniformMatrix4fv(modelviewSlot, 1, 0, modelView.Pointer()); }
+      void SetModelView(const machete::math::Mat4 & modelView);
       
     protected:
       //! Pivot Slot.

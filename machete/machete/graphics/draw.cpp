@@ -132,14 +132,24 @@ namespace machete {
 #ifdef TARGET_ANDROID
       if (target == TargetTexture) {
 #endif
+#ifndef OPENGL_11
         glGenFramebuffers(1, &framebuffer);
-        CheckGLError("glGenFramebuffers");        
+        CheckGLError("glGenFramebuffers");
+#else
+        glGenFramebuffersOES(1, &framebuffer);
+        CheckGLError("glGenFramebuffersOES");
+#endif
 #ifdef TARGET_ANDROID
       }
 #endif
       
+#ifndef OPENGL_11
       glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
       CheckGLError("glBindFramebuffer");
+#else
+      glBindFramebufferOES(GL_FRAMEBUFFER, framebuffer);
+      CheckGLError("glBindFramebuffer");
+#endif
 
       if (target == TargetScreen) {
 #ifdef TARGET_IOS
@@ -167,9 +177,14 @@ namespace machete {
         struct Tex *tex = TheTextureMgr->CreateTexture(width, height);
         
         texture = tex->id;
-        
+
+#ifndef OPENGL_11
         glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, tex->id, 0);
+        CheckGLError("glFramebufferTexture2DOES");
+#else
+        glFramebufferTexture2DOES(GL_FRAMEBUFFER_OES, GL_COLOR_ATTACHMENT0_OES, GL_TEXTURE_2D_OES, tex->id, 0);
         CheckGLError("glFramebufferTexture2D");
+#endif
 #ifdef TARGET_IOS
       } else {
         glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, renderbuffer);
@@ -177,9 +192,15 @@ namespace machete {
 #endif
       }
       
+#ifndef OPENGL_11
       GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
       CheckGLError("glCheckFramebufferStatus");
       if (status != GL_FRAMEBUFFER_COMPLETE) {
+#else
+      GLenum status = glCheckFramebufferStatusOES(GL_FRAMEBUFFER_OES);
+      CheckGLError("glCheckFramebufferStatus");
+      if (status != GL_FRAMEBUFFER_COMPLETE_OES) {
+#endif
         machete::common::Log("Frame buffer is not ready");
         return;
       }
@@ -191,11 +212,25 @@ namespace machete {
     void DrawContext::Use() {
       lastTexBind = 0;
       
+#ifndef OPENGL_11
       glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
       CheckGLError("glBindFramebuffer");
+#else
+      glBindFramebufferOES(GL_FRAMEBUFFER_OES, framebuffer);
+      CheckGLError("glBindFramebuffer");
+#endif
 
       glViewport(0, 0, size.x, size.y);
       CheckGLError("glViewport");
+
+#ifdef OPENGL_11
+      glMatrixMode(GL_MODELVIEW);
+      CheckGLError("glMatrixMode GL_MODELVIEW");
+      glLoadIdentity();
+      CheckGLError("glLoadIdentity");
+      glTranslatef(0, size.y, 0);
+      CheckGLError("glTranslatef");
+#endif
 
       glClearColor(color.x, color.y, color.z, color.w);
       CheckGLError("glClearColor");
@@ -206,8 +241,13 @@ namespace machete {
         renderer->Unuse();
       }
       
+#ifndef OPENGL_11
       glBindFramebuffer(GL_FRAMEBUFFER, 0);
       CheckGLError("glBindFramebuffer");
+#else
+      glBindFramebufferOES(GL_FRAMEBUFFER_OES, 0);
+      CheckGLError("glBindFramebuffer");
+#endif
       
       renderer = NULL;
     }
@@ -234,9 +274,16 @@ namespace machete {
       
       CheckNewProgram(program);
       
-      if (texId != lastTexBind || vtxCount + vcount > MAX_VTX || idxCount + ecount > MAX_IDX || this->tint.x != tint.x || this->tint.y != tint.y || this->tint.z != tint.z || this->tint.w != tint.w) {
+#ifdef OPENGL_11
+      if (texId != lastTexBind || vtxCount + vcount > MAX_VTX || idxCount + ecount > MAX_IDX) {
         Draw();
       }
+#else
+      if (texId != lastTexBind || vtxCount + vcount > MAX_VTX || idxCount + ecount > MAX_IDX ||
+          this->tint.x != tint.x || this->tint.y != tint.y || this->tint.z != tint.z || this->tint.w != tint.w) {
+        Draw();
+      }
+#endif
       
       if (renderer == NULL) {
         return;

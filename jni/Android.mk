@@ -38,6 +38,7 @@ LOCAL_SRC_FILES := \
 	android/com_maton_machete_MacheteNative.cpp \
 	android/utils.cpp \
 	android/AndroidPlatform.cpp
+#LOCAL_LDLIBS := -ldl -llog -lz -lGLESv1_CM
 LOCAL_LDLIBS := -lGLESv2 -ldl -llog -lz
 include $(BUILD_STATIC_LIBRARY)
 
