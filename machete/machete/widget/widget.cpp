@@ -445,6 +445,8 @@ namespace machete {
     
     bool Widget::TouchEvent(machete::input::Touch *touch) {
       if (touch->owner != this) {
+        if (!active || !visible) return false;
+        
         if (Container::TouchEvent(touch) == true) {
           return true;
         }
@@ -464,7 +466,7 @@ namespace machete {
     }
     
     bool Widget::TouchAcceptTap() {
-      return allowTap;
+      return active && visible && allowTap;
     }
     
     bool Widget::TouchTapIntent() {
@@ -488,11 +490,11 @@ namespace machete {
     }
     
     bool Widget::TouchAcceptDragX() {
-      return allowDragX;
+      return active && visible && allowDragX;
     }
     
     bool Widget::TouchAcceptDragY() {
-      return allowDragY;
+      return active && visible && allowDragY;
     }
     
     void Widget::TouchStartDrag(Vec2 &position) {
@@ -1041,6 +1043,8 @@ namespace machete {
     }
     
     bool Scroll::TouchEvent(machete::input::Touch *touch) {
+      if (!active || !visible) return false;
+      
       Rect2D bounds = GetGlobalBounds();
       bool contained = bounds.Contains(touch->current);
       
