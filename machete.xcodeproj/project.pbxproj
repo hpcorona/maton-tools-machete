@@ -329,8 +329,8 @@
 			children = (
 				A876348913C104CA006B1333 /* widget.cpp */,
 				A876348B13C104D6006B1333 /* widget.h */,
-				A82BF6F6148F1684005DB0D3 /* extended.h */,
 				A82BF6F9148F1E8F005DB0D3 /* extended.cpp */,
+				A82BF6F6148F1684005DB0D3 /* extended.h */,
 			);
 			name = widget;
 			path = machete/machete/widget;
