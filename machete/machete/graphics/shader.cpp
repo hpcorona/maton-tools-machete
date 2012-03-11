@@ -438,14 +438,14 @@ namespace machete {
     void VtxRender::SetBase(const machete::math::Mat4 & base) {
       this->base = base;
 #ifndef OPENGL_11
-      glUniformMatrix4fv(baseSlot, 1, 0, base.Pointer());
+      glUniformMatrix4fv(baseSlot, 1, 0, this->base.Pointer());
 #endif
     }
 
     void VtxRender::SetModelView(const machete::math::Mat4 & modelView) {
       this->modelView = modelView;
 #ifndef OPENGL_11
-      glUniformMatrix4fv(modelviewSlot, 1, 0, modelView.Pointer());
+      glUniformMatrix4fv(modelviewSlot, 1, 0, this->modelView.Pointer());
 #endif
     }
 

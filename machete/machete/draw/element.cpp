@@ -86,7 +86,6 @@ namespace machete {
       
       // TODO: Aplicar Posicion, Rotación, Escala
       bounds += position;
-      bounds *= scale;
     }
     
     void Container::Update(float time) {
@@ -106,19 +105,23 @@ namespace machete {
       
       Mat4 mat = matrix;
       bool changed = false;
-      
+
+      Vec2 Position = position + pos;
+
       if (scale.x != 1 || scale.y != 1 || rotation != 0) {
-        
         ctx->Draw();
         
-        ctx->ChangeModelView(Mat4().Translate(position.x + pos.x, position.y + pos.y, 0).Scale(scale.x, scale.y, 0).Rotate(rotation).Pointer());
+        mat = Mat4::Rotate(rotation) * Mat4::Scale(scale.x, scale.y, 1) * Mat4::Translate(position.x + pos.x, -position.y - pos.y, 0);
+        ctx->ChangeModelView(mat.Pointer());
         changed = true;
+        
+        Position.x = 0;
+        Position.y = 0;
       }
       
       childs.Reset();
       
       Vec4 NewColor = this->color * color;
-      Vec2 Position = position + pos;
       
       while (childs.Next()) {
         Element *current = childs.GetCurrent()->GetValue();
@@ -220,7 +223,6 @@ namespace machete {
       
       bounds.size = element->GetSize();
       bounds.pos += position + pivot;
-      bounds *= scale;
     }
     
     void Drawing::Update(float time) {
@@ -269,7 +271,6 @@ namespace machete {
       }
       
       bounds += position;
-      bounds *= scale;
     }
     
     void Animation::Update(float time) {
@@ -417,7 +418,6 @@ namespace machete {
       }
       
       bounds += position;
-      bounds *= scale;
     }
     
     void Actor::Update(float time) {
@@ -435,10 +435,30 @@ namespace machete {
     
     void Actor::Draw(const Mat4 & matrix, Vec2 & pos, Vec4 & color, DrawContext *ctx) {
       if (current != NULL) {
+        Mat4 mat = matrix;
+        bool changed = false;
+        
         Vec2 Position = position + pos;
+        
+        if (scale.x != 1 || scale.y != 1 || rotation != 0) {
+          ctx->Draw();
+          
+          mat = Mat4::Rotate(rotation) * Mat4::Scale(scale.x, scale.y, 1) * Mat4::Translate(position.x + pos.x, -position.y - pos.y, 0);
+          ctx->ChangeModelView(mat.Pointer());
+          changed = true;
+          
+          Position.x = 0;
+          Position.y = 0;
+        }
+        
         Vec4 Color = this->color * color;
         
-        current->Draw(matrix, Position, Color, ctx);
+        current->Draw(mat, Position, Color, ctx);
+        
+        if (changed) {
+          ctx->Draw();
+          ctx->ChangeModelView(matrix);
+        }
       }
     }
     
