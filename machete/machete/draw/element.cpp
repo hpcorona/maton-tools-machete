@@ -352,9 +352,15 @@ namespace machete {
     }
     
     void Actor::SetFallback(const char* name) {
+      if (name == NULL) {
+        fallback = NULL;
+        return;
+      }
+      
       Tree<Str, Animation*> *node = actions.Seek(name);
       if (node == NULL) {
         fallback = NULL;
+        return;
       }
       
       fallback = node->GetValue();
