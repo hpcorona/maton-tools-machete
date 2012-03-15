@@ -150,6 +150,9 @@ namespace machete {
       //! Create a new Element. This is abstract, you need to use other specialiced classes.
       Element();
       
+      //! Destructor.
+      virtual ~Element();
+      
       //! Set the current position of the element.
       /*!
        \param pos The new position.

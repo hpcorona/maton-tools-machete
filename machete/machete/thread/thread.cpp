@@ -14,6 +14,8 @@
 namespace machete {
   namespace thread {
     
+    HeavyWork::~HeavyWork() {}
+    
     Resource::Resource() {
       pthread_cond_init(&condition, NULL);
       pthread_mutex_init(&mutex, NULL);

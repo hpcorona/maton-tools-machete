@@ -52,6 +52,9 @@ namespace machete {
    */
   class IGame {
   public:
+    
+    virtual ~IGame() {}
+    
     //! This is the first call to your game.
     /*!
 		 Machete will send you the draw context so you can render images

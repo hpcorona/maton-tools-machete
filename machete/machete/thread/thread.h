@@ -25,6 +25,9 @@ namespace machete {
     class HeavyWork {
     public:
       
+      //! Destructor.
+      virtual ~HeavyWork();
+      
       //! Multithread work.
       virtual void Run() = 0;
       

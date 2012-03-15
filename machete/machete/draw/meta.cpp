@@ -123,6 +123,8 @@ namespace machete {
       objId = ++Element::NEXT_ID;
     }
     
+    Element::~Element() {}
+    
     Rect2D Element::GetGlobalBounds() {
       Rect2D global = GetBounds();
       
