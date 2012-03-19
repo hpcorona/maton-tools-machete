@@ -340,7 +340,7 @@ namespace machete {
     }
     
     TweenManager::TweenManager() {
-      
+      callback.instance = NULL;
     }
     
     TweenManager::~TweenManager() {
@@ -352,10 +352,24 @@ namespace machete {
     }
     
     void TweenManager::Update(float time) {
+      if (tweens.Count() == 0) {
+        if (!dispatched) {
+          dispatched = true;
+          
+          if (callback.instance != NULL) {
+            machete::common::InvokeCallback(&callback);
+            
+            callback.instance = NULL;
+          }
+        }
+        return;
+      }
+      
       tweens.Reset();
       while (tweens.Next()) {
         Tween* tween = tweens.GetCurrent()->GetValue();
         tween->Update(time);
+        dispatched = false;
       }
       
       tweens.Reset();
@@ -373,6 +387,11 @@ namespace machete {
     
     bool TweenManager::IsAnimating() const {
       return tweens.Count() > 0;
+    }
+    
+    void TweenManager::WorkAfterAnimation(machete::common::Callback *instance, machete::common::CallbackFunc method, void *data) {
+      machete::common::MakeCallback(callback, instance, method, data);
+      dispatched = false;
     }
     
   }

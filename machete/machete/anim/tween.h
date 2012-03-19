@@ -11,6 +11,7 @@
 #include "func.h"
 #include "../draw/meta.h"
 #include "../data/lists.h"
+#include "../common/callback.h"
 
 namespace machete {
   namespace anim {
@@ -148,9 +149,15 @@ namespace machete {
       
       bool IsAnimating() const;
       
+      void WorkAfterAnimation(machete::common::Callback *instance, machete::common::CallbackFunc method, void *data);
+      
     protected:
       
       machete::data::Iterator<Tween*> tweens;
+      
+      bool dispatched;
+      
+      struct machete::common::CallbackData callback;
       
     };
     
