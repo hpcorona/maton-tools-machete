@@ -23,11 +23,20 @@ CAEAGLLayer *eaglLayer = NULL;
     eaglLayer = (CAEAGLLayer*)super.layer;
     eaglLayer.opaque = YES;
     
+    int width = CGRectGetWidth(frame);
+    int height = CGRectGetHeight(frame);
+    int devor = [[UIDevice currentDevice] orientation];
+    if (UIDeviceOrientationIsLandscape(devor)) {
+      int t = width;
+      width = height;
+      height = t;
+    }
+    
     // Apply the Screen scale to the current UIView
     // If it's on retina then it will use the full resolution
     self.contentScaleFactor = [[UIScreen mainScreen] scale];
 
-    renEngine = CreateDrawContext(machete::graphics::TargetScreen, CGRectGetWidth(frame), CGRectGetHeight(frame));
+    renEngine = CreateDrawContext(machete::graphics::TargetScreen, width, height);
     
     // Detect the REAL resolution
     IVec2 size = renEngine->GetSize();
@@ -108,15 +117,21 @@ CAEAGLLayer *eaglLayer = NULL;
   for (UITouch *touch in touches) {
     Touch *t = TheTouchInput->GetTouch(count++);
     
-    CGPoint pos = [touch locationInView:self];
-    CGPoint prev = [touch previousLocationInView:self];
+    CGPoint cg_pos = [touch locationInView:self];
+    CGPoint cg_prev = [touch previousLocationInView:self];
+    
+    Vec2 pos(cg_pos.x, cg_pos.y);
+    Vec2 prev(cg_prev.x, cg_prev.y);
       
     // Scale the touch's position
     pos.x *= scale;
     pos.y *= scale;
     prev.x *= scale;
     prev.y *= scale;
-      
+    
+    machete::draw::TheAshaManager->AdaptPosition(pos);
+    machete::draw::TheAshaManager->AdaptPosition(prev);
+    
     if (state == TouchStart) {
       t->start.x = pos.x;
       t->start.y = pos.y;

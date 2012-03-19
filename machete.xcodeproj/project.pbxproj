@@ -67,6 +67,7 @@
 		A874067013B5030200F8B807 /* touch.h in Headers */ = {isa = PBXBuildFile; fileRef = A874066E13B5030200F8B807 /* touch.h */; };
 		A876348A13C104CA006B1333 /* widget.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A876348913C104CA006B1333 /* widget.cpp */; };
 		A876348C13C104D6006B1333 /* widget.h in Headers */ = {isa = PBXBuildFile; fileRef = A876348B13C104D6006B1333 /* widget.h */; };
+		A884A9DB1516894D00B6AB1E /* asha.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A884A9DA1516894D00B6AB1E /* asha.cpp */; };
 		A8885811135CB02F00F7732C /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A8885810135CB02F00F7732C /* Foundation.framework */; };
 		A8885841135CB1FC00F7732C /* engine.h in Headers */ = {isa = PBXBuildFile; fileRef = A8885829135CB1FC00F7732C /* engine.h */; };
 		A8885846135CB1FC00F7732C /* matrix.h in Headers */ = {isa = PBXBuildFile; fileRef = A888582F135CB1FC00F7732C /* matrix.h */; };
@@ -156,6 +157,8 @@
 		A874066E13B5030200F8B807 /* touch.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = touch.h; sourceTree = "<group>"; };
 		A876348913C104CA006B1333 /* widget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = widget.cpp; sourceTree = "<group>"; };
 		A876348B13C104D6006B1333 /* widget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = widget.h; sourceTree = "<group>"; };
+		A884A9D81516894200B6AB1E /* asha.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = asha.h; sourceTree = "<group>"; };
+		A884A9DA1516894D00B6AB1E /* asha.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = asha.cpp; sourceTree = "<group>"; };
 		A888580D135CB02F00F7732C /* libmachete.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libmachete.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		A8885810135CB02F00F7732C /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		A8885814135CB02F00F7732C /* machete-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "machete-Prefix.pch"; sourceTree = "<group>"; };
@@ -282,6 +285,8 @@
 				A81A334013AF1C49001C2871 /* font.h */,
 				A81A334313AF1C6D001C2871 /* meta.cpp */,
 				A81A334413AF1C6D001C2871 /* meta.h */,
+				A884A9DA1516894D00B6AB1E /* asha.cpp */,
+				A884A9D81516894200B6AB1E /* asha.h */,
 			);
 			name = draw;
 			path = machete/machete/draw;
@@ -562,6 +567,9 @@
 /* Begin PBXProject section */
 		A8885804135CB02F00F7732C /* Project object */ = {
 			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0430;
+			};
 			buildConfigurationList = A8885807135CB02F00F7732C /* Build configuration list for PBXProject "machete" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
@@ -616,6 +624,7 @@
 				A807D19C149BFD3C00848DE7 /* window.c in Sources */,
 				A8BEE3EB14A277A0005E7701 /* MacheteGLView.mm in Sources */,
 				A8BEE3EF14A277F1005E7701 /* iOSPlatform.mm in Sources */,
+				A884A9DB1516894D00B6AB1E /* asha.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

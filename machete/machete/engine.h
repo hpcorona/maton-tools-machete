@@ -29,6 +29,7 @@
 #include "storage/sql.h"
 #include "widget/extended.h"
 #include "anim/func.h"
+#include "draw/asha.h"
 
 //! The main namespace. All the escential definitions of the engine are here.
 namespace machete {
@@ -120,6 +121,7 @@ namespace machete {
 
   //! Start the Engine. This is called automatically by each platform's glue code.
   static void Start(IPlatform *platf) {
+    draw::TheAshaManager = new draw::AshaManager();
     thread::TheThreadMgr = new thread::ThreadManager();
     
     platform::ThePlatform = platf;
