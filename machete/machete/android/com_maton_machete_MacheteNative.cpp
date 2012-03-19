@@ -137,9 +137,11 @@ void JNICALL Java_com_maton_machete_MacheteNative_touch(JNIEnv *vm, jobject, jin
 
     t->current.x = x;
     t->current.y = y;
+    machete::draw::TheAshaManager->AdaptPosition(t->current);
   } else {
     t->current.x = x;
     t->current.y = y;
+    machete::draw::TheAshaManager->AdaptPosition(t->current);
 
     t->previous = t->current;
     t->start = t->current;

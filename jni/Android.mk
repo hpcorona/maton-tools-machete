@@ -33,12 +33,14 @@ LOCAL_SRC_FILES := \
 	draw/element.cpp \
 	draw/font.cpp \
 	draw/meta.cpp \
+	draw/asha.cpp \
 	data/mbd.cpp \
+	common/callback.cpp \
 	anim/func.cpp \
+	anim/tween.cpp \
 	android/com_maton_machete_MacheteNative.cpp \
 	android/utils.cpp \
 	android/AndroidPlatform.cpp
-#LOCAL_LDLIBS := -ldl -llog -lz -lGLESv1_CM
 LOCAL_LDLIBS := -lGLESv2 -ldl -llog -lz
 include $(BUILD_STATIC_LIBRARY)
 
