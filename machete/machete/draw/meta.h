@@ -185,6 +185,9 @@ namespace machete {
        */
       void SetRotation(float rotation) { this->rotation = rotation; }
       
+      //! Get the rotation of the element.
+      float GetRotation() const { return rotation; }
+      
       //! Set the scaling of the element. The scale is made around the pivot.
       /*!
        \param x Scale about the x axis.

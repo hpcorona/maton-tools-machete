@@ -30,6 +30,7 @@
 #include "widget/extended.h"
 #include "anim/func.h"
 #include "draw/asha.h"
+#include "anim/tween.h"
 
 //! The main namespace. All the escential definitions of the engine are here.
 namespace machete {

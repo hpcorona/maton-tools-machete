@@ -382,18 +382,23 @@ namespace machete {
       Mat4 mat = matrix;
       bool changed = false;
       
+      Vec2 Position = position + pos;
+      
       if (scale.x != 1 || scale.y != 1 || rotation != 0) {
         
         ctx->Draw();
         
-        ctx->ChangeModelView(Mat4().Translate(position.x + pos.x, position.y + pos.y, 0).Scale(scale.x, scale.y, 0).Rotate(rotation).Pointer());
+        mat = Mat4::Rotate(rotation) * Mat4::Scale(scale.x, scale.y, 1) * Mat4::Translate(position.x + pos.x, -position.y - pos.y, 0);
+        ctx->ChangeModelView(mat.Pointer());
         changed = true;
+        
+        Position.x = 0;
+        Position.y = 0;
       }
       
       childs.Reset();
       
       Vec4 NewColor = this->color * color;
-      Vec2 Position = position + pos;
       
       if (state != NULL) {
         state->SetDrawSize(size);
@@ -750,17 +755,22 @@ namespace machete {
       Mat4 mat = matrix;
       bool changed = false;
       
+      Vec2 Position = position + pos;
+      
       if (scale.x != 1 || scale.y != 1 || rotation != 0) {
         ctx->Draw();
         
-        ctx->ChangeModelView(Mat4().Translate(position.x + pos.x, position.y + pos.y, 0).Scale(scale.x, scale.y, 0).Rotate(rotation).Pointer());
+        mat = Mat4::Rotate(rotation) * Mat4::Scale(scale.x, scale.y, 1) * Mat4::Translate(position.x + pos.x, -position.y - pos.y, 0);
+        ctx->ChangeModelView(mat.Pointer());
         changed = true;
+        
+        Position.x = 0;
+        Position.y = 0;
       }
       
       childs.Reset();
       
       Vec4 NewColor = this->color * color;
-      Vec2 Position = position + pos;
       
       while (childs.Next()) {
         if (changed) {

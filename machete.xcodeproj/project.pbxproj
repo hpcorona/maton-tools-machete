@@ -68,6 +68,7 @@
 		A876348A13C104CA006B1333 /* widget.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A876348913C104CA006B1333 /* widget.cpp */; };
 		A876348C13C104D6006B1333 /* widget.h in Headers */ = {isa = PBXBuildFile; fileRef = A876348B13C104D6006B1333 /* widget.h */; };
 		A884A9DB1516894D00B6AB1E /* asha.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A884A9DA1516894D00B6AB1E /* asha.cpp */; };
+		A884A9E11516DFA200B6AB1E /* tween.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A884A9E01516DFA200B6AB1E /* tween.cpp */; };
 		A8885811135CB02F00F7732C /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A8885810135CB02F00F7732C /* Foundation.framework */; };
 		A8885841135CB1FC00F7732C /* engine.h in Headers */ = {isa = PBXBuildFile; fileRef = A8885829135CB1FC00F7732C /* engine.h */; };
 		A8885846135CB1FC00F7732C /* matrix.h in Headers */ = {isa = PBXBuildFile; fileRef = A888582F135CB1FC00F7732C /* matrix.h */; };
@@ -159,6 +160,8 @@
 		A876348B13C104D6006B1333 /* widget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = widget.h; sourceTree = "<group>"; };
 		A884A9D81516894200B6AB1E /* asha.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = asha.h; sourceTree = "<group>"; };
 		A884A9DA1516894D00B6AB1E /* asha.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = asha.cpp; sourceTree = "<group>"; };
+		A884A9DF1516DF8500B6AB1E /* tween.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = tween.h; sourceTree = "<group>"; };
+		A884A9E01516DFA200B6AB1E /* tween.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = tween.cpp; sourceTree = "<group>"; };
 		A888580D135CB02F00F7732C /* libmachete.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libmachete.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		A8885810135CB02F00F7732C /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		A8885814135CB02F00F7732C /* machete-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "machete-Prefix.pch"; sourceTree = "<group>"; };
@@ -297,6 +300,8 @@
 			children = (
 				A829396E13DE747F005D0D64 /* func.h */,
 				A829397013DE7D18005D0D64 /* func.cpp */,
+				A884A9DF1516DF8500B6AB1E /* tween.h */,
+				A884A9E01516DFA200B6AB1E /* tween.cpp */,
 			);
 			name = anim;
 			path = machete/machete/anim;
@@ -625,6 +630,7 @@
 				A8BEE3EB14A277A0005E7701 /* MacheteGLView.mm in Sources */,
 				A8BEE3EF14A277F1005E7701 /* iOSPlatform.mm in Sources */,
 				A884A9DB1516894D00B6AB1E /* asha.cpp in Sources */,
+				A884A9E11516DFA200B6AB1E /* tween.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
