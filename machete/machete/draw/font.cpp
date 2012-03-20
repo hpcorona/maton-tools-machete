@@ -85,6 +85,10 @@ namespace machete {
       return textSize;
     }
     
+    bool Text::TouchEvent(machete::input::Touch *touch) {
+      return false;
+    }
+    
     Font::Font(const char *name, struct Tex * t) {
       texture = t;
       

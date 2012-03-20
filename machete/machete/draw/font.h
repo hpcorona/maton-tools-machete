@@ -135,6 +135,14 @@ namespace machete {
       //! Get the total text size.
       Vec2 & GetTextSize();
       
+      //! Send a touch event to this element.
+      /*!
+       \param touch The touch event.
+       \return True if the event was processed.
+       */
+      bool TouchEvent(machete::input::Touch *touch);
+
+      
     protected:
       
       //! Characters to display.
