@@ -243,6 +243,10 @@ namespace machete {
       while (screens.Next()) {
         ScreenDefinition* scrdf = screens.GetCurrent()->GetValue();
         
+        if (!useBigger) {
+          if (scrdf->GetWidth() > width || scrdf->GetHeight() > height) continue;
+        }
+        
         float a = scrdf->GetScaledArea(width, height);
         
         float da = cabs(area - a);

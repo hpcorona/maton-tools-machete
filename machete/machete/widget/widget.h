@@ -237,7 +237,7 @@ namespace machete {
       /*!
        \return The size of the widget.
        */
-      inline Vec2 & GetSize();
+      Vec2 & GetSize();
       
       //! The touch was cancelled.
       virtual void TouchCancelled();
