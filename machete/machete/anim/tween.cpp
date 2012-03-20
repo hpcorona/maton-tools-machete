@@ -15,6 +15,7 @@ namespace machete {
       func = &TweenLinear;
       offset = 0;
       animation = 1.0f;
+      factor = 1.0f;
     }
     
     void Tween::SetTweenFunction(TweenFunc func) {
@@ -234,6 +235,8 @@ namespace machete {
           targetValues[MODIFIER_SLOT_SCALE_Y] = targetModifiers[MODIFIER_SLOT_SCALE_Y];
         }
       }
+      
+      elem->Enable();
     }
     
     void Modifier::AffectValues(float interp) {
@@ -293,7 +296,6 @@ namespace machete {
     
     SingleTween::SingleTween(machete::draw::Element* element, TweenFunc func) : Tween(), Modifier() {
       this->element = element;
-      offset = 0;
       time = 0;
       finished = false;
       started = false;
@@ -341,6 +343,7 @@ namespace machete {
     
     TweenManager::TweenManager() {
       callback.instance = NULL;
+      dispatched = false;
     }
     
     TweenManager::~TweenManager() {

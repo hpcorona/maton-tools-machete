@@ -26,7 +26,8 @@ namespace machete {
       TargetColorB = 32,    //!< Animate Blue Color
       TargetColorA = 64,    //!< Animate Alpha Color
       TargetScaleX = 128,   //!< Animate X Scale
-      TargetScaleY = 256    //!< Animate Y Scale
+      TargetScaleY = 256,    //!< Animate Y Scale
+      TargetAll = 511        //!< Target All
     };
     
 #define MODIFIER_SLOT_POS_X 0
