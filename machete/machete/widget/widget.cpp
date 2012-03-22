@@ -1170,12 +1170,21 @@ namespace machete {
       centered = true;
       centering = false;
       
-      CalculateElastic(1000);
+      CalculateElastic(0);
       Vec2 strength(-elastic.x, -elastic.y);
       ElasticMovement(strength);
-      CalculateElastic(1000);
-      Vec2 strength2(-elastic.x, -elastic.y);
-      ElasticMovement(strength2);
+      
+      CalculateElastic(0);
+      strength.x = -elastic.x; strength.y = -elastic.y;
+      ElasticMovement(strength);
+      
+      if (hScroll != NULL && autoHScroll) {
+        hScroll->color.w = 0;
+      }
+      
+      if (vScroll != NULL && autoVScroll) {
+        vScroll->color.w = 0;
+      }
     }
     
     void Scroll::ClearScroll() {
