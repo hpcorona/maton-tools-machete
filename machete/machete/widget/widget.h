@@ -543,6 +543,13 @@ namespace machete {
        */
       void CenterView(const Vec2 & cp);
       
+      //! Do a hard scroll to the desired point.
+      /*!
+       \brief Elasticity will be applied 1 time.
+       \param cp The target point to center.
+       */
+      void HardScroll(const Vec2 & cp);
+      
       //! Seek gluepoint.
       /*!
        \param dir Seek for a glue point in the desired direction.

@@ -1160,6 +1160,24 @@ namespace machete {
       }
     }
     
+    void Scroll::HardScroll(const Vec2 &cp) {
+      container->position.x = -cp.x + size.x * 0.5f;
+      container->position.y = -cp.y + size.y * 0.5f;
+      
+      center.x = -container->position.x + size.x * 0.5f;
+      center.y = -container->position.y + size.y * 0.5f;
+      
+      centered = true;
+      centering = false;
+      
+      CalculateElastic(1000);
+      Vec2 strength(-elastic.x, -elastic.y);
+      ElasticMovement(strength);
+      CalculateElastic(1000);
+      Vec2 strength2(-elastic.x, -elastic.y);
+      ElasticMovement(strength2);
+    }
+    
     void Scroll::ClearScroll() {
       container->SetPosition(0, 0);
       center = size / 2;
