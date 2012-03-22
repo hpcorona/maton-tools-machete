@@ -135,15 +135,42 @@ CAEAGLLayer *eaglLayer = NULL;
     if (state == TouchStart) {
       t->start.x = pos.x;
       t->start.y = pos.y;
+      t->movement.x = 0;
+      t->movement.y = 0;
+      t->nextPhase = TouchNone;
+      t->consumed = false;
+
+      t->phase = state;
+      t->finger = 1;
+      t->previous.x = pos.x;
+      t->previous.y = pos.y;
+      t->current.x = pos.x;
+      t->current.y = pos.y;
+      t->tapCount = touch.tapCount;
+      t->offset.x = 0;
+      t->offset.y = 0;
+    } else {
+      if (!t->consumed && state == TouchStart) {
+        t->movement += pos - prev;
+        t->nextPhase = state;
+        t->tapCount = touch.tapCount;
+        t->finger = 1;
+        t->consumed = false;
+      } else {
+        t->phase = state;
+        t->finger = 1;
+        t->previous.x = prev.x;
+        t->previous.y = prev.y;
+        t->current.x = pos.x;
+        t->current.y = pos.y;
+        t->tapCount = touch.tapCount;
+        t->offset = t->current - t->previous;
+        t->movement.x = 0;
+        t->movement.y = 0;
+        t->nextPhase = TouchNone;
+        t->consumed = false;
+      }
     }
-    t->phase = state;
-    t->finger = 1;
-    t->previous.x = prev.x;
-    t->previous.y = prev.y;
-    t->current.x = pos.x;
-    t->current.y = pos.y;
-    t->tapCount = touch.tapCount;
-    t->offset = t->current - t->previous;
     
     if (t->phase == TouchStart) {
       t->owner = NULL;

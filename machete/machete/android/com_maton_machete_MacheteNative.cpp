@@ -132,26 +132,49 @@ void JNICALL Java_com_maton_machete_MacheteNative_touch(JNIEnv *vm, jobject, jin
   machete::input::TheTouchInput->SetTouchCount(1);
   machete::input::Touch *t = machete::input::TheTouchInput->GetTouch(0);
 
-  if (event != machete::input::TouchStart) {
-    t->previous = t->current;
-
+  if (event == machete::input::TouchStart) {
     t->current.x = x;
     t->current.y = y;
     machete::draw::TheAshaManager->AdaptPosition(t->current);
-  } else {
-    t->current.x = x;
-    t->current.y = y;
-    machete::draw::TheAshaManager->AdaptPosition(t->current);
-
     t->previous = t->current;
     t->start = t->current;
+    t->movement.x = 0;
+    t->movement.y = 0;
+    t->nextPhase = machete::input::TouchNone;
+
+    t->offset.x = 0;
+    t->offset.y = 0;
+    t->finger = id;
+    t->phase = (machete::input::TouchPhase)event;
 
     t->owner = NULL;
+
+    t->consumed = false;
+  } else {
+    if (!t->consumed && t->phase == machete::input::TouchStart) {
+      Vec2 lagPos(x, y);
+      machete::draw::TheAshaManager->AdaptPosition(lagPos);
+
+      t->movement += lagPos - t->current;
+      t->nextPhase = (machete::input::TouchPhase)event;
+      t->consumed = false;
+      t->finger = id;
+    } else {
+      t->previous = t->current;
+      t->current.x = x;
+      t->current.y = y;
+      machete::draw::TheAshaManager->AdaptPosition(t->current);
+
+      t->movement.x = 0;
+      t->movement.y = 0;
+      t->nextPhase = machete::input::TouchNone;
+      t->offset = t->current - t->previous;
+      t->finger = id;
+      t->phase = (machete::input::TouchPhase)event;
+      t->consumed = false;
+    }
   }
 
-  t->offset = t->current - t->previous;
-  t->finger = id;
-  t->phase = (machete::input::TouchPhase)event;
 
   machete::input::TheTouchInput->MarkAvailable();
 }

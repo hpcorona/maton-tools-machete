@@ -82,6 +82,15 @@ namespace machete {
       //! The current touch processor owner.
       TouchReceiver *owner;
       
+      //! Touch next phase (updated if the touch event is not yet processed).
+      TouchPhase nextPhase;
+      
+      //! Accumulated movements (updated if the touch event is not yet processed).
+      machete::math::Vec2 movement;
+      
+      //! Check if it's consumed.
+      bool consumed;
+      
       //! The number of taps that the user has made. Only available with the TouchEnd phase.
       int tapCount;
     };
