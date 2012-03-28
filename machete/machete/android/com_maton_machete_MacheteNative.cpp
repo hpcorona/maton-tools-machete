@@ -179,3 +179,6 @@ void JNICALL Java_com_maton_machete_MacheteNative_touch(JNIEnv *vm, jobject, jin
   machete::input::TheTouchInput->MarkAvailable();
 }
 
+JNIEXPORT void JNICALL Java_com_maton_machete_MacheteNative_onKeyTyped(JNIEnv *vm, jobject, jint key) {
+  game->OnKeyTyped(machete::input::MobileBack);
+}

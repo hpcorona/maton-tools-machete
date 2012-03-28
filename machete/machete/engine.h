@@ -31,6 +31,7 @@
 #include "anim/func.h"
 #include "draw/asha.h"
 #include "anim/tween.h"
+#include "input/key.h"
 
 //! The main namespace. All the escential definitions of the engine are here.
 namespace machete {
@@ -118,6 +119,9 @@ namespace machete {
 		 This will be called only once on your application's lifecycle.
 		 */
     virtual void OnStop() = 0;
+    
+    //! Called when the user is pressing a key.
+    virtual void OnKeyTyped(machete::input::Key key) = 0;
   };
 
   //! Start the Engine. This is called automatically by each platform's glue code.

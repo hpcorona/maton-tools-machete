@@ -95,6 +95,14 @@ JNIEXPORT void JNICALL Java_com_maton_machete_MacheteNative_touch
 JNIEXPORT void JNICALL Java_com_maton_machete_MacheteNative_startup
   (JNIEnv *, jobject);
 
+/*
+ * Class:     com_maton_machete_MacheteNative
+ * Method:    onKeyTyped
+ * Signature: (I)V
+ */
+JNIEXPORT void JNICALL Java_com_maton_machete_MacheteNative_onKeyTyped
+  (JNIEnv *, jobject, jint);
+
 #ifdef __cplusplus
 }
 #endif

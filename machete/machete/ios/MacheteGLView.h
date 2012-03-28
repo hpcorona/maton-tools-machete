@@ -26,6 +26,8 @@ extern CAEAGLLayer *eaglLayer;
   double timestamp;
     
   machete::IGame *game;
+  
+  bool onForeground;
 }
 
 - (void)drawView:(CADisplayLink*)displayLink;
@@ -35,5 +37,10 @@ extern CAEAGLLayer *eaglLayer;
 - (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event;
 - (void)touchesCancelled:(NSSet *)touches withEvent:(UIEvent *)event;
 - (void)sendTouches:(NSSet *)touches withType:(TouchPhase) state;
+- (void)willBackground;
+- (void)didBackground;
+- (void)willForeground;
+- (void)didForeground;
+- (void)willTerminate;
 
 @end

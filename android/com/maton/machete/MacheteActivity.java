@@ -78,6 +78,11 @@ public abstract class MacheteActivity extends Activity {
 	}
 
 	@Override
+	public void onBackPressed() {
+		engine.onKeyTyped(1);
+	}
+
+	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		

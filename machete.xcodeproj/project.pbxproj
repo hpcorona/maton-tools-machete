@@ -187,6 +187,7 @@
 		A8CD9AA31417156100270862 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
 		A8D62E9D149833B100E5DB12 /* thread.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = thread.h; sourceTree = "<group>"; };
 		A8D62E9F149833DC00E5DB12 /* thread.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = thread.cpp; sourceTree = "<group>"; };
+		A8D99BB715227BE300FE6F80 /* key.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = key.h; sourceTree = "<group>"; };
 		A8E4DD8313A93A5B00A27214 /* platform.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = platform.h; sourceTree = "<group>"; };
 		A8E4DD8513A93BB300A27214 /* draw.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = draw.cpp; sourceTree = "<group>"; };
 		A8E4DD8613A93BB300A27214 /* draw.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = draw.h; sourceTree = "<group>"; };
@@ -334,6 +335,7 @@
 			children = (
 				A874066D13B5030200F8B807 /* touch.cpp */,
 				A874066E13B5030200F8B807 /* touch.h */,
+				A8D99BB715227BE300FE6F80 /* key.h */,
 			);
 			name = input;
 			path = machete/machete/input;

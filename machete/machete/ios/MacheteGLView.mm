@@ -56,6 +56,8 @@ CAEAGLLayer *eaglLayer = NULL;
     
     [self setUserInteractionEnabled:YES];
     [self setMultipleTouchEnabled:NO]; // Solo un touch de momento
+    
+    onForeground = true;
   }
   return self;
 }
@@ -79,6 +81,8 @@ CAEAGLLayer *eaglLayer = NULL;
 }
 
 - (void)drawView: (CADisplayLink*) displayLink {
+  if (!onForeground) return;
+  
   double elapsedSeconds = 0;
   if (displayLink != nil) {
     elapsedSeconds = displayLink.timestamp - timestamp;
@@ -179,6 +183,28 @@ CAEAGLLayer *eaglLayer = NULL;
   
   TheTouchInput->SetTouchCount(count);
   TheTouchInput->MarkAvailable();
+}
+
+- (void)willBackground {
+  onForeground = false;
+  game->OnPause();
+}
+
+- (void)didBackground {
+  
+}
+
+- (void)willForeground {
+  game->OnResume();
+}
+
+- (void)didForeground {
+  onForeground = true;
+}
+
+- (void)willTerminate {
+  onForeground = false;
+  game->OnPause();
 }
 
 @end
