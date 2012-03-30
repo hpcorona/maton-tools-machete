@@ -62,6 +62,10 @@
 		A839A6AD13AE9A4700D0C254 /* bundle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A839A6AB13AE9A4700D0C254 /* bundle.cpp */; };
 		A839A6AE13AE9A4700D0C254 /* bundle.h in Headers */ = {isa = PBXBuildFile; fileRef = A839A6AC13AE9A4700D0C254 /* bundle.h */; };
 		A839E21313AB3E65004A1CA5 /* platform.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A839E21213AB3E65004A1CA5 /* platform.cpp */; };
+		A84013FA15258E02008E88B0 /* libGoogleAnalytics.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A84013F915258E02008E88B0 /* libGoogleAnalytics.a */; };
+		A84013FD15258F09008E88B0 /* analytics.h in Headers */ = {isa = PBXBuildFile; fileRef = A84013FC15258F09008E88B0 /* analytics.h */; };
+		A84013FF152592FB008E88B0 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A84013FE152592FB008E88B0 /* CFNetwork.framework */; };
+		A8401403152597E2008E88B0 /* analytics.mm in Sources */ = {isa = PBXBuildFile; fileRef = A8401401152597E2008E88B0 /* analytics.mm */; };
 		A85B7EE71398909A008776AB /* mbd.h in Headers */ = {isa = PBXBuildFile; fileRef = A85B7EE61398909A008776AB /* mbd.h */; };
 		A874066F13B5030200F8B807 /* touch.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A874066D13B5030200F8B807 /* touch.cpp */; };
 		A874067013B5030200F8B807 /* touch.h in Headers */ = {isa = PBXBuildFile; fileRef = A874066E13B5030200F8B807 /* touch.h */; };
@@ -152,6 +156,10 @@
 		A839A6AB13AE9A4700D0C254 /* bundle.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = bundle.cpp; sourceTree = "<group>"; };
 		A839A6AC13AE9A4700D0C254 /* bundle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = bundle.h; sourceTree = "<group>"; };
 		A839E21213AB3E65004A1CA5 /* platform.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = platform.cpp; sourceTree = "<group>"; };
+		A84013F915258E02008E88B0 /* libGoogleAnalytics.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libGoogleAnalytics.a; sourceTree = "<group>"; };
+		A84013FC15258F09008E88B0 /* analytics.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = analytics.h; sourceTree = "<group>"; };
+		A84013FE152592FB008E88B0 /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
+		A8401401152597E2008E88B0 /* analytics.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = analytics.mm; sourceTree = "<group>"; };
 		A85130FF13A7357E00084BD5 /* vtx.vert */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = vtx.vert; sourceTree = "<group>"; };
 		A851310213A7359400084BD5 /* vtx.frag */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = vtx.frag; sourceTree = "<group>"; };
 		A85B7EE61398909A008776AB /* mbd.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mbd.h; sourceTree = "<group>"; };
@@ -199,6 +207,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A84013FF152592FB008E88B0 /* CFNetwork.framework in Frameworks */,
 				A8315180147980390036D4BB /* libsqlite3.dylib in Frameworks */,
 				A8CD9AA41417156100270862 /* AudioToolbox.framework in Frameworks */,
 				A8CD9A9F141714A600270862 /* CoreAudio.framework in Frameworks */,
@@ -208,6 +217,7 @@
 				A8885855135CB85100F7732C /* QuartzCore.framework in Frameworks */,
 				A8885853135CB84B00F7732C /* OpenGLES.framework in Frameworks */,
 				A8885811135CB02F00F7732C /* Foundation.framework in Frameworks */,
+				A84013FA15258E02008E88B0 /* libGoogleAnalytics.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -322,9 +332,34 @@
 			path = storage;
 			sourceTree = "<group>";
 		};
+		A84013F615258DD1008E88B0 /* googleanalytics */ = {
+			isa = PBXGroup;
+			children = (
+				A84013F815258DDA008E88B0 /* bin */,
+			);
+			path = googleanalytics;
+			sourceTree = "<group>";
+		};
+		A84013F815258DDA008E88B0 /* bin */ = {
+			isa = PBXGroup;
+			children = (
+				A84013F915258E02008E88B0 /* libGoogleAnalytics.a */,
+			);
+			path = bin;
+			sourceTree = "<group>";
+		};
+		A84013FB15258EB2008E88B0 /* analytics */ = {
+			isa = PBXGroup;
+			children = (
+				A84013FC15258F09008E88B0 /* analytics.h */,
+			);
+			path = analytics;
+			sourceTree = "<group>";
+		};
 		A847010F1471E6990046FC3F /* deps */ = {
 			isa = PBXGroup;
 			children = (
+				A84013F615258DD1008E88B0 /* googleanalytics */,
 				A807D151149BFD3C00848DE7 /* libtremor */,
 			);
 			path = deps;
@@ -357,14 +392,6 @@
 			isa = PBXGroup;
 			children = (
 				A8BEE3DF14A2763B005E7701 /* ios */,
-				A831517F147980390036D4BB /* libsqlite3.dylib */,
-				A8CD9AA31417156100270862 /* AudioToolbox.framework */,
-				A8CD9A9E141714A600270862 /* CoreAudio.framework */,
-				A80A9A82140622D200614DB0 /* OpenAL.framework */,
-				A8885860135CBB8200F7732C /* CoreGraphics.framework */,
-				A888585E135CBB7D00F7732C /* UIKit.framework */,
-				A8885854135CB85100F7732C /* QuartzCore.framework */,
-				A8885852135CB84B00F7732C /* OpenGLES.framework */,
 				A8885812135CB02F00F7732C /* machete */,
 				A888580F135CB02F00F7732C /* Frameworks */,
 				A888580E135CB02F00F7732C /* Products */,
@@ -383,6 +410,15 @@
 		A888580F135CB02F00F7732C /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				A831517F147980390036D4BB /* libsqlite3.dylib */,
+				A8CD9AA31417156100270862 /* AudioToolbox.framework */,
+				A8CD9A9E141714A600270862 /* CoreAudio.framework */,
+				A80A9A82140622D200614DB0 /* OpenAL.framework */,
+				A8885860135CBB8200F7732C /* CoreGraphics.framework */,
+				A888585E135CBB7D00F7732C /* UIKit.framework */,
+				A8885854135CB85100F7732C /* QuartzCore.framework */,
+				A8885852135CB84B00F7732C /* OpenGLES.framework */,
+				A84013FE152592FB008E88B0 /* CFNetwork.framework */,
 				A8885810135CB02F00F7732C /* Foundation.framework */,
 			);
 			name = Frameworks;
@@ -408,6 +444,7 @@
 		A888581A135CB1FC00F7732C /* machete */ = {
 			isa = PBXGroup;
 			children = (
+				A84013FB15258EB2008E88B0 /* analytics */,
 				A8BEE3E714A27754005E7701 /* ios */,
 				A8D62E9B1498335D00E5DB12 /* thread */,
 				A8315184147981070036D4BB /* storage */,
@@ -440,6 +477,7 @@
 				A8BEE3EE14A277F1005E7701 /* iOSPlatform.mm */,
 				A8BEE3E814A277A0005E7701 /* MacheteGLView.h */,
 				A8BEE3E914A277A0005E7701 /* MacheteGLView.mm */,
+				A8401401152597E2008E88B0 /* analytics.mm */,
 			);
 			path = ios;
 			sourceTree = "<group>";
@@ -551,6 +589,7 @@
 				A807D19E149BFD3C00848DE7 /* window_lookup.h in Headers */,
 				A8BEE3EA14A277A0005E7701 /* MacheteGLView.h in Headers */,
 				A8BEE3ED14A277E5005E7701 /* machete-Prefix.pch in Headers */,
+				A84013FD15258F09008E88B0 /* analytics.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -639,6 +678,7 @@
 				A884A9DB1516894D00B6AB1E /* asha.cpp in Sources */,
 				A884A9E11516DFA200B6AB1E /* tween.cpp in Sources */,
 				A87DBA6F1517CC970092650B /* callback.cpp in Sources */,
+				A8401403152597E2008E88B0 /* analytics.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -686,11 +726,17 @@
 					TARGET_IOS,
 					ENGINE,
 				);
-				HEADER_SEARCH_PATHS = "\"$(SRCROOT)/deps/libtremor/\"";
-				LIBRARY_SEARCH_PATHS = "$(inherited)";
+				HEADER_SEARCH_PATHS = (
+					"\"$(SRCROOT)/deps/libtremor/\"",
+					"\"$(SRCROOT)/deps/googleanalytics/include\"",
+				);
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/deps/googleanalytics/bin\"",
+				);
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				USER_HEADER_SEARCH_PATHS = "\"$(SRCROOT)/deps/libtremor/\"";
+				USER_HEADER_SEARCH_PATHS = "\"$(SRCROOT)/deps/libtremor/\" \"$(SRCROOT)/deps/googleanalytics/include\"";
 			};
 			name = Debug;
 		};
@@ -705,11 +751,17 @@
 					TARGET_IOS,
 					ENGINE,
 				);
-				HEADER_SEARCH_PATHS = "\"$(SRCROOT)/deps/libtremor/\"";
-				LIBRARY_SEARCH_PATHS = "$(inherited)";
+				HEADER_SEARCH_PATHS = (
+					"\"$(SRCROOT)/deps/libtremor/\"",
+					"\"$(SRCROOT)/deps/googleanalytics/include\"",
+				);
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/deps/googleanalytics/bin\"",
+				);
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				USER_HEADER_SEARCH_PATHS = "\"$(SRCROOT)/deps/libtremor/\"";
+				USER_HEADER_SEARCH_PATHS = "\"$(SRCROOT)/deps/libtremor/\" \"$(SRCROOT)/deps/googleanalytics/include\"";
 			};
 			name = Release;
 		};

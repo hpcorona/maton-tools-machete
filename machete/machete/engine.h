@@ -32,6 +32,7 @@
 #include "draw/asha.h"
 #include "anim/tween.h"
 #include "input/key.h"
+#include "analytics/analytics.h"
 
 //! The main namespace. All the escential definitions of the engine are here.
 namespace machete {

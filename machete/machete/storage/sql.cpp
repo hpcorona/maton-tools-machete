@@ -34,11 +34,13 @@ namespace machete {
       
       int result = sqlite3_prepare(database, pqry, -1, &query, NULL);
       
+#ifdef MACHETE_STORAGE_DEBUG
       if (result != SQLITE_OK) {
         std::cout << "ERROR IN SQL:" << std::endl << "\t" << pqry << std::endl;
       } else {
         std::cout << "SUCCESS:" << std::endl << "\t" << pqry << std::endl;
       }
+#endif
       
       return result == SQLITE_OK;
     }
@@ -51,12 +53,14 @@ namespace machete {
       
       int result = sqlite3_exec(database, pqry, NULL, NULL, NULL);
       
+#ifdef MACHETE_STORAGE_DEBUG
       if (result != SQLITE_OK) {
         std::cout << "ERROR IN SQL:" << std::endl << "\t" << pqry << std::endl;
       } else {
         std::cout << "SUCCESS:" << std::endl << "\t" << pqry << std::endl;
       }
-
+#endif
+      
       return result == SQLITE_OK;
     }
     
