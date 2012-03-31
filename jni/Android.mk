@@ -40,6 +40,7 @@ LOCAL_SRC_FILES := \
 	anim/tween.cpp \
 	android/com_maton_machete_MacheteNative.cpp \
 	android/utils.cpp \
+	android/analytics.cpp \
 	android/AndroidPlatform.cpp
 LOCAL_LDLIBS := -lGLESv2 -ldl -llog -lz
 include $(BUILD_STATIC_LIBRARY)

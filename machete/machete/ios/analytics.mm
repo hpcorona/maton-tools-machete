@@ -36,6 +36,8 @@ void GoogleTracker::Start(Str accountId, int dispatchPeriod) {
   accountId.GetChars(accountIdChars, 20);
   NSString * accId = [NSString stringWithUTF8String:accountIdChars] ;
   
+  [[GANTracker sharedTracker] setSampleRate:100];
+  [[GANTracker sharedTracker] setAnonymizeIp:YES];
   [[GANTracker sharedTracker] startTrackerWithAccountID:accId
                                          dispatchPeriod:dispatchPeriod
                                                delegate:nil];
@@ -56,8 +58,6 @@ void GoogleTracker::SetCustomVariable(int idx, Str name, Str value) {
   nsValue = [NSString stringWithUTF8String:valueChars];
   
   NSError *error = nil;
-  [[GANTracker sharedTracker] setSampleRate:100];
-  [[GANTracker sharedTracker] setAnonymizeIp:YES];
   [[GANTracker sharedTracker] setCustomVariableAtIndex:idx
                                                   name:nsName
                                                  value:nsValue
@@ -106,7 +106,7 @@ void GoogleTracker::TrackPageview(Str page) {
   
   nsPageview = [NSString stringWithUTF8String:pageView];
 
-  NSError *error;
+  NSError *error = nil;
   [[GANTracker sharedTracker] trackPageview:nsPageview
                                   withError:&error];
   
@@ -121,6 +121,27 @@ void GoogleTracker::Stop() {
 
 void GoogleTracker::Dispatch() {
   [[GANTracker sharedTracker] dispatch];
+}
+    
+void GoogleTracker::SetReferrer(Str campaign, Str source, Str medium) {
+  Str params(100);
+  params = "utm_campaign=";
+  params += campaign;
+  params += "&utm_source=";
+  params += source;
+  params += "&utm_medium=";
+  params += medium;
+  
+  char paramsChars[100];
+  params.GetChars(paramsChars, 100);
+  
+  NSString *nsParams = [NSString stringWithUTF8String:paramsChars];
+  NSError *error = nil;
+  [[GANTracker sharedTracker] setReferrer:nsParams withError:&error];
+  
+  if (error != nil) {
+    NSLog(@"Error: %@", error);
+  }
 }
 
   }

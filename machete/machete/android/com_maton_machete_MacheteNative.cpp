@@ -31,7 +31,9 @@ void Java_com_maton_machete_MacheteNative_initialize
   height = h;
 }
 
-void JNICALL Java_com_maton_machete_MacheteNative_startup(JNIEnv *, jobject) {
+void JNICALL Java_com_maton_machete_MacheteNative_startup(JNIEnv *env, jobject obj) {
+  TheActivity = env->NewGlobalRef(obj);
+
 	game = CreateGame();
 	game->Initialize(renEngine, width, height, machete::DeviceOrientationPortrait);
 }
@@ -114,21 +116,20 @@ void Java_com_maton_machete_MacheteNative_start
  * Signature: ()V
  */
 void Java_com_maton_machete_MacheteNative_stop
-  (JNIEnv *, jobject) {
+  (JNIEnv *env, jobject) {
 	if (game == NULL) return;
 	game->OnStop();
-}
 
-jint JNI_OnLoad(JavaVM* vm, void* reserved) {
-	return JNI_VERSION_1_6;
+	env->DeleteGlobalRef(TheActivity);
 }
 
 void JNI_OnUnload(JavaVM* vm, void* reserved) {
 
 }
 
-void JNICALL Java_com_maton_machete_MacheteNative_touch(JNIEnv *vm, jobject, jint id, jint event, jfloat x, jfloat y) {
+jobject TheActivity = NULL;
 
+void JNICALL Java_com_maton_machete_MacheteNative_touch(JNIEnv *vm, jobject obj, jint id, jint event, jfloat x, jfloat y) {
   machete::input::TheTouchInput->SetTouchCount(1);
   machete::input::Touch *t = machete::input::TheTouchInput->GetTouch(0);
 

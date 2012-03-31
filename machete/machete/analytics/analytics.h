@@ -28,6 +28,9 @@ namespace machete {
       //! Start the Tracker.
       void Start(Str accountId, int dispatchPeriod);
       
+      //! Sets the referrer.
+      void SetReferrer(Str campaign, Str source, Str medium);
+      
       //! Set a custom variable.
       void SetCustomVariable(int idx, Str name, Str value);
       
