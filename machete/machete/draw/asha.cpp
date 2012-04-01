@@ -253,6 +253,7 @@ namespace machete {
         
         if (best == NULL || minDiffArea > da) {
           best = scrdf;
+          minDiffArea = da;
         }
       }
       
