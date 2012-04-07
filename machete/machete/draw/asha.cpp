@@ -81,11 +81,11 @@ namespace machete {
       }
       
       display->Add(element);
-      display->SetRotation(rotation ? -machete::math::PiTwo : 0);
+      element->SetRotation(rotation ? -90.0f : 0);
       Vec2 newOff = offset;
       
       if (rotation) {
-        newOff.y -= size.y;
+        newOff.x += size.x;
       }
       
       element->SetPosition(newOff);
@@ -95,12 +95,15 @@ namespace machete {
     void ScreenAdapter::AdaptVector(Vec2 & touchPos) {
       if (perfectMatch) return;
       
-      touchPos = (touchPos - offset) * (1.0f / scale);
-      
-      if (rotation) {
-        float t = size.y - touchPos.x;
-        touchPos.x = touchPos.y;
-        touchPos.y = t;
+      if (rotation == false) {
+        touchPos = (touchPos - offset) * (1.0f / scale);
+      } else {
+        float t = size.x - touchPos.x;
+        touchPos.x = touchPos.y - offset.y;
+        touchPos.y = t - offset.x;
+        
+        touchPos = touchPos * (1.0f / scale);
+        
       }
     }
     
