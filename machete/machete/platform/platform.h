@@ -88,7 +88,11 @@ namespace machete {
     //! Get the name of a complete writable file path.
     virtual char* WritableFile(const char* name) = 0;
     
+    //! Get the absolute system time.
     virtual double AbsoluteTime() = 0;
+    
+    //! Launch a website.
+    virtual void LaunchURL(const char* url) = 0;
   };
 
   //! Platform specific features.

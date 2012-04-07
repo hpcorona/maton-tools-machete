@@ -1,23 +1,7 @@
 
 #include "../analytics/analytics.h"
 #include "../common/log.h"
-#include <jni.h>
 #include "utils.h"
-
-static JavaVM* javaVM = NULL;
-
-jint JNI_OnLoad(JavaVM* vm, void* reserved) {
-  javaVM = vm;
-  return JNI_VERSION_1_2;
-}
-
-static JNIEnv* GetEnv() {
-  JNIEnv* env = NULL;
-  if (javaVM != NULL) {
-    javaVM->GetEnv((void**)&env, JNI_VERSION_1_2);
-  }
-  return env;
-}
 
 namespace machete {
   namespace analytics {
@@ -40,20 +24,20 @@ namespace machete {
         JNIEnv* env = GetEnv();
 
         classGANTracker = env->FindClass("com/maton/machete/GANTracker");
-         if (!classGANTracker) {
-           machete::common::Log("Cannot load class GoogleAnalyticsTracker");
-           return;
-         }
+        if (!classGANTracker) {
+          machete::common::Log("Cannot load class GoogleAnalyticsTracker");
+          return;
+        }
 
-         methodStartNewSession = env->GetStaticMethodID(classGANTracker, "startNewSession", "(Ljava/lang/String;I)V");
-         methodTrackEvent = env->GetStaticMethodID(classGANTracker, "trackEvent", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;I)V");
-         methodTrackPageview = env->GetStaticMethodID(classGANTracker, "trackPageview", "(Ljava/lang/String;)V");
-         methodDispatch = env->GetStaticMethodID(classGANTracker, "dispatch", "()V");
-         methodStopTracker = env->GetStaticMethodID(classGANTracker, "stopSession", "()V");
-         methodSetCustomVar = env->GetStaticMethodID(classGANTracker, "setCustomVar", "(ILjava/lang/String;Ljava/lang/String;)V");
-         methodSetAnonymizeIp = env->GetStaticMethodID(classGANTracker, "setAnonymizeIp", "(Z)V");
-         methodSetSampleRate = env->GetStaticMethodID(classGANTracker, "setSampleRate", "(I)V");
-         methodSetReferrer = env->GetStaticMethodID(classGANTracker, "setReferrer", "(Ljava/lang/String;)V");
+        methodStartNewSession = env->GetStaticMethodID(classGANTracker, "startNewSession", "(Ljava/lang/String;I)V");
+        methodTrackEvent = env->GetStaticMethodID(classGANTracker, "trackEvent", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;I)V");
+        methodTrackPageview = env->GetStaticMethodID(classGANTracker, "trackPageview", "(Ljava/lang/String;)V");
+        methodDispatch = env->GetStaticMethodID(classGANTracker, "dispatch", "()V");
+        methodStopTracker = env->GetStaticMethodID(classGANTracker, "stopSession", "()V");
+        methodSetCustomVar = env->GetStaticMethodID(classGANTracker, "setCustomVar", "(ILjava/lang/String;Ljava/lang/String;)V");
+        methodSetAnonymizeIp = env->GetStaticMethodID(classGANTracker, "setAnonymizeIp", "(Z)V");
+        methodSetSampleRate = env->GetStaticMethodID(classGANTracker, "setSampleRate", "(I)V");
+        methodSetReferrer = env->GetStaticMethodID(classGANTracker, "setReferrer", "(Ljava/lang/String;)V");
       }
 
       started = false;

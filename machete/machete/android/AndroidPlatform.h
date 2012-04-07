@@ -46,6 +46,8 @@ public:
 
   double AbsoluteTime();
 
+  void LaunchURL(const char * url);
+
 protected:
   void OpenAPK();
   void CloseAPK();

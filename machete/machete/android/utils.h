@@ -11,3 +11,6 @@
 #include <jni.h>
 
 extern jobject TheActivity;
+extern JavaVM* javaVM;
+
+JNIEnv* GetEnv();

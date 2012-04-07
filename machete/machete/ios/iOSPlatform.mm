@@ -208,7 +208,12 @@ public:
   double AbsoluteTime() {
     return mach_absolute_time() / 1000000000L;
   }
-
+  
+  void LaunchURL(const char* url) {
+    NSString *nsURL = [NSString stringWithUTF8String:url];
+    
+    [[UIApplication sharedApplication] openURL:[NSURL URLWithString:nsURL]];
+  }
   
 protected:
   CFDataRef imageData;

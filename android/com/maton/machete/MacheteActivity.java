@@ -73,7 +73,7 @@ public abstract class MacheteActivity extends Activity {
 
 	protected MacheteActivity(String baseAssets) {
 		this.baseAssets = baseAssets;
-		GANTracker.initialize(this);
+		AndroidPlatform.initialize(this);
 		engine = new MacheteNative();
 		tick = new TickGenerator();
 	}

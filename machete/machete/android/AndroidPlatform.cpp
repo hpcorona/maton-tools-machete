@@ -4,6 +4,24 @@ __BEGIN_DECLS
 extern unsigned int arc4random(void);
 __END_DECLS
 
+JavaVM* javaVM = NULL;
+
+jint JNI_OnLoad(JavaVM* vm, void* reserved) {
+  javaVM = vm;
+  return JNI_VERSION_1_2;
+}
+
+JNIEnv* GetEnv() {
+  JNIEnv* env = NULL;
+  if (javaVM != NULL) {
+    javaVM->GetEnv((void**)&env, JNI_VERSION_1_2);
+  }
+  return env;
+}
+
+static jclass classAndroidPlatform = NULL;
+static jmethodID methodLaunchUrl;
+
 machete::graphics::DrawContext* CreateDrawContext(machete::graphics::RenderTarget target, int width, int height) {
 
   machete::graphics::DrawContext *ctx = new machete::graphics::DrawContext(target);
@@ -371,4 +389,30 @@ png_byte* AndroidPlatform::LoadPNG(const char *filename, int &width, int &height
   zip_fclose(file);
 
   return image_data;
+}
+
+void AndroidPlatform::LaunchURL(const char * url) {
+  JNIEnv* env = GetEnv();
+
+  if (classAndroidPlatform == NULL) {
+    classAndroidPlatform = env->FindClass("com/maton/machete/AndroidPlatform");
+  }
+
+  if (!classAndroidPlatform) {
+    machete::common::Log("Cannot load class AndroidPlatform");
+    return;
+  }
+
+  if (methodLaunchUrl == NULL) {
+    methodLaunchUrl = env->GetStaticMethodID(classAndroidPlatform, "launchUrl", "(Ljava/lang/String;)V");
+  }
+
+  if (methodLaunchUrl == NULL) {
+    machete::common::Log("Cannot get method AndroidPlatform::launchUrl");
+    return;
+  }
+
+  jstring nsUrl = env->NewStringUTF(url);
+
+  env->CallStaticBooleanMethod(classAndroidPlatform, methodLaunchUrl, nsUrl);
 }
