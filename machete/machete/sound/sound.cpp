@@ -845,6 +845,20 @@ namespace machete {
       }
     }
     
+    void MusicManager::Stop() {
+      if (fading != NULL) {
+        fading->Stop();
+        fading->Unload();
+      }
+      
+      if (current != NULL) {
+        current->Stop();
+        current->Unload();
+      }
+      
+      currentMusicName = "";
+    }
+    
     SoundManager* TheSoundMgr = NULL;
     
     MusicManager* TheMusicMgr = NULL;

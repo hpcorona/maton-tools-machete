@@ -438,6 +438,9 @@ namespace machete {
        */
       void Update(float time);
       
+      //! Stop all the music and unload data.
+      void Stop();
+      
     protected:
       
       //! The current volume.
