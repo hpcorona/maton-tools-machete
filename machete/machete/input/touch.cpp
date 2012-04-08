@@ -39,6 +39,18 @@ namespace machete {
       }
     }
     
+    void TouchInput::SetTapTolerance(float tolerance) {
+      this->tolerance = tolerance;
+    }
+    
+    float TouchInput::GetTapTolerance() const {
+      return tolerance;
+    }
+    
+    float TouchInput::GetTapToleranceSquared() const {
+      return tolerance * tolerance;
+    }
+    
     TouchProcessor::TouchProcessor(TouchListener *listener) {
       this->listener = listener;
       withTap = false;
@@ -171,7 +183,7 @@ namespace machete {
             startOff.y = -startOff.y;
           }
 
-          if (startOff.LengthSquared() > 400) {
+          if (startOff.LengthSquared() > TheTouchInput->GetTapToleranceSquared()) {
             withTap = false;
             tracking = false;
             
@@ -233,7 +245,7 @@ namespace machete {
       alive = false;
     }
     
-    TouchInput *TheTouchInput = new TouchInput();
+    TouchInput *TheTouchInput = NULL;
     
   }
 }

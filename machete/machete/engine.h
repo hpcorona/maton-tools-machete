@@ -127,6 +127,7 @@ namespace machete {
 
   //! Start the Engine. This is called automatically by each platform's glue code.
   static void Start(IPlatform *platf) {
+    input::TheTouchInput = new input::TouchInput();
     draw::TheAshaManager = new draw::AshaManager();
     thread::TheThreadMgr = new thread::ThreadManager();
     

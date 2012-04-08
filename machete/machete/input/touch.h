@@ -143,6 +143,19 @@ namespace machete {
       //! Cancel all touch events.
       void CancelTouchEvents();
       
+      //! Set the tap tolerance for movement.
+      /*!
+       How much can i move my finger and still consider my gesture as a tap?
+       \param tolerance Toleranse, measured in pixels.
+       */
+      void SetTapTolerance(float tolerance);
+      
+      //! Get the current tap tolerance.
+      float GetTapTolerance() const;
+      
+      //! Get the squared tap tolerance.
+      float GetTapToleranceSquared() const;
+      
     protected:
       
       //! Touch array.
@@ -153,6 +166,9 @@ namespace machete {
       
       //! True if there are no touches to process.
       bool invalid;
+      
+      //! Tap tolerance.
+      float tolerance;
     };
     
     //! An event listener. Receives updates about how the user is touching the device on a Widget.
