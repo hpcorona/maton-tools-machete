@@ -13,7 +13,7 @@
 
 #include "shader.h"
 
-#define MAX_RING 128
+#define MAX_RING 64
 #define MAX_SPR 100
 #define MAX_VTX (MAX_SPR*4)
 #define MAX_IDX (MAX_SPR*6)
