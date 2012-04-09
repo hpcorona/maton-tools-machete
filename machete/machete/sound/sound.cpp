@@ -546,6 +546,16 @@ namespace machete {
       return true;
     }
     
+    void SoundManager::Detach() {
+      alcSuspendContext(context);
+      alcMakeContextCurrent(NULL);
+    }
+    
+    void SoundManager::Attach() {
+      alcMakeContextCurrent(context);
+      alcProcessContext(context);
+    }
+    
     void SoundManager::Unload() {
       Iterator< Tree<Str,Sound* >* >* singl = singletons.Enumerate();
       singl->Reset();
@@ -749,6 +759,8 @@ namespace machete {
       
       buff1 = NULL;
       buff2 = NULL;
+      
+      pausedMusicName = "";
     }
     
     MusicManager::~MusicManager() {
@@ -770,6 +782,7 @@ namespace machete {
       }
       
       currentMusicName = file;
+      pausedMusicName = "";
       
       fading->Stop();
       fading->Unload();
@@ -857,6 +870,30 @@ namespace machete {
       }
       
       currentMusicName = "";
+      pausedMusicName = "";
+    }
+    
+    void MusicManager::Pause() {
+      if (currentMusicName == "") {
+        pausedMusicName = "";
+        Stop();
+        return;
+      }
+      
+      Str pmusic = currentMusicName;
+      Stop();
+      
+      pausedMusicName = pmusic;
+    }
+    
+    void MusicManager::Resume(unsigned int flags, float time) {
+      if (pausedMusicName == "") {
+        return;
+      }
+      
+      char mname[50];
+      pausedMusicName.GetChars(mname, 50);
+      Play(mname, flags, time);
     }
     
     SoundManager* TheSoundMgr = NULL;

@@ -186,10 +186,11 @@ CAEAGLLayer *eaglLayer = NULL;
 }
 
 - (void)willForeground {
-  game->OnResume();
+
 }
 
 - (void)didForeground {
+  game->OnResume();
   onForeground = true;
 }
 

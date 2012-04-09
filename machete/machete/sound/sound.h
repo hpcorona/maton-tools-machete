@@ -312,6 +312,12 @@ namespace machete {
       //! Unload sound effects and all devices.
       void Unload();
       
+      //! Detach context (used on app losing focus).
+      void Detach();
+      
+      //! Attach context (used on app gain focus).
+      void Attach();
+      
       //! Preload a sound into the buffer.
       /*!
        \param name The sound name.
@@ -441,6 +447,12 @@ namespace machete {
       //! Stop all the music and unload data.
       void Stop();
       
+      //! Pause the current music.
+      void Pause();
+      
+      //! Resume the playing.
+      void Resume(unsigned int flags, float time);
+      
     protected:
       
       //! The current volume.
@@ -466,6 +478,9 @@ namespace machete {
       
       //! Current music name.
       Str currentMusicName;
+      
+      //! The paused music name.
+      Str pausedMusicName;
       
     };
     
