@@ -1,5 +1,6 @@
 package com.maton.machete;
 
+
 public class TickGenerator {
 	private long prevTime;
 	private long newTime;

@@ -87,33 +87,34 @@ public abstract class MacheteActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
-		fullScreen();
 		hideTitle();
+		fullScreen();
 
 		mGLSurfaceView = new GLSurfaceView(this);
-
+		
 		mGLSurfaceView.setEGLConfigChooser(new EGLConfigChooser() {
 			public EGLConfig chooseConfig(EGL10 egl, EGLDisplay display) {
-				EGLConfig[] configs = new EGLConfig[1];
-				int[] num_config = new int[1];
+			    int[] version = new int[2];
+			    egl.eglInitialize(display, version);
 
-				boolean check = false;
+			    int EGL_OPENGL_ES2_BIT = 4;
+			    int[] configAttribs =
+			    {
+			        EGL10.EGL_RED_SIZE, 4,
+			        EGL10.EGL_GREEN_SIZE, 4,
+			        EGL10.EGL_BLUE_SIZE, 4,
+			        EGL10.EGL_RENDERABLE_TYPE, EGL_OPENGL_ES2_BIT,
+			        EGL10.EGL_NONE
+			    };
 
-				int[] configSpec = { EGL10.EGL_DEPTH_SIZE, 16, EGL10.EGL_NONE };
-
-				check = egl.eglInitialize(display, new int[] { MacheteNative.GL_VERSION, 0 });
-				Log.i("Maton", "Choosing EGL: " + MacheteNative.GL_VERSION);
-
-				if (!check)
-					return null;
-				check = false;
-
-				check = egl.eglChooseConfig(display, configSpec, configs, 1,
-						num_config);
-				if (!check)
-					return null;
-
-				return configs[0];
+			    EGLConfig[] configs = new EGLConfig[50];
+			    int[] num_config = new int[1];
+			    
+		    	boolean res = egl.eglChooseConfig(display, configAttribs, configs, 50, num_config);
+		    	if (!res) return null;
+		    	egl.eglTerminate(display);
+			    
+			    return configs[num_config[0] - 1];
 			}
 		});
 
