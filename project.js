@@ -34,6 +34,8 @@ project.addConfigurator("android", null, function(_proj) {
 		"machete/android/utils.cpp",
 		"machete/android/analytics.cpp",
 		"machete/android/AndroidPlatform.cpp"]);
+	_proj.addSpec("analytics_lib", "../deps/googleanalytics/bin/libGoogleAnalytics.jar");
+	_proj.addSpec("java_sources", "../android");
 });
 
 project.addConfigurator("ios", null, function(_proj) {
