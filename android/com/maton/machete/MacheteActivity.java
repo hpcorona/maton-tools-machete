@@ -3,6 +3,7 @@ package com.maton.machete;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 
 import javax.microedition.khronos.egl.EGL10;
 import javax.microedition.khronos.egl.EGLConfig;
@@ -10,6 +11,9 @@ import javax.microedition.khronos.egl.EGLContext;
 import javax.microedition.khronos.egl.EGLDisplay;
 import javax.microedition.khronos.opengles.GL10;
 
+import android.view.View;
+import android.widget.ImageView;
+import android.view.ViewGroup.LayoutParams;
 import android.app.Activity;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
@@ -23,14 +27,50 @@ import android.opengl.GLSurfaceView.Renderer;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MotionEvent;
+import android.graphics.Canvas;
 import android.view.Window;
 import android.view.WindowManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.content.Context;
 
 public abstract class MacheteActivity extends Activity {
 
+	private TickGenerator tick;
+	private MacheteNative engine;
+	private boolean initialized = false;
+	private String baseAssets;
+	private boolean gameReady = false;
+	private BackgroundView backView;
+	private String splash;
+	private int color;
+
+	protected MacheteActivity(String baseAssets, String splash, int color) {
+		this.baseAssets = baseAssets;
+		AndroidPlatform.initialize(this);
+		engine = new MacheteNative();
+		tick = new TickGenerator();
+		gameReady = false;
+		this.color = color;
+		this.splash = splash;
+	}
+
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		
+		hideTitle();
+		fullScreen();
+		
+		startGame();
+	}
+	
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
-		dispatchTouch(event);
+		if (gameReady) {
+			dispatchTouch(event);
+		}
+
 		return super.onTouchEvent(event);
 	}
 
@@ -66,32 +106,25 @@ public abstract class MacheteActivity extends Activity {
 		engine.touch(id, touchEvent, x, y);
 	}
 
-	private TickGenerator tick;
-	private MacheteNative engine;
-	private boolean initialized = false;
-	private String baseAssets;
-
-	protected MacheteActivity(String baseAssets) {
-		this.baseAssets = baseAssets;
-		AndroidPlatform.initialize(this);
-		engine = new MacheteNative();
-		tick = new TickGenerator();
-	}
-
 	@Override
 	public void onBackPressed() {
-		engine.onKeyTyped(1);
+		if (gameReady) {
+			engine.onKeyTyped(1);
+		}
 	}
 
 	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
+	protected void onResume() {
+		super.onResume();
 		
-		hideTitle();
-		fullScreen();
-
+		if (gameReady) {
+			engine.resume();
+		}
+	}
+	
+	protected void startGame() {
 		mGLSurfaceView = new GLSurfaceView(this);
-		
+
 		mGLSurfaceView.setEGLConfigChooser(new EGLConfigChooser() {
 			public EGLConfig chooseConfig(EGL10 egl, EGLDisplay display) {
 			    int[] version = new int[2];
@@ -109,11 +142,11 @@ public abstract class MacheteActivity extends Activity {
 
 			    EGLConfig[] configs = new EGLConfig[50];
 			    int[] num_config = new int[1];
-			    
+
 		    	boolean res = egl.eglChooseConfig(display, configAttribs, configs, 50, num_config);
 		    	if (!res) return null;
 		    	egl.eglTerminate(display);
-			    
+
 			    return configs[num_config[0] - 1];
 			}
 		});
@@ -140,7 +173,7 @@ public abstract class MacheteActivity extends Activity {
 			public void onSurfaceCreated(GL10 gl, EGLConfig config) {
 			}
 
-			public void onSurfaceChanged(GL10 gl, int width, int height) {
+			public void onSurfaceChanged(final GL10 gl, final int width, final int height) {
 				if (initialized) {
 					engine.resize(width, height, 1);
 				} else {
@@ -155,7 +188,7 @@ public abstract class MacheteActivity extends Activity {
 								"Unable to locate assets, aborting...");
 					}
 					apkFilePath = appInfo.sourceDir;
-					
+
 					File f = getFilesDir();
 
 					engine.initialize(f.toString(), apkFilePath, width, height, 1, 1);
@@ -181,8 +214,20 @@ public abstract class MacheteActivity extends Activity {
 						}
 					} catch (IOException e) {
 					}
-					
+
 					engine.startup();
+
+					engine.resume();
+					
+					MacheteActivity.this.runOnUiThread(new Runnable() {
+						public void run() {
+							MacheteActivity.this.backView.setVisibility(View.INVISIBLE);
+							MacheteActivity.this.mGLSurfaceView.setVisibility(View.VISIBLE);
+							MacheteActivity.this.gameReady = true;
+							MacheteActivity.this.backView.invalidate();
+							MacheteActivity.this.mGLSurfaceView.invalidate();
+						}
+					});
 				}
 			}
 
@@ -192,31 +237,43 @@ public abstract class MacheteActivity extends Activity {
 				engine.render();
 			}
 		});
-		setContentView(mGLSurfaceView);
-	}
-
-	@Override
-	protected void onResume() {
-		super.onResume();
-		engine.resume();
+		
+		addContentView(mGLSurfaceView, new LayoutParams(LayoutParams.FILL_PARENT,
+				LayoutParams.FILL_PARENT));
+		
+		backView = new BackgroundView(this, splash);
+		addContentView(backView, new LayoutParams(LayoutParams.FILL_PARENT,
+				LayoutParams.FILL_PARENT));
+		backView.SetColor(color);
 	}
 
 	@Override
 	protected void onPause() {
 		super.onPause();
-		engine.pause();
+		
+		if (gameReady) {
+			engine.pause();
+			engine.stop();
+			android.os.Process.killProcess(android.os.Process.myPid());
+		}
 	}
 
 	@Override
 	protected void onStart() {
 		super.onStart();
-		engine.start();
+		
+		if (gameReady) {
+			engine.start();
+		}
 	}
 
 	@Override
 	protected void onStop() {
 		super.onStop();
-		engine.stop();
+		
+		if (gameReady) {
+			engine.stop();
+		}
 	}
 
 	protected void fullScreen() {
@@ -229,6 +286,55 @@ public abstract class MacheteActivity extends Activity {
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 	}
 
-	private GLSurfaceView mGLSurfaceView;
+	private GLSurfaceView mGLSurfaceView = null;
+
+	class BackgroundView extends View {
+		ImageView imgView;
+		
+		public BackgroundView(Context context, String image) {
+			super(context);
+			
+			imgView = new ImageView(context);
+			try {
+				imgView.setImageBitmap(getBitmapFromAsset(image));
+			} catch (IOException e) {
+				Log.e("SPLASH", "Cannot find splash " + image);
+			}
+
+			addContentView(imgView, new LayoutParams(LayoutParams.FILL_PARENT,
+					LayoutParams.FILL_PARENT));
+		}
+
+		@Override
+		protected void onDraw(Canvas canvas) {
+			if (getVisibility() == View.VISIBLE) {
+				canvas.drawColor(color);
+				imgView.draw(canvas);
+			}
+		}
+
+		private int color = 0xff000000;
+
+		public void SetColor(int aColor) {
+			color = aColor;
+			invalidate();
+		}
+		
+    private Bitmap getBitmapFromAsset(String strName) throws IOException {
+        AssetManager assetManager = getAssets();
+        
+        InputStream istr = assetManager.open(strName);
+        Bitmap bitmap = BitmapFactory.decodeStream(istr);
+
+        return bitmap;
+    }
+
+		@Override
+		public void setVisibility(int v) {
+			super.setVisibility(v);
+			imgView.setVisibility(v);
+			invalidate();
+		}
+	}
 
 }
