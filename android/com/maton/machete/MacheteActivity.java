@@ -33,6 +33,10 @@ import android.view.WindowManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.content.Context;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.pm.ConfigurationInfo;
+import android.app.ActivityManager;
 
 public abstract class MacheteActivity extends Activity {
 
@@ -44,6 +48,7 @@ public abstract class MacheteActivity extends Activity {
 	private BackgroundView backView;
 	private String splash;
 	private int color;
+	private AlertDialog.Builder builder;
 
 	protected MacheteActivity(String baseAssets, String splash, int color) {
 		this.baseAssets = baseAssets;
@@ -58,6 +63,15 @@ public abstract class MacheteActivity extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		
+		builder = new AlertDialog.Builder(this);
+		builder.setMessage("This application is not compatible with your device. Try updating to a newer version.")
+		       .setCancelable(false)
+		       .setNeutralButton("Close", new DialogInterface.OnClickListener() {
+		           public void onClick(DialogInterface dialog, int id) {
+		                MacheteActivity.this.finish();
+		           }
+		       });
 		
 		hideTitle();
 		fullScreen();
@@ -123,124 +137,149 @@ public abstract class MacheteActivity extends Activity {
 	}
 	
 	protected void startGame() {
-		mGLSurfaceView = new GLSurfaceView(this);
-
-		mGLSurfaceView.setEGLConfigChooser(new EGLConfigChooser() {
-			public EGLConfig chooseConfig(EGL10 egl, EGLDisplay display) {
-			    int[] version = new int[2];
-			    egl.eglInitialize(display, version);
-
-			    int EGL_OPENGL_ES2_BIT = 4;
-			    int[] configAttribs =
-			    {
-			        EGL10.EGL_RED_SIZE, 4,
-			        EGL10.EGL_GREEN_SIZE, 4,
-			        EGL10.EGL_BLUE_SIZE, 4,
-			        EGL10.EGL_RENDERABLE_TYPE, EGL_OPENGL_ES2_BIT,
-			        EGL10.EGL_NONE
-			    };
-
-			    EGLConfig[] configs = new EGLConfig[50];
-			    int[] num_config = new int[1];
-
-		    	boolean res = egl.eglChooseConfig(display, configAttribs, configs, 50, num_config);
-		    	if (!res) return null;
-		    	egl.eglTerminate(display);
-
-			    return configs[num_config[0] - 1];
-			}
-		});
-
-		mGLSurfaceView.setEGLContextFactory(new EGLContextFactory() {
-			public void destroyContext(EGL10 egl, EGLDisplay display,
-					EGLContext context) {
-				egl.eglDestroyContext(display, context);
-			}
-
-			public EGLContext createContext(EGL10 egl, EGLDisplay display,
-					EGLConfig eglConfig) {
-				Log.i("Maton", "Creating Context with EGL Version: " + MacheteNative.GL_VERSION);
-				int[] attrib_list = new int[] {
-						0x3098 /* EGL10.EGL_VERSION */, MacheteNative.GL_VERSION, EGL10.EGL_NONE };
-
-				EGLContext context = egl.eglCreateContext(display, eglConfig,
-						EGL10.EGL_NO_CONTEXT, attrib_list);
-				return context;
-			}
-		});
-
-		mGLSurfaceView.setRenderer(new Renderer() {
-			public void onSurfaceCreated(GL10 gl, EGLConfig config) {
-			}
-
-			public void onSurfaceChanged(final GL10 gl, final int width, final int height) {
-				if (initialized) {
-					engine.resize(width, height, 1);
-				} else {
-					String apkFilePath = null;
-					ApplicationInfo appInfo = null;
-					PackageManager packMgmr = getPackageManager();
-					try {
-						appInfo = packMgmr.getApplicationInfo(baseAssets, 0);
-					} catch (NameNotFoundException e) {
-						e.printStackTrace();
-						throw new RuntimeException(
-								"Unable to locate assets, aborting...");
+		final ActivityManager activityManager = (ActivityManager)getSystemService(Context.ACTIVITY_SERVICE);
+		final ConfigurationInfo configurationInfo = activityManager.getDeviceConfigurationInfo();
+		final boolean supportsEs2 = configurationInfo.reqGlEsVersion >= 0x20000;
+		
+		if (!supportsEs2) {
+			MacheteActivity.this.runOnUiThread(new Runnable() {
+					public void run() {
+						AlertDialog alert = builder.show();
 					}
-					apkFilePath = appInfo.sourceDir;
+				});
+		} else {
+			mGLSurfaceView = new GLSurfaceView(this);
 
-					File f = getFilesDir();
+			mGLSurfaceView.setEGLConfigChooser(new EGLConfigChooser() {
+				public EGLConfig chooseConfig(EGL10 egl, EGLDisplay display) {
+				    int[] version = new int[2];
+				    egl.eglInitialize(display, version);
 
-					engine.initialize(f.toString(), apkFilePath, width, height, 1, 1);
+				    int EGL_OPENGL_ES2_BIT = 4;
+				    int[] configAttribs =
+				    {
+				        EGL10.EGL_RED_SIZE, 4,
+				        EGL10.EGL_GREEN_SIZE, 4,
+				        EGL10.EGL_BLUE_SIZE, 4,
+				        EGL10.EGL_RENDERABLE_TYPE, EGL_OPENGL_ES2_BIT,
+				        EGL10.EGL_NONE
+				    };
 
-					AssetManager mgr = getAssets();
-					String path = "";
-					String list[];
-					try {
-						list = mgr.list(path);
-						if (list != null) {
-							for (int i = 0; i < list.length; ++i) {
-								try {
-									AssetFileDescriptor fd = mgr
-											.openFd(list[i]);
+				    EGLConfig[] configs = new EGLConfig[50];
+				    int[] num_config = new int[1];
 
-									engine.resourceOffset(list[i],
-											fd.getStartOffset(), fd.getLength());
+			    	boolean res = egl.eglChooseConfig(display, configAttribs, configs, 50, num_config);
+			    	if (!res) return null;
+			    	egl.eglTerminate(display);
 
-									fd.close();
-								} catch (FileNotFoundException e) {
+						if (num_config[0] < 1) {
+							return null;
+						}
+				    return configs[num_config[0] - 1];
+				}
+			});
+
+			mGLSurfaceView.setEGLContextFactory(new EGLContextFactory() {
+				public void destroyContext(EGL10 egl, EGLDisplay display,
+						EGLContext context) {
+					egl.eglDestroyContext(display, context);
+				}
+
+				public EGLContext createContext(EGL10 egl, EGLDisplay display,
+						EGLConfig eglConfig) {
+						
+					if (eglConfig == null) {
+						MacheteActivity.this.runOnUiThread(new Runnable() {
+								public void run() {
+									AlertDialog alert = builder.create();
+								}
+							});
+						return null;
+					}
+				
+					Log.i("Maton", "Creating Context with EGL Version: " + MacheteNative.GL_VERSION);
+					int[] attrib_list = new int[] {
+							0x3098 /* EGL10.EGL_VERSION */, MacheteNative.GL_VERSION, EGL10.EGL_NONE };
+
+					EGLContext context = egl.eglCreateContext(display, eglConfig,
+							EGL10.EGL_NO_CONTEXT, attrib_list);
+						return context;
+				}
+			});
+
+			mGLSurfaceView.setRenderer(new Renderer() {
+				public void onSurfaceCreated(GL10 gl, EGLConfig config) {
+				}
+
+				public void onSurfaceChanged(final GL10 gl, final int width, final int height) {
+					if (initialized) {
+						engine.resize(width, height, 1);
+					} else {
+						String apkFilePath = null;
+						ApplicationInfo appInfo = null;
+						PackageManager packMgmr = getPackageManager();
+						try {
+							appInfo = packMgmr.getApplicationInfo(baseAssets, 0);
+						} catch (NameNotFoundException e) {
+							e.printStackTrace();
+							throw new RuntimeException(
+									"Unable to locate assets, aborting...");
+						}
+						apkFilePath = appInfo.sourceDir;
+
+						File f = getFilesDir();
+
+						engine.initialize(f.toString(), apkFilePath, width, height, 1, 1);
+
+						AssetManager mgr = getAssets();
+						String path = "";
+						String list[];
+						try {
+							list = mgr.list(path);
+							if (list != null) {
+								for (int i = 0; i < list.length; ++i) {
+									try {
+										AssetFileDescriptor fd = mgr
+												.openFd(list[i]);
+
+										engine.resourceOffset(list[i],
+												fd.getStartOffset(), fd.getLength());
+
+										fd.close();
+									} catch (FileNotFoundException e) {
+									}
 								}
 							}
+						} catch (IOException e) {
 						}
-					} catch (IOException e) {
-					}
 
-					engine.startup();
+						engine.startup();
 
-					engine.resume();
+						engine.resume();
 					
-					MacheteActivity.this.runOnUiThread(new Runnable() {
-						public void run() {
-							MacheteActivity.this.backView.setVisibility(View.INVISIBLE);
-							MacheteActivity.this.mGLSurfaceView.setVisibility(View.VISIBLE);
-							MacheteActivity.this.gameReady = true;
-							MacheteActivity.this.backView.invalidate();
-							MacheteActivity.this.mGLSurfaceView.invalidate();
-						}
-					});
+						MacheteActivity.this.runOnUiThread(new Runnable() {
+							public void run() {
+								MacheteActivity.this.backView.setVisibility(View.INVISIBLE);
+								MacheteActivity.this.mGLSurfaceView.setVisibility(View.VISIBLE);
+								MacheteActivity.this.gameReady = true;
+								MacheteActivity.this.backView.invalidate();
+								MacheteActivity.this.mGLSurfaceView.invalidate();
+							}
+						});
+					}
 				}
-			}
 
-			public void onDrawFrame(GL10 gl) {
-				float t = tick.nextFrame();
-				engine.update(t);
-				engine.render();
-			}
-		});
+				public void onDrawFrame(GL10 gl) {
+					float t = tick.nextFrame();
+					engine.update(t);
+					engine.render();
+				}
+			});
 		
-		addContentView(mGLSurfaceView, new LayoutParams(LayoutParams.FILL_PARENT,
-				LayoutParams.FILL_PARENT));
-		
+			addContentView(mGLSurfaceView, new LayoutParams(LayoutParams.FILL_PARENT,
+					LayoutParams.FILL_PARENT));
+		}
+
 		backView = new BackgroundView(this, splash);
 		addContentView(backView, new LayoutParams(LayoutParams.FILL_PARENT,
 				LayoutParams.FILL_PARENT));
