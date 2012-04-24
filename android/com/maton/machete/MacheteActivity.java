@@ -11,32 +11,31 @@ import javax.microedition.khronos.egl.EGLContext;
 import javax.microedition.khronos.egl.EGLDisplay;
 import javax.microedition.khronos.opengles.GL10;
 
-import android.view.View;
-import android.widget.ImageView;
-import android.view.ViewGroup.LayoutParams;
 import android.app.Activity;
+import android.app.ActivityManager;
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.pm.ApplicationInfo;
+import android.content.pm.ConfigurationInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.AssetFileDescriptor;
 import android.content.res.AssetManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
 import android.opengl.GLSurfaceView;
-import android.opengl.GLSurfaceView.EGLConfigChooser;
 import android.opengl.GLSurfaceView.EGLContextFactory;
 import android.opengl.GLSurfaceView.Renderer;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MotionEvent;
-import android.graphics.Canvas;
+import android.view.View;
+import android.view.ViewGroup.LayoutParams;
 import android.view.Window;
 import android.view.WindowManager;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.content.Context;
-import android.app.AlertDialog;
-import android.content.DialogInterface;
-import android.content.pm.ConfigurationInfo;
-import android.app.ActivityManager;
+import android.widget.ImageView;
 
 public abstract class MacheteActivity extends Activity {
 
@@ -63,22 +62,24 @@ public abstract class MacheteActivity extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		
+
 		builder = new AlertDialog.Builder(this);
-		builder.setMessage("This application is not compatible with your device. Try updating to a newer version.")
-		       .setCancelable(false)
-		       .setNeutralButton("Close", new DialogInterface.OnClickListener() {
-		           public void onClick(DialogInterface dialog, int id) {
-		                MacheteActivity.this.finish();
-		           }
-		       });
-		
+		builder.setMessage(
+				"This application is not compatible with your device. Try updating to a newer version.")
+				.setCancelable(false)
+				.setNeutralButton("Close",
+						new DialogInterface.OnClickListener() {
+							public void onClick(DialogInterface dialog, int id) {
+								MacheteActivity.this.finish();
+							}
+						});
+
 		hideTitle();
 		fullScreen();
-		
+
 		startGame();
 	}
-	
+
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
 		if (gameReady) {
@@ -130,54 +131,57 @@ public abstract class MacheteActivity extends Activity {
 	@Override
 	protected void onResume() {
 		super.onResume();
-		
+
 		if (gameReady) {
 			engine.resume();
 		}
 	}
-	
+
 	protected void startGame() {
-		final ActivityManager activityManager = (ActivityManager)getSystemService(Context.ACTIVITY_SERVICE);
-		final ConfigurationInfo configurationInfo = activityManager.getDeviceConfigurationInfo();
+		final ActivityManager activityManager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+		final ConfigurationInfo configurationInfo = activityManager
+				.getDeviceConfigurationInfo();
 		final boolean supportsEs2 = configurationInfo.reqGlEsVersion >= 0x20000;
-		
+
 		if (!supportsEs2) {
 			MacheteActivity.this.runOnUiThread(new Runnable() {
-					public void run() {
-						AlertDialog alert = builder.show();
-					}
-				});
-		} else {
-			mGLSurfaceView = new GLSurfaceView(this);
-
-			mGLSurfaceView.setEGLConfigChooser(new EGLConfigChooser() {
-				public EGLConfig chooseConfig(EGL10 egl, EGLDisplay display) {
-				    int[] version = new int[2];
-				    egl.eglInitialize(display, version);
-
-				    int EGL_OPENGL_ES2_BIT = 4;
-				    int[] configAttribs =
-				    {
-				        EGL10.EGL_RED_SIZE, 4,
-				        EGL10.EGL_GREEN_SIZE, 4,
-				        EGL10.EGL_BLUE_SIZE, 4,
-				        EGL10.EGL_RENDERABLE_TYPE, EGL_OPENGL_ES2_BIT,
-				        EGL10.EGL_NONE
-				    };
-
-				    EGLConfig[] configs = new EGLConfig[50];
-				    int[] num_config = new int[1];
-
-			    	boolean res = egl.eglChooseConfig(display, configAttribs, configs, 50, num_config);
-			    	if (!res) return null;
-			    	egl.eglTerminate(display);
-
-						if (num_config[0] < 1) {
-							return null;
-						}
-				    return configs[num_config[0] - 1];
+				public void run() {
+					builder.show();
 				}
 			});
+		} else {
+			mGLSurfaceView = new GLSurfaceView(this);
+			
+			mGLSurfaceView.setEGLConfigChooser(new ConfigChooser(5, 6, 5, 0, 24, 0));
+			
+			/*
+			mGLSurfaceView.setEGLConfigChooser(new EGLConfigChooser() {
+				public EGLConfig chooseConfig(EGL10 egl, EGLDisplay display) {
+					int[] version = new int[2];
+					egl.eglInitialize(display, version);
+
+					int EGL_OPENGL_ES2_BIT = 4;
+					int[] configAttribs = { EGL10.EGL_RED_SIZE, 4,
+							EGL10.EGL_GREEN_SIZE, 4, EGL10.EGL_BLUE_SIZE, 4,
+							EGL10.EGL_RENDERABLE_TYPE, EGL_OPENGL_ES2_BIT,
+							EGL10.EGL_NONE };
+
+					EGLConfig[] configs = new EGLConfig[50];
+					int[] num_config = new int[1];
+
+					boolean res = egl.eglChooseConfig(display, configAttribs,
+							configs, 50, num_config);
+					if (!res)
+						return null;
+					egl.eglTerminate(display);
+
+					if (num_config[0] < 1) {
+						return null;
+					}
+					return configs[num_config[0] - 1];
+				}
+			});
+			*/
 
 			mGLSurfaceView.setEGLContextFactory(new EGLContextFactory() {
 				public void destroyContext(EGL10 egl, EGLDisplay display,
@@ -187,23 +191,25 @@ public abstract class MacheteActivity extends Activity {
 
 				public EGLContext createContext(EGL10 egl, EGLDisplay display,
 						EGLConfig eglConfig) {
-						
+
 					if (eglConfig == null) {
 						MacheteActivity.this.runOnUiThread(new Runnable() {
-								public void run() {
-									AlertDialog alert = builder.create();
-								}
-							});
+							public void run() {
+								builder.create();
+							}
+						});
 						return null;
 					}
-				
-					Log.i("Maton", "Creating Context with EGL Version: " + MacheteNative.GL_VERSION);
-					int[] attrib_list = new int[] {
-							0x3098 /* EGL10.EGL_VERSION */, MacheteNative.GL_VERSION, EGL10.EGL_NONE };
 
-					EGLContext context = egl.eglCreateContext(display, eglConfig,
-							EGL10.EGL_NO_CONTEXT, attrib_list);
-						return context;
+					Log.i("Maton", "Creating Context with EGL Version: "
+							+ MacheteNative.GL_VERSION);
+					int[] attrib_list = new int[] {
+							0x3098 , // EGL10.EGL_VERSION
+							MacheteNative.GL_VERSION, EGL10.EGL_NONE };
+
+					EGLContext context = egl.eglCreateContext(display,
+							eglConfig, EGL10.EGL_NO_CONTEXT, attrib_list);
+					return context;
 				}
 			});
 
@@ -211,7 +217,8 @@ public abstract class MacheteActivity extends Activity {
 				public void onSurfaceCreated(GL10 gl, EGLConfig config) {
 				}
 
-				public void onSurfaceChanged(final GL10 gl, final int width, final int height) {
+				public void onSurfaceChanged(final GL10 gl, final int width,
+						final int height) {
 					if (initialized) {
 						engine.resize(width, height, 1);
 					} else {
@@ -219,7 +226,8 @@ public abstract class MacheteActivity extends Activity {
 						ApplicationInfo appInfo = null;
 						PackageManager packMgmr = getPackageManager();
 						try {
-							appInfo = packMgmr.getApplicationInfo(baseAssets, 0);
+							appInfo = packMgmr
+									.getApplicationInfo(baseAssets, 0);
 						} catch (NameNotFoundException e) {
 							e.printStackTrace();
 							throw new RuntimeException(
@@ -229,7 +237,8 @@ public abstract class MacheteActivity extends Activity {
 
 						File f = getFilesDir();
 
-						engine.initialize(f.toString(), apkFilePath, width, height, 1, 1);
+						engine.initialize(f.toString(), apkFilePath, width,
+								height, 1, 1);
 
 						AssetManager mgr = getAssets();
 						String path = "";
@@ -243,7 +252,8 @@ public abstract class MacheteActivity extends Activity {
 												.openFd(list[i]);
 
 										engine.resourceOffset(list[i],
-												fd.getStartOffset(), fd.getLength());
+												fd.getStartOffset(),
+												fd.getLength());
 
 										fd.close();
 									} catch (FileNotFoundException e) {
@@ -256,14 +266,17 @@ public abstract class MacheteActivity extends Activity {
 						engine.startup();
 
 						engine.resume();
-					
+
 						MacheteActivity.this.runOnUiThread(new Runnable() {
 							public void run() {
-								MacheteActivity.this.backView.setVisibility(View.INVISIBLE);
-								MacheteActivity.this.mGLSurfaceView.setVisibility(View.VISIBLE);
+								MacheteActivity.this.backView
+										.setVisibility(View.INVISIBLE);
+								MacheteActivity.this.mGLSurfaceView
+										.setVisibility(View.VISIBLE);
 								MacheteActivity.this.gameReady = true;
 								MacheteActivity.this.backView.invalidate();
-								MacheteActivity.this.mGLSurfaceView.invalidate();
+								MacheteActivity.this.mGLSurfaceView
+										.invalidate();
 							}
 						});
 					}
@@ -275,9 +288,9 @@ public abstract class MacheteActivity extends Activity {
 					engine.render();
 				}
 			});
-		
-			addContentView(mGLSurfaceView, new LayoutParams(LayoutParams.FILL_PARENT,
-					LayoutParams.FILL_PARENT));
+
+			addContentView(mGLSurfaceView, new LayoutParams(
+					LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
 		}
 
 		backView = new BackgroundView(this, splash);
@@ -289,7 +302,7 @@ public abstract class MacheteActivity extends Activity {
 	@Override
 	protected void onPause() {
 		super.onPause();
-		
+
 		if (gameReady) {
 			engine.pause();
 			engine.stop();
@@ -300,7 +313,7 @@ public abstract class MacheteActivity extends Activity {
 	@Override
 	protected void onStart() {
 		super.onStart();
-		
+
 		if (gameReady) {
 			engine.start();
 		}
@@ -309,7 +322,7 @@ public abstract class MacheteActivity extends Activity {
 	@Override
 	protected void onStop() {
 		super.onStop();
-		
+
 		if (gameReady) {
 			engine.stop();
 		}
@@ -329,10 +342,10 @@ public abstract class MacheteActivity extends Activity {
 
 	class BackgroundView extends View {
 		ImageView imgView;
-		
+
 		public BackgroundView(Context context, String image) {
 			super(context);
-			
+
 			imgView = new ImageView(context);
 			try {
 				imgView.setImageBitmap(getBitmapFromAsset(image));
@@ -358,15 +371,15 @@ public abstract class MacheteActivity extends Activity {
 			color = aColor;
 			invalidate();
 		}
-		
-    private Bitmap getBitmapFromAsset(String strName) throws IOException {
-        AssetManager assetManager = getAssets();
-        
-        InputStream istr = assetManager.open(strName);
-        Bitmap bitmap = BitmapFactory.decodeStream(istr);
 
-        return bitmap;
-    }
+		private Bitmap getBitmapFromAsset(String strName) throws IOException {
+			AssetManager assetManager = getAssets();
+
+			InputStream istr = assetManager.open(strName);
+			Bitmap bitmap = BitmapFactory.decodeStream(istr);
+
+			return bitmap;
+		}
 
 		@Override
 		public void setVisibility(int v) {
