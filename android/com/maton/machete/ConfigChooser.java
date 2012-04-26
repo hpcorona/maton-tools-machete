@@ -58,6 +58,8 @@ public class ConfigChooser implements GLSurfaceView.EGLConfigChooser {
 
 	public EGLConfig chooseConfig(EGL10 egl, EGLDisplay display,
 			EGLConfig[] configs) {
+		EGLConfig bestConf = null;
+		int distance = 999999999;
 		for (EGLConfig config : configs) {
 			int d = findConfigAttrib(egl, display, config,
 					EGL10.EGL_DEPTH_SIZE, 0);
@@ -79,10 +81,20 @@ public class ConfigChooser implements GLSurfaceView.EGLConfigChooser {
 					EGL10.EGL_ALPHA_SIZE, 0);
 
 			if (r == mRedSize && g == mGreenSize && b == mBlueSize
-					&& a == mAlphaSize)
+					&& a == mAlphaSize) {
 				return config;
+			} else {
+				int localDist = Math.abs(r - mRedSize) + 
+					Math.abs(g - mGreenSize) + Math.abs(b - mBlueSize) +
+					Math.abs(a - mAlphaSize);
+				
+				if (localDist < distance) {
+					bestConf = config;
+					distance = localDist;
+				}
+			}
 		}
-		return null;
+		return bestConf;
 	}
 
 	private int findConfigAttrib(EGL10 egl, EGLDisplay display,
@@ -103,7 +115,7 @@ public class ConfigChooser implements GLSurfaceView.EGLConfigChooser {
 		}
 	}
 
-	private void printConfig(EGL10 egl, EGLDisplay display, EGLConfig config) {
+	public static String printConfig(EGL10 egl, EGLDisplay display, EGLConfig config) {
 		int[] attributes = { EGL10.EGL_BUFFER_SIZE, EGL10.EGL_ALPHA_SIZE,
 				EGL10.EGL_BLUE_SIZE, EGL10.EGL_GREEN_SIZE, EGL10.EGL_RED_SIZE,
 				EGL10.EGL_DEPTH_SIZE, EGL10.EGL_STENCIL_SIZE,
@@ -145,17 +157,19 @@ public class ConfigChooser implements GLSurfaceView.EGLConfigChooser {
 				"EGL_COLOR_BUFFER_TYPE", "EGL_RENDERABLE_TYPE",
 				"EGL_CONFORMANT" };
 		int[] value = new int[1];
+		String confStr = "";
 		for (int i = 0; i < attributes.length; i++) {
 			int attribute = attributes[i];
 			String name = names[i];
 			if (egl.eglGetConfigAttrib(display, config, attribute, value)) {
-				Log.w("Maton", String.format("  %s: %d\n", name, value[0]));
+				confStr += String.format("  %s: %d\n", name, value[0]);
 			} else {
 				// Log.w("Maton", String.format("  %s: failed\n", name));
-				while (egl.eglGetError() != EGL10.EGL_SUCCESS)
-					;
+				while (egl.eglGetError() != EGL10.EGL_SUCCESS);
 			}
 		}
+		
+		return confStr;
 	}
 
 	// Subclasses can adjust these values:

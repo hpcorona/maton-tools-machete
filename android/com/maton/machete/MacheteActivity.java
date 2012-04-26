@@ -28,6 +28,7 @@ import android.graphics.Canvas;
 import android.opengl.GLSurfaceView;
 import android.opengl.GLSurfaceView.EGLContextFactory;
 import android.opengl.GLSurfaceView.Renderer;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -154,35 +155,6 @@ public abstract class MacheteActivity extends Activity {
 			
 			mGLSurfaceView.setEGLConfigChooser(new ConfigChooser(5, 6, 5, 0, 24, 0));
 			
-			/*
-			mGLSurfaceView.setEGLConfigChooser(new EGLConfigChooser() {
-				public EGLConfig chooseConfig(EGL10 egl, EGLDisplay display) {
-					int[] version = new int[2];
-					egl.eglInitialize(display, version);
-
-					int EGL_OPENGL_ES2_BIT = 4;
-					int[] configAttribs = { EGL10.EGL_RED_SIZE, 4,
-							EGL10.EGL_GREEN_SIZE, 4, EGL10.EGL_BLUE_SIZE, 4,
-							EGL10.EGL_RENDERABLE_TYPE, EGL_OPENGL_ES2_BIT,
-							EGL10.EGL_NONE };
-
-					EGLConfig[] configs = new EGLConfig[50];
-					int[] num_config = new int[1];
-
-					boolean res = egl.eglChooseConfig(display, configAttribs,
-							configs, 50, num_config);
-					if (!res)
-						return null;
-					egl.eglTerminate(display);
-
-					if (num_config[0] < 1) {
-						return null;
-					}
-					return configs[num_config[0] - 1];
-				}
-			});
-			*/
-
 			mGLSurfaceView.setEGLContextFactory(new EGLContextFactory() {
 				public void destroyContext(EGL10 egl, EGLDisplay display,
 						EGLContext context) {
@@ -193,12 +165,8 @@ public abstract class MacheteActivity extends Activity {
 						EGLConfig eglConfig) {
 
 					if (eglConfig == null) {
-						MacheteActivity.this.runOnUiThread(new Runnable() {
-							public void run() {
-								builder.create();
-							}
-						});
-						return null;
+						throw new RuntimeException("eglConfig is null, or bad match: " + 
+							Build.MANUFACTURER + ", " + Build.MODEL + ", " + Build.PRODUCT);
 					}
 
 					Log.i("Maton", "Creating Context with EGL Version: "
