@@ -59,16 +59,17 @@ public class ConfigChooser implements GLSurfaceView.EGLConfigChooser {
 	public EGLConfig chooseConfig(EGL10 egl, EGLDisplay display,
 			EGLConfig[] configs) {
 		EGLConfig bestConf = null;
-		int distance = 999999999;
+		int distance = 999999;
 		for (EGLConfig config : configs) {
 			int d = findConfigAttrib(egl, display, config,
 					EGL10.EGL_DEPTH_SIZE, 0);
 			int s = findConfigAttrib(egl, display, config,
 					EGL10.EGL_STENCIL_SIZE, 0);
 
-			// We need at least mDepthSize and mStencilSize bits
-			if (d < mDepthSize || s < mStencilSize)
+			// We need at max mDepthSize (Tegra devices only supports up to 16) and min mStencilSize bits
+			if (d > mDepthSize || s < mStencilSize) {
 				continue;
+			}
 
 			// We want an *exact* match for red/green/blue/alpha
 			int r = findConfigAttrib(egl, display, config, EGL10.EGL_RED_SIZE,
@@ -81,12 +82,12 @@ public class ConfigChooser implements GLSurfaceView.EGLConfigChooser {
 					EGL10.EGL_ALPHA_SIZE, 0);
 
 			if (r == mRedSize && g == mGreenSize && b == mBlueSize
-					&& a == mAlphaSize) {
+					&& a == mAlphaSize && d == mDepthSize) {
 				return config;
 			} else {
 				int localDist = Math.abs(r - mRedSize) + 
-					Math.abs(g - mGreenSize) + Math.abs(b - mBlueSize) +
-					Math.abs(a - mAlphaSize);
+						Math.abs(g - mGreenSize) + Math.abs(b - mBlueSize) +
+						(Math.abs(a - mAlphaSize) * 100) + (Math.abs(d - mDepthSize) * 10000);
 				
 				if (localDist < distance) {
 					bestConf = config;
