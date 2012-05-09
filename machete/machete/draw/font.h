@@ -32,7 +32,7 @@ namespace machete {
        \param uv1 The second coordinate of the texture.
        \param texture The identifier of the texture.
        */
-      FontChar(const Vec2 & pivot, const Vec2 & size, const Vec2 & uv0, const Vec2 & uv1, unsigned int texture);
+      FontChar(const Vec2 & pivot, const Vec2 & size, const Vec2 & uv0, const Vec2 & uv1, Texture* texture);
       
       //! Changes the pixels that this character consumes in the x axis.
       /*!
@@ -171,7 +171,7 @@ namespace machete {
        \param name File name to load. If the extension is xml or fnt it will be changed to mbd.
        \param t The texture.
        */
-      Font(const char* name, struct Tex * t);
+      Font(const char* name, Texture* t);
       
       //! Destructor.
       ~Font();
@@ -208,7 +208,7 @@ namespace machete {
       Hash<int, FontChar*> chars;
       
       //! The texture associated with this font.
-      struct Tex *texture;
+      Texture* texture;
       
     };
     

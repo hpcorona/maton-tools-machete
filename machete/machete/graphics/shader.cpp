@@ -30,9 +30,30 @@ namespace machete {
     
     bool Shader::LoadShader(GLenum shaderType, const char *source) {
 #ifndef OPENGL_11
+      if (this->source != NULL) {
+        delete this->source;
+      }
+      this->source = new char[strlen(source)+1];
+      this->source[strlen(source)] = 0;
+      strcpy(this->source, source);
+      
+      this->shaderType = shaderType;
+      
+      return CreateShader();
+#else
+      return true;
+#endif
+    }
+    
+    void Shader::Regenerate() {
+      CreateShader();
+    }
+    
+    bool Shader::CreateShader() {
+#ifndef OPENGL_11
       shader = glCreateShader(shaderType);
       CheckGLError("glCreateShader");
-      glShaderSource(shader, 1, &source, 0);
+      glShaderSource(shader, 1, (const char**)&this->source, 0);
       CheckGLError("glShaderSource");
       glCompileShader(shader);
       CheckGLError("glCompileShader");
@@ -51,7 +72,6 @@ namespace machete {
         return false;
       }
 #endif
-      
       return true;
     }
     
@@ -73,6 +93,14 @@ namespace machete {
     void Program::Unuse() {
 #ifndef OPENGL_11
       glUseProgram(0);
+#endif
+    }
+    
+    void Program::Regenerate() {
+#ifndef OPENGL_11
+      CreateProgram(vertexShader, fragmentShader);
+      
+      Extract();
 #endif
     }
 
@@ -180,64 +208,128 @@ namespace machete {
 #endif
     }
     
+    void ShaderMgr::Regenerate() {
+      machete::data::Iterator< machete::data::Tree<machete::data::Str, Shader*>* >* iter = shaders.Enumerate();
+      
+      iter->Reset();
+      while (iter->Next()) {
+        machete::data::Tree<machete::data::Str, Shader*>* node;
+        node = iter->GetCurrent()->GetValue();
+        
+        node->GetValue()->Regenerate();
+      }
+    }
+    
     TextureMgr::~TextureMgr() {
-      machete::data::Iterator< machete::data::Tree<machete::data::Str, struct Tex*>* >* iter = textures.Enumerate();
+      machete::data::Iterator< machete::data::Tree<machete::data::Str, Texture*>* >* iter = textures.Enumerate();
       
       iter->Reset();
       
       while (iter->Next()) {
-        struct Tex *tex = iter->GetCurrent()->GetValue()->GetValue();
+        Texture *tex = iter->GetCurrent()->GetValue()->GetValue();
+        
+        glDeleteTextures(1, &tex->id);
+        CheckGLError("glDeleteTextures");
+      }
+      delete iter;
+      
+      dynTextures.Reset();
+      while (dynTextures.Next()) {
+        Texture *tex = dynTextures.GetCurrent()->GetValue();
         
         glDeleteTextures(1, &tex->id);
         CheckGLError("glDeleteTextures");
       }
       
-      delete iter;
+      resources.RemoveAll();
     }
     
-    struct Tex* TextureMgr::LoadTexture(const char *name) {
-      machete::data::Tree<machete::data::Str, struct Tex*> *txNode = textures.Seek(name);
+    void TextureMgr::Regenerate() {
+      machete::data::Iterator< machete::data::Tree<machete::data::Str, Texture*>* >* iter = textures.Enumerate();
       
-      struct Tex *tex = NULL;
-      GLuint texId;
+      iter->Reset();
+      char fileName[200];
+      machete::data::Str fileNameStr(200);
+      
+      while (iter->Next()) {
+        machete::data::Tree<machete::data::Str, Texture*>* node;
+        node = iter->GetCurrent()->GetValue();
+        fileNameStr = node->GetKey();
+        fileNameStr.GetChars(fileName, 200);
+        Texture *tex = iter->GetCurrent()->GetValue()->GetValue();
+        
+        InternalLoad(fileName, tex);
+      }
+      delete iter;
+      
+      dynTextures.Reset();
+      while (dynTextures.Next()) {
+        Texture *tex = dynTextures.GetCurrent()->GetValue();
+        
+        InternalCreate((int)tex->width, (int)tex->height, tex);
+      }
+      
+      resources.Reset();
+      while (resources.Next()) {
+        Regen *res = resources.GetCurrent()->GetValue();
+        
+        res->Regenerate();
+      }
+    }
+    
+    void TextureMgr::RegisterRegen(machete::graphics::Regen *reg) {
+      resources.Append(reg);
+    }
+    
+    void TextureMgr::UnregisterRegen(machete::graphics::Regen *reg) {
+      resources.Reset();
+      
+      while (resources.Next()) {
+        if (resources.GetCurrent()->GetValue() == reg) {
+          resources.RemoveCurrent(true);
+        }
+      }
+    }
+
+    void TextureMgr::Unload(Texture *texture) {
+      machete::data::Iterator< machete::data::Tree<machete::data::Str, Texture*>* >* iter = textures.Enumerate();
+      
+      iter->Reset();
+      machete::data::Str fileNameStr(200);
+      
+      while (iter->Next()) {
+        machete::data::Tree<machete::data::Str, Texture*>* node;
+        if (node->GetValue() == texture) {
+          glDeleteTextures(1, &node->GetValue()->id);
+          CheckGLError("glDeleteTextures");
+          textures.Delete(node->GetKey());
+          
+          delete iter;
+          return;
+        }
+      }
+      delete iter;
+      
+      dynTextures.Reset();
+      while (dynTextures.Next()) {
+        Texture *tex = dynTextures.GetCurrent()->GetValue();
+        if (tex == texture) {
+          glDeleteTextures(1, &tex->id);
+          CheckGLError("glDeleteTextures");
+          return;
+        }
+      }
+    }
+    
+    Texture* TextureMgr::LoadTexture(const char *name) {
+      machete::data::Tree<machete::data::Str, Texture*> *txNode = textures.Seek(name);
+      
+      Texture *tex = NULL;
       
       if (txNode == NULL) {
-        tex = new struct Tex();
+        tex = new Texture();
         
-        glGenTextures(1, &texId);
-        CheckGLError("glGenTextures");
-        
-        glActiveTexture(GL_TEXTURE0);
-        CheckGLError("glActiveTexture");
-        glBindTexture(GL_TEXTURE_2D, texId);
-        CheckGLError("glBindTexture");
-        
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
-                        GL_LINEAR);
-        CheckGLError("glTexParameteri");
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,
-                        GL_LINEAR);
-        CheckGLError("glTexParameteri");
-        
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S,
-                        GL_CLAMP_TO_EDGE);
-        CheckGLError("glTexParameteri");
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T,
-                        GL_CLAMP_TO_EDGE);
-        CheckGLError("glTexParameteri");
-        
-        void* pixels = NULL;
-        machete::math::IVec2 size;
-        
-        machete::platform::ThePlatform->LoadImage(name, &pixels, size);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, size.x, size.y, 0, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
-        CheckGLError("glTexImage2D");
-        
-        machete::platform::ThePlatform->UnloadImage();
-        
-        tex->id = texId;
-        tex->width = size.x;
-        tex->height = size.y;
+        InternalLoad(name, tex);
         
         textures.Add(name, tex);
       } else {
@@ -247,10 +339,60 @@ namespace machete {
       return tex;
     }
     
-    struct Tex* TextureMgr::CreateTexture(int width, int height) {
-      struct Tex *t = new struct Tex();
-      t->width = width;
-      t->height = height;
+    Texture* TextureMgr::InternalLoad(const char *name, Texture* tex) {
+      GLuint texId;
+      
+      glGenTextures(1, &texId);
+      CheckGLError("glGenTextures");
+      
+      glActiveTexture(GL_TEXTURE0);
+      CheckGLError("glActiveTexture");
+      glBindTexture(GL_TEXTURE_2D, texId);
+      CheckGLError("glBindTexture");
+      
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
+                      GL_LINEAR);
+      CheckGLError("glTexParameteri");
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,
+                      GL_LINEAR);
+      CheckGLError("glTexParameteri");
+      
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S,
+                      GL_CLAMP_TO_EDGE);
+      CheckGLError("glTexParameteri");
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T,
+                      GL_CLAMP_TO_EDGE);
+      CheckGLError("glTexParameteri");
+      
+      void* pixels = NULL;
+      machete::math::IVec2 size;
+      
+      machete::platform::ThePlatform->LoadImage(name, &pixels, size);
+      glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, size.x, size.y, 0, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
+      CheckGLError("glTexImage2D");
+      
+      machete::platform::ThePlatform->UnloadImage();
+      
+      tex->id = texId;
+      tex->width = size.x;
+      tex->height = size.y;
+      
+      return tex;
+    }
+    
+    Texture* TextureMgr::CreateTexture(int width, int height) {
+      Texture *t = new Texture();
+      
+      InternalCreate(width, height, t);
+      
+      dynTextures.Append(t);
+      
+      return t;
+    }
+    
+    Texture* TextureMgr::InternalCreate(int width, int height, Texture* tex) {
+      tex->width = width;
+      tex->height = height;
       
       GLuint texId;
       
@@ -261,7 +403,7 @@ namespace machete {
       CheckGLError("glActiveTexture");
       glBindTexture(GL_TEXTURE_2D, texId);
       CheckGLError("glBindTexture");
-
+      
       glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
                       GL_LINEAR);
       CheckGLError("glTexParameteri");
@@ -279,18 +421,26 @@ namespace machete {
       glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
       CheckGLError("glTexImage2D");
       
-      t->id = texId;
+      tex->id = texId;
       
-      return t;
+      return tex;
     }
     
     VtxRender::VtxRender() {
 #ifndef OPENGL_11
-      Shader *vtx = CreateVtxShader();
-      Shader *frg = CreateFrgShader();
+      vertexShader = CreateVtxShader();
+      fragmentShader = CreateFrgShader();
       
-      CreateProgram(vtx, frg);
+      CreateProgram(vertexShader, fragmentShader);
       
+      Extract();
+#else
+      // TODO: OpenGL ES 1.1 Renderer Initialization
+#endif
+    }
+    
+    void VtxRender::Extract() {
+#ifndef OPENGL_11
       pivotSlot = glGetAttribLocation(program, "Pivot");
       CheckGLError("glGetAttribLocation");
       offsetSlot = glGetAttribLocation(program, "Offset");
@@ -313,8 +463,6 @@ namespace machete {
       
       samplerSlot = glGetUniformLocation(program, "Sampler");
       CheckGLError("glGetUniformLocation");
-#else
-      // TODO: OpenGL ES 1.1 Renderer Initialization
 #endif
     }
     
@@ -439,6 +587,7 @@ namespace machete {
       this->base = base;
 #ifndef OPENGL_11
       glUniformMatrix4fv(baseSlot, 1, 0, this->base.Pointer());
+      CheckGLError("glUniformMatrix4fv");
 #endif
     }
 
@@ -446,6 +595,7 @@ namespace machete {
       this->modelView = modelView;
 #ifndef OPENGL_11
       glUniformMatrix4fv(modelviewSlot, 1, 0, this->modelView.Pointer());
+      CheckGLError("glUniformMatrix4fv");
 #endif
     }
 

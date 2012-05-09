@@ -42,13 +42,17 @@ public abstract class MacheteActivity extends Activity {
 
 	private TickGenerator tick;
 	private MacheteNative engine;
-	private boolean initialized = false;
 	private String baseAssets;
 	private boolean gameReady = false;
 	private BackgroundView backView;
 	private String splash;
 	private int color;
 	private AlertDialog.Builder builder;
+	private boolean queueResume = false;
+	private boolean queuePause = false;
+	private boolean queueStop = false;
+	private GLSurfaceView glView = null;
+	private boolean contextLost = false;
 
 	protected MacheteActivity(String baseAssets, String splash, int color) {
 		this.baseAssets = baseAssets;
@@ -129,15 +133,6 @@ public abstract class MacheteActivity extends Activity {
 		}
 	}
 
-	@Override
-	protected void onResume() {
-		super.onResume();
-
-		if (gameReady) {
-			engine.resume();
-		}
-	}
-
 	protected void startGame() {
 		final ActivityManager activityManager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
 		final ConfigurationInfo configurationInfo = activityManager
@@ -151,11 +146,11 @@ public abstract class MacheteActivity extends Activity {
 				}
 			});
 		} else {
-			mGLSurfaceView = new GLSurfaceView(this);
+			glView = new GLSurfaceView(this);
 			
-			mGLSurfaceView.setEGLConfigChooser(new ConfigChooser(5, 6, 5, 0, 24, 0));
+			glView.setEGLConfigChooser(new ConfigChooser(5, 6, 5, 0, 24, 0));
 			
-			mGLSurfaceView.setEGLContextFactory(new EGLContextFactory() {
+			glView.setEGLContextFactory(new EGLContextFactory() {
 				public void destroyContext(EGL10 egl, EGLDisplay display,
 						EGLContext context) {
 					egl.eglDestroyContext(display, context);
@@ -169,7 +164,7 @@ public abstract class MacheteActivity extends Activity {
 							Build.MANUFACTURER + ", " + Build.MODEL + ", " + Build.PRODUCT);
 					}
 
-					Log.i("Maton", "Creating Context with EGL Version: "
+					Log.i("machete", "Creating Context with EGL Version: "
 							+ MacheteNative.GL_VERSION);
 					int[] attrib_list = new int[] {
 							0x3098 , // EGL10.EGL_VERSION
@@ -181,14 +176,25 @@ public abstract class MacheteActivity extends Activity {
 				}
 			});
 
-			mGLSurfaceView.setRenderer(new Renderer() {
+			glView.setRenderer(new Renderer() {
+				public void onSurfaceLost() {
+					contextLost = true;
+				}
+				
 				public void onSurfaceCreated(GL10 gl, EGLConfig config) {
+					contextLost = true;
 				}
 
 				public void onSurfaceChanged(final GL10 gl, final int width,
 						final int height) {
-					if (initialized) {
+					if (gameReady) {
+						if (contextLost) {
+							engine.reconfigure();
+							
+							contextLost = false;
+						}
 						engine.resize(width, height, 1);
+						glView.onResume();
 					} else {
 						String apkFilePath = null;
 						ApplicationInfo appInfo = null;
@@ -231,22 +237,40 @@ public abstract class MacheteActivity extends Activity {
 						} catch (IOException e) {
 						}
 
-						engine.startup();
-
-						engine.resume();
-
-						MacheteActivity.this.runOnUiThread(new Runnable() {
-							public void run() {
-								MacheteActivity.this.backView
-										.setVisibility(View.INVISIBLE);
-								MacheteActivity.this.mGLSurfaceView
-										.setVisibility(View.VISIBLE);
-								MacheteActivity.this.gameReady = true;
-								MacheteActivity.this.backView.invalidate();
-								MacheteActivity.this.mGLSurfaceView
-										.invalidate();
+						contextLost = false;
+						
+						if (queueStop) {
+							MacheteActivity.this.runOnUiThread(new Runnable() {
+								public void run() {
+									android.os.Process.killProcess(android.os.Process.myPid());
+								}
+							});
+						} else {
+							engine.startup();
+							engine.start();
+							
+							if (queueResume) {
+								engine.resume();
 							}
-						});
+							
+							if (queuePause) {
+								engine.pause();
+							}
+							
+							MacheteActivity.this.runOnUiThread(new Runnable() {
+								public void run() {
+									MacheteActivity.this.backView
+											.setVisibility(View.INVISIBLE);
+									MacheteActivity.this.glView
+											.setVisibility(View.VISIBLE);
+									MacheteActivity.this.gameReady = true;
+									MacheteActivity.this.backView.invalidate();
+									MacheteActivity.this.glView
+											.invalidate();
+									MacheteActivity.this.glView.onResume();
+								}
+							});
+						}
 					}
 				}
 
@@ -257,7 +281,7 @@ public abstract class MacheteActivity extends Activity {
 				}
 			});
 
-			addContentView(mGLSurfaceView, new LayoutParams(
+			addContentView(glView, new LayoutParams(
 					LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
 		}
 
@@ -268,31 +292,57 @@ public abstract class MacheteActivity extends Activity {
 	}
 
 	@Override
+	protected void onRestart() {
+		super.onRestart();
+	}
+
+	@Override
 	protected void onPause() {
 		super.onPause();
 
 		if (gameReady) {
+			glView.onPause();
 			engine.pause();
-			engine.stop();
-			android.os.Process.killProcess(android.os.Process.myPid());
+		} else {
+			queueResume = false;
+			queuePause = true;
+		}
+	}
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+
+		if (gameReady) {
+			glView.onResume();
+			engine.resume();
+		} else {
+			if (queuePause) {
+				queuePause = false;
+			}
+			queueResume = true;
 		}
 	}
 
 	@Override
 	protected void onStart() {
 		super.onStart();
-
-		if (gameReady) {
-			engine.start();
-		}
 	}
 
 	@Override
 	protected void onStop() {
 		super.onStop();
+	}
+	
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
 
 		if (gameReady) {
 			engine.stop();
+			android.os.Process.killProcess(android.os.Process.myPid());
+		} else {
+			queueStop = true;
 		}
 	}
 
@@ -305,8 +355,6 @@ public abstract class MacheteActivity extends Activity {
 	protected void hideTitle() {
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 	}
-
-	private GLSurfaceView mGLSurfaceView = null;
 
 	class BackgroundView extends View {
 		ImageView imgView;

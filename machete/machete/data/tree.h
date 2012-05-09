@@ -93,7 +93,7 @@ namespace machete {
       /*!
        \return The key of the node.
        */
-      T GetKey() {
+      K GetKey() {
         return key;
       }
       

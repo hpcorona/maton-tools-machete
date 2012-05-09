@@ -85,12 +85,13 @@ namespace machete {
        */
       void DeleteBuffer(unsigned int buffer) const;
 
-    protected:
       //! Creates all the vertex buffers needed.
       void CreateBuffers();
       
       //! Destroys all the vertex buffers that were created.
       void DestroyBuffers();
+
+    protected:
 
       //! Array index ring.
       GLushort indicesRing[MAX_RING][MAX_IDX];
@@ -143,7 +144,7 @@ namespace machete {
      
      \sa CreateDrawContext
      */
-    class DrawContext {
+    class DrawContext : public Regen {
     public:
       
       //! Creates a new DrawContext class with the specified target.
@@ -160,7 +161,7 @@ namespace machete {
       void Initialize(int width, int height);
       
       //! Destructor.
-      ~DrawContext() {}
+      ~DrawContext();
       
       //! Start using this context. You must call this before using it.
       void Use();
@@ -213,7 +214,7 @@ namespace machete {
       /*!
        \return The render texture, or zero if the render target is the screen.
        */
-      unsigned int GetRenderTexture() const { return texture; }
+      Texture* GetRenderTexture() { return texture; }
       
       //! Set the clear color.
       /*!
@@ -221,7 +222,17 @@ namespace machete {
        */
       void SetClearColor(machete::math::Vec4 & color);
       
+      //! Regenerate a render context.
+      void Regenerate();
+      
     private:
+      
+      //! Setup the graphics for the first time.
+      void Setup();
+      
+      //! Configure the views for the first time or initialize them.
+      void Configure();
+      
       //! Check and configure a new program.
       /*!
        If there's a new program, a Draw() will be issued.
@@ -242,7 +253,7 @@ namespace machete {
       GLuint renderbuffer;
       
       //! The render texture, only available when rendering to texture.
-      GLuint texture;
+      Texture* texture;
       
       //! The current array index buffer.
       GLushort* indices;

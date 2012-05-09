@@ -49,6 +49,14 @@ JNIEXPORT void JNICALL Java_com_maton_machete_MacheteNative_pause
 
 /*
  * Class:     com_maton_machete_MacheteNative
+ * Method:    reconfigure
+ * Signature: ()V
+ */
+JNIEXPORT void JNICALL Java_com_maton_machete_MacheteNative_reconfigure
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     com_maton_machete_MacheteNative
  * Method:    update
  * Signature: (F)V
  */

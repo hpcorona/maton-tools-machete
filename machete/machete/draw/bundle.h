@@ -286,7 +286,7 @@ namespace machete {
       Mbd *atlas;
       
       //! The texture associated with this bundle.
-      struct Tex *tex;
+      Texture *tex;
       
       //! Images by name.
       Hash<Str, MetaSprite*> images;

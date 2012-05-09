@@ -211,6 +211,8 @@ machete::graphics::DrawContext* CreateDrawContext(machete::graphics::RenderTarge
     if (![EAGLContext setCurrentContext:context]) {
       return NULL;
     }
+    
+    machete::StartGraphics();
   }
   
   machete::graphics::DrawContext *renEngine = new machete::graphics::DrawContext(target);

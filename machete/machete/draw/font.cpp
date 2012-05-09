@@ -10,7 +10,7 @@
 
 namespace machete {
   namespace draw {
-    FontChar::FontChar(const Vec2 & pivot, const Vec2 & size, const Vec2 & uv0, const Vec2 & uv1, unsigned int texture) : MetaSprite(size, uv0, uv1, texture) {
+    FontChar::FontChar(const Vec2 & pivot, const Vec2 & size, const Vec2 & uv0, const Vec2 & uv1, Texture* texture) : MetaSprite(size, uv0, uv1, texture) {
       advance.x = 0;
       advance.y = 0;
       
@@ -89,7 +89,7 @@ namespace machete {
       return false;
     }
     
-    Font::Font(const char *name, struct Tex * t) {
+    Font::Font(const char *name, Texture* t) {
       texture = t;
       
       font = new Mbd(name);
@@ -146,9 +146,9 @@ namespace machete {
         float xa = font->FloatValue("/font/chars[1]/char[%1]/@xadvance", cIdx);
         
 #ifdef TARGET_IOS
-        FontChar *fchar = new FontChar(Vec2(px, py), Vec2(w, h), Vec2(x / texture->width, y / texture->height), Vec2(x1 / texture->width, y1 / texture->height), texture->id);
+        FontChar *fchar = new FontChar(Vec2(px, py), Vec2(w, h), Vec2(x / texture->width, y / texture->height), Vec2(x1 / texture->width, y1 / texture->height), texture);
 #elif TARGET_ANDROID
-        FontChar *fchar = new FontChar(Vec2(px, py), Vec2(w, h), Vec2(x / texture->width, 1 - (y / texture->height)), Vec2(x1 / texture->width, 1 - (y1 / texture->height)), texture->id);
+        FontChar *fchar = new FontChar(Vec2(px, py), Vec2(w, h), Vec2(x / texture->width, 1 - (y / texture->height)), Vec2(x1 / texture->width, 1 - (y1 / texture->height)), texture);
 #endif
         
         fchar->SetXAdvance(xa);

@@ -81,6 +81,10 @@ namespace machete {
      \param devor The new device orientation.
      */
     virtual void Resize(int width, int height, DeviceOrientation devor) = 0;
+    
+    //! Called when the Graphics context was re-created and must be reconfigured.
+    //! \brief This is a good moment to call machete::RegenerateGraphics(). Usually only needed on Android.
+    virtual void Reconfigure() = 0;
 
 		//! Called at the start of each frame.
 		/*!
@@ -133,12 +137,24 @@ namespace machete {
     
     platform::ThePlatform = platf;
     
-    graphics::TheShaderMgr = new graphics::ShaderMgr();
-    graphics::TheTextureMgr = new graphics::TextureMgr();
     sound::TheSoundMgr = new sound::SoundManager();
     sound::TheMusicMgr = new sound::MusicManager();
   }
   
+  static void StartGraphics() {
+    graphics::TheBufferMgr = new graphics::BufferMgr();
+    graphics::TheShaderMgr = new graphics::ShaderMgr();
+    graphics::TheTextureMgr = new graphics::TextureMgr();
+    graphics::TheVertexShader = new VtxRender();
+  }
+  
+  static void RegenerateGraphics() {
+    TheBufferMgr->DestroyBuffers();
+    TheBufferMgr->CreateBuffers();
+    TheTextureMgr->Regenerate();
+    TheShaderMgr->Regenerate();
+    TheVertexShader->Regenerate();
+  }
 }
 
 //! Creator function. You need to implement this function.

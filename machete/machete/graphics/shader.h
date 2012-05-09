@@ -84,7 +84,7 @@ namespace machete {
     public:
       
       //! Creates a new empty shader.
-      Shader() { shader = 0; }
+      Shader() { shader = 0; source = NULL; shaderType = 0; }
       
       //! Destructor.
       ~Shader();
@@ -100,7 +100,19 @@ namespace machete {
        */
       bool LoadShader(GLenum shaderType, const char* source);
       
+      //! Regenerate a shader.
+      void Regenerate();
+      
     protected:
+      
+      //! Create the shader.
+      bool CreateShader();
+      
+      //! The shader type.
+      GLenum shaderType;
+      
+      //! The shader source code.
+      char *source;
       
       //! The shader handler.
       GLuint shader;
@@ -181,8 +193,14 @@ namespace machete {
        \param modelView The new model-view transformation. By default this is an identity matrix.
        */
       virtual void SetModelView(const machete::math::Mat4 & modelView) = 0;
-
+      
+      //! Regenerate the program.
+      void Regenerate();
+      
     protected:
+      //! Extract variables.
+      virtual void Extract() = 0;
+
       //! Links a vertex shader and a fragment shader into a program.
       /*!
        \param vtx The vertex shader.
@@ -223,6 +241,9 @@ namespace machete {
        */
       Shader *LoadShader(GLenum shaderType, const char *name, const char *source);
       
+      //! Regenerate shaders.
+      void Regenerate();
+      
     protected:
       
       //! Shader Pool.
@@ -230,7 +251,8 @@ namespace machete {
     };
     
     //! A texture descriptor.
-    struct Tex {
+    class Texture {
+    public:
       
       //! Texture identifier.
       unsigned int id;
@@ -240,6 +262,15 @@ namespace machete {
       
       //! Height of the texture.
       float height;
+    };
+    
+    //! A regenerable class. It will be regenerated.
+    class Regen {
+    public:
+      
+      //! Regenerate the resource.
+      virtual void Regenerate() = 0;
+      
     };
     
     //! Pool of textures. Simplifies the creation and loading of textures.
@@ -257,7 +288,7 @@ namespace machete {
        \param name Name of the image.
        \return A texture. NULL if it could not be loaded.
        */
-      struct Tex* LoadTexture(const char *name);
+      Texture* LoadTexture(const char *name);
       
       //! Creates a new texture with the specified width and height.
       /*!
@@ -268,12 +299,58 @@ namespace machete {
        \param height Height of the texture.
        \return A texture. NULL if it could not be created.
        */
-      struct Tex* CreateTexture(int width, int height);
+      Texture* CreateTexture(int width, int height);
+      
+      //! Unload a texture from memory.
+      /*!
+       \param texture The texture to unload.
+       */
+      void Unload(Texture* texture);
+      
+      //! Regenerate all textures.
+      /*!
+       \brief Used when the GL context is destroyed (android).
+       */
+      void Regenerate();
+      
+      //! Register a new regenerator.
+      /*!
+       \param reg The regenerable resource.
+       */
+      void RegisterRegen(Regen* reg);
+      
+      //! Unregister a regenerator object.
+      /*!
+       \param reg The regenerable resource.
+       */
+      void UnregisterRegen(Regen *reg);
       
     protected:
       
+      //! Load a texture and fill the Texture structure.
+      /*!
+       \param name Name of the texture.
+       \param tex The texture structure to fill.
+       \return The same texture structure.
+       */
+      Texture* InternalLoad(const char* name, Texture* tex);
+      
+      //! Create a new texture.
+      /*!
+       \param width Width in pixels.
+       \param height Height in pixels.
+       \param tex The texture structure to fill with the data.
+       */
+      Texture* InternalCreate(int width, int height, Texture* tex);
+      
       //! Texture Pool.
-      machete::data::Hash<machete::data::Str, struct Tex*> textures;
+      machete::data::Hash<machete::data::Str, Texture*> textures;
+      
+      //! Dynamic textures.
+      machete::data::Iterator<Texture*> dynTextures;
+      
+      //! Regenerable Resources.
+      machete::data::Iterator<Regen*> resources;
     };
         
     //! Vertex Renderer. A simple vertex renderer. Draws each Vtx object as requested.
@@ -319,6 +396,9 @@ namespace machete {
       void SetModelView(const machete::math::Mat4 & modelView);
       
     protected:
+      //! Extract the information for the program.
+      void Extract();
+      
       //! Pivot Slot.
       GLuint pivotSlot;
       

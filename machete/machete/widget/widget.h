@@ -37,7 +37,7 @@ namespace machete {
        \param bottomRight Bottom right corner size in pixels.
        \param texture The identifier of the texture.
        */
-      MetaWidget(const Vec2 & size, const Vec2 & uv0, const Vec2 & uv1, const Vec2 & topLeft, const Vec2 & bottomRight, unsigned int texture);
+      MetaWidget(const Vec2 & size, const Vec2 & uv0, const Vec2 & uv1, const Vec2 & topLeft, const Vec2 & bottomRight, Texture* texture);
       
       //! Sends data to the current batch in a DrawContext.
       /*!
@@ -112,7 +112,7 @@ namespace machete {
       unsigned short elemsH[18];
       
       //! Texture.
-      unsigned int texture;
+      Texture* texture;
 
     };
     

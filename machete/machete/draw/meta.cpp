@@ -11,7 +11,7 @@
 namespace machete {
   namespace draw {
     
-    MetaSprite::MetaSprite(const Vec2 & size, const Vec2 & uv0, const Vec2 & uv1, unsigned int texture) {
+    MetaSprite::MetaSprite(const Vec2 & size, const Vec2 & uv0, const Vec2 & uv1, Texture* texture) {
       
       this->size = size;
       this->uv0 = uv0;
@@ -101,7 +101,7 @@ namespace machete {
       verts[3].rotation = rotation;
 #endif
       
-      ctx->Draw(program == NULL ? TheVertexShader : program, verts, 4, elems, 6, color, texture);
+      ctx->Draw(program == NULL ? TheVertexShader : program, verts, 4, elems, 6, color, texture->id);
     }
     
     MetaSprite* MetaSpriteFromDrawContext(DrawContext *ctx) {

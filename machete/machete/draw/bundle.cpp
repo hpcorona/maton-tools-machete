@@ -306,7 +306,7 @@ namespace machete {
         uv1.y = 1 - uv1.y;
 #endif
         
-        MetaSprite *ms = new MetaSprite(Vec2(w, h), uv0, uv1, tex->id);
+        MetaSprite *ms = new MetaSprite(Vec2(w, h), uv0, uv1, tex);
         
         images.Add(stName, ms);
       }

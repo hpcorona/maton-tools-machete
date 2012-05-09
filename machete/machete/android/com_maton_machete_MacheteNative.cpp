@@ -24,6 +24,7 @@ void Java_com_maton_machete_MacheteNative_initialize
 	platform = new AndroidPlatform(str, cname);
 
   machete::Start(platform);
+	machete::StartGraphics();
 
   renEngine = CreateDrawContext(machete::graphics::TargetScreen, w, h);
 
@@ -192,4 +193,15 @@ void JNICALL Java_com_maton_machete_MacheteNative_touch(JNIEnv *vm, jobject obj,
 
 JNIEXPORT void JNICALL Java_com_maton_machete_MacheteNative_onKeyTyped(JNIEnv *vm, jobject, jint key) {
   game->OnKeyTyped(machete::input::MobileBack);
+}
+
+/*
+ * Class:     com_maton_machete_MacheteNative
+ * Method:    reconfigure
+ * Signature: ()V
+ */
+void Java_com_maton_machete_MacheteNative_reconfigure
+  (JNIEnv *env, jobject) {
+	if (game == NULL) return;
+	game->Reconfigure();
 }

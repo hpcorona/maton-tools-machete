@@ -31,4 +31,5 @@ public class MacheteNative {
 	public native void touch(int id, int event, float x, float y);
 	public native void startup();
 	public native void onKeyTyped(int key);
+	public native void reconfigure();
 }

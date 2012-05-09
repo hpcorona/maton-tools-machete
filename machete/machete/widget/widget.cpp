@@ -11,7 +11,7 @@
 namespace machete {
   namespace widget {
     
-    MetaWidget::MetaWidget(const Vec2 & size, const Vec2 & uv0, const Vec2 & uv1, const Vec2 & topLeft, const Vec2 & bottomRight, unsigned int texture) {
+    MetaWidget::MetaWidget(const Vec2 & size, const Vec2 & uv0, const Vec2 & uv1, const Vec2 & topLeft, const Vec2 & bottomRight, Texture* texture) {
       
       // Internal position of UV's
       Vec2 uvi0, uvi1, delta;
@@ -258,7 +258,7 @@ namespace machete {
         }
 #endif
         
-        ctx->Draw(program == NULL ? TheVertexShader : program, verts, 16, elems, 54, color, texture);
+        ctx->Draw(program == NULL ? TheVertexShader : program, verts, 16, elems, 54, color, texture->id);
       } else if (flipX && !flipY) {
         // Top Box
         vertsH[4].vert.x = drawSize.x - bottomRight.x; vertsH[4].vert.y = 0; vertsH[4].vert.z = 0;
@@ -278,7 +278,7 @@ namespace machete {
         }
 #endif
         
-        ctx->Draw(program == NULL ? TheVertexShader : program, vertsH, 8, elemsH, 18, color, texture);
+        ctx->Draw(program == NULL ? TheVertexShader : program, vertsH, 8, elemsH, 18, color, texture->id);
       } else if (flipY && !flipX) {
         // Bottom Box
         vertsV[4].vert.x = 0; vertsV[4].vert.y = -(drawSize.y - bottomRight.y); vertsV[4].vert.z = 0;
@@ -298,7 +298,7 @@ namespace machete {
         }
 #endif
         
-        ctx->Draw(program == NULL ? TheVertexShader : program, vertsV, 8, elemsV, 18, color, texture);
+        ctx->Draw(program == NULL ? TheVertexShader : program, vertsV, 8, elemsV, 18, color, texture->id);
       }
     }
     

@@ -112,14 +112,40 @@ namespace machete {
     BufferMgr *TheBufferMgr = NULL;
     
     DrawContext::DrawContext(RenderTarget t) : color(0.5f, 0.5f, 0.5f, 1.0f), tint(1, 1, 1, 1) {
-      if (TheBufferMgr == NULL) {
-        TheBufferMgr = new BufferMgr();
-      }
-      
       target = t;
+      texture = NULL;
+
+#ifdef TARGET_ANDROID
+      TheTextureMgr->RegisterRegen(this);
+#else
+      if (target == TargetTexture) {
+        TheTextureMgr->RegisterRegen(this);
+      }
+#endif
+      
+      Setup();
+    }
+    
+    DrawContext::~DrawContext() {
+#ifdef TARGET_ANDROID
+      TheTextureMgr->UnregisterRegen(this);
+#else
+      if (target == TargetTexture) {
+        TheTextureMgr->UnregisterRegen(this);
+      }
+#endif
+    }
+    
+    void DrawContext::Regenerate() {
+      if (target == TargetTexture && texture == NULL) return;
+      
+      Setup();
+      Configure();
+    }
+    
+    void DrawContext::Setup() {
       framebuffer = 0;
       renderbuffer = 0;
-      texture = 0;
       indices = NULL;
       vertexes = NULL;
       indexBuffer = 0;
@@ -150,7 +176,7 @@ namespace machete {
       glBindFramebufferOES(GL_FRAMEBUFFER, framebuffer);
       CheckGLError("glBindFramebuffer");
 #endif
-
+      
       if (target == TargetScreen) {
 #ifdef TARGET_IOS
         glGenRenderbuffers(1, &renderbuffer);
@@ -166,23 +192,23 @@ namespace machete {
     IVec2 DrawContext::GetSize() const { return size; }
     
     void DrawContext::Initialize(int width, int height) {
-      if (TheVertexShader == NULL) {
-          TheVertexShader = new VtxRender();
-      }
-
       size.x = width;
       size.y = height;
       
       if (target == TargetTexture) {
-        struct Tex *tex = TheTextureMgr->CreateTexture(width, height);
-        
-        texture = tex->id;
-
+        texture = TheTextureMgr->CreateTexture(width, height);
+      }
+      
+      Configure();
+    }
+      
+    void DrawContext::Configure() {
+      if (target == TargetTexture) {
 #ifndef OPENGL_11
-        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, tex->id, 0);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texture->id, 0);
         CheckGLError("glFramebufferTexture2DOES");
 #else
-        glFramebufferTexture2DOES(GL_FRAMEBUFFER_OES, GL_COLOR_ATTACHMENT0_OES, GL_TEXTURE_2D_OES, tex->id, 0);
+        glFramebufferTexture2DOES(GL_FRAMEBUFFER_OES, GL_COLOR_ATTACHMENT0_OES, GL_TEXTURE_2D_OES, texture->id, 0);
         CheckGLError("glFramebufferTexture2D");
 #endif
 #ifdef TARGET_IOS
@@ -204,7 +230,7 @@ namespace machete {
         machete::common::Log("Frame buffer is not ready");
         return;
       }
-      
+        
       base = Mat4();
       base = base.Translate(-this->size.x / 2, this->size.y / 2, 0);
     }

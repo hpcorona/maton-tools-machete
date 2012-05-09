@@ -63,9 +63,9 @@ namespace machete {
        \param size The size of the sprite in pixels.
        \param uv0 The first coordinate of the texture.
        \param uv1 The second coordinate of the texture.
-       \param texture The identifier of the texture.
+       \param texture The texture.
        */
-      MetaSprite(const Vec2 & size, const Vec2 & uv0, const Vec2 & uv1, unsigned int texture);
+      MetaSprite(const Vec2 & size, const Vec2 & uv0, const Vec2 & uv1, Texture* texture);
       
       //! Destructor.
       ~MetaSprite();
@@ -106,7 +106,7 @@ namespace machete {
       /*!
        \return The texture used for the image.
        */
-      unsigned int GetTexture() { return texture; }
+      Texture* GetTexture() { return texture; }
 
     protected:
       
@@ -119,7 +119,7 @@ namespace machete {
       unsigned short elems[6];
       
       //! Texture.
-      unsigned int texture;
+      Texture* texture;
       
       //! Size of the sprite.
       Vec2 size;
