@@ -25,6 +25,7 @@ import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.Rect;
 import android.opengl.GLSurfaceView;
 import android.opengl.GLSurfaceView.EGLContextFactory;
 import android.opengl.GLSurfaceView.Renderer;
@@ -53,6 +54,8 @@ public abstract class MacheteActivity extends Activity {
 	private boolean queueStop = false;
 	private GLSurfaceView glView = null;
 	private boolean contextLost = false;
+	private boolean withFocus = false;
+	private boolean triggerResume = false;
 
 	protected MacheteActivity(String baseAssets, String splash, int color) {
 		this.baseAssets = baseAssets;
@@ -67,6 +70,10 @@ public abstract class MacheteActivity extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		
+		if (gameReady) {
+			return;
+		}
 
 		builder = new AlertDialog.Builder(this);
 		builder.setMessage(
@@ -303,6 +310,7 @@ public abstract class MacheteActivity extends Activity {
 		if (gameReady) {
 			glView.onPause();
 			engine.pause();
+			triggerResume = false;
 		} else {
 			queueResume = false;
 			queuePause = true;
@@ -314,14 +322,33 @@ public abstract class MacheteActivity extends Activity {
 		super.onResume();
 
 		if (gameReady) {
-			glView.onResume();
-			engine.resume();
+			if (withFocus) {
+				glView.onResume();
+				engine.resume();
+				triggerResume = false;
+			} else {
+				triggerResume = true;
+			}
 		} else {
 			if (queuePause) {
 				queuePause = false;
 			}
 			queueResume = true;
 		}
+	}
+	
+	@Override
+	public void onWindowFocusChanged(boolean gainFocus) {
+		super.onWindowFocusChanged(gainFocus);
+		
+		if (gameReady) {
+			if (!withFocus && gainFocus && triggerResume) {
+				glView.onResume();
+				engine.resume();
+				triggerResume = false;
+			}
+		}
+		withFocus = gainFocus;
 	}
 
 	@Override

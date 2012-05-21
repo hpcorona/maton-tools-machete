@@ -195,6 +195,12 @@ namespace machete {
       //! Preload all buffers.
       void Preload();
       
+      //! Pause Workers.
+      void PauseWorker();
+      
+      //! Resume Workers.
+      void ResumeWorker();
+      
     protected:
       
       //! Create the sound buffers.

@@ -30,26 +30,52 @@
 static const ALCchar android_device[] = "Android Default";
 
 static JavaVM* javaVM = NULL;
+static pthread_key_t javaDetach = 0;
 
 static jclass cAudioTrack = NULL;
 
 static jmethodID mAudioTrack;
 static jmethodID mGetMinBufferSize;
 static jmethodID mPlay;
+static jmethodID mPause;
 static jmethodID mStop;
 static jmethodID mRelease;
 static jmethodID mWrite;
+static jmethodID mGetPlaybackHeadPosition;
+
+static void onJavaDetach(void* arg)
+{
+    (*javaVM)->DetachCurrentThread(javaVM);
+    pthread_setspecific(javaDetach, NULL);
+}
 
 jint JNI_OnLoad(JavaVM* vm, void* reserved)
 {
     javaVM = vm;
+    pthread_key_create(&javaDetach, onJavaDetach);
     return JNI_VERSION_1_2;
 }
 
 static JNIEnv* GetEnv()
 {
     JNIEnv* env = NULL;
-    if (javaVM) (*javaVM)->GetEnv(javaVM, (void**)&env, JNI_VERSION_1_2);
+    int err = (*javaVM)->GetEnv(javaVM, (void**)&env, JNI_VERSION_1_2);
+    if (err ==  JNI_EDETACHED)
+    {
+        int err = (*javaVM)->AttachCurrentThread(javaVM, &env, NULL);
+        if (err != 0)
+        {
+            AL_PRINT("Error attaching to current thread!");
+            exit(1);
+        }
+
+        pthread_setspecific(javaDetach, env);
+    }
+    else if (err != JNI_OK)
+    {
+        AL_PRINT("Error getting JNIEnv!");
+        exit(1);
+    }
     return env;
 }
 
@@ -65,9 +91,32 @@ typedef struct
 #define ENCODING_PCM_8BIT 3
 #define ENCODING_PCM_16BIT 2
 #define MODE_STREAM 1
+#define STREAM_SIZE_IN_MS 100.0f
+#define STREAM_TOLERANCE_IN_MS 50.0f
+
+//! Condition signal.
+static pthread_cond_t openal_android_condition;
+      
+//! Mutex.
+static pthread_mutex_t openal_android_mutex;
+
+static int openal_android_paused = 0;
+
+void alPauseThread() {
+	openal_android_paused = 1;
+	pthread_cond_broadcast(&openal_android_condition);
+}
+
+void alResumeThread() {
+	openal_android_paused = 0;
+	pthread_cond_broadcast(&openal_android_condition);
+}
 
 static void* thread_function(void* arg)
 {
+		pthread_cond_init(&openal_android_condition, NULL);
+    pthread_mutex_init(&openal_android_mutex, NULL);
+    
     ALCdevice* device = (ALCdevice*)arg;
     AndroidData* data = (AndroidData*)device->ExtraData;
 
@@ -77,23 +126,30 @@ static void* thread_function(void* arg)
     (*env)->PushLocalFrame(env, 2);
 
     int sampleRateInHz = device->Frequency;
-    int channelConfig = aluChannelsFromFormat(device->Format) == 1 ? CHANNEL_CONFIGURATION_MONO : CHANNEL_CONFIGURATION_STEREO;
-    int audioFormat = aluBytesFromFormat(device->Format) == 1 ? ENCODING_PCM_8BIT : ENCODING_PCM_16BIT;
+    int channelConfig = ChannelsFromDevFmt(device->FmtChans) == 1 ? CHANNEL_CONFIGURATION_MONO : CHANNEL_CONFIGURATION_STEREO;
+    int audioFormat = BytesFromDevFmt(device->FmtType) == 1 ? ENCODING_PCM_8BIT : ENCODING_PCM_16BIT;
 
-    int bufferSizeInBytes = (*env)->CallStaticIntMethod(env, cAudioTrack, 
-        mGetMinBufferSize, sampleRateInHz, channelConfig, audioFormat);
+    int minBufferSizeInBytes = (*env)->CallStaticIntMethod(env, cAudioTrack, mGetMinBufferSize, sampleRateInHz, channelConfig, audioFormat);
+    jobject track = (*env)->NewObject(env, cAudioTrack, mAudioTrack, STREAM_MUSIC, sampleRateInHz, channelConfig, audioFormat, minBufferSizeInBytes, MODE_STREAM);
 
-    int bufferSizeInSamples = bufferSizeInBytes / aluFrameSizeFromFormat(device->Format);
-
-    jobject track = (*env)->NewObject(env, cAudioTrack, mAudioTrack,
-        STREAM_MUSIC, sampleRateInHz, channelConfig, audioFormat, device->NumUpdates * bufferSizeInBytes, MODE_STREAM);
+    int bufferSizeInBytes = sampleRateInHz * ChannelsFromDevFmt(device->FmtChans) * BytesFromDevFmt(device->FmtType) * (STREAM_SIZE_IN_MS/1000.0f);
+    int bufferSizeInSamples = bufferSizeInBytes / (ChannelsFromDevFmt(device->FmtChans) * BytesFromDevFmt(device->FmtType));
+    int bufferToleranceInSamples  = bufferSizeInSamples * (STREAM_TOLERANCE_IN_MS / STREAM_SIZE_IN_MS);
 
     (*env)->CallNonvirtualVoidMethod(env, track, cAudioTrack, mPlay);
 
     jarray buffer = (*env)->NewByteArray(env, bufferSizeInBytes);
 
+    uint32_t totalFrames = 0;
     while (data->running)
     {
+				while (openal_android_paused == 1) {
+			    (*env)->CallNonvirtualVoidMethod(env, track, cAudioTrack, mPause);
+					pthread_cond_wait(&openal_android_condition, &openal_android_mutex);					
+					if (openal_android_paused == 0) {
+						(*env)->CallNonvirtualVoidMethod(env, track, cAudioTrack, mPlay);
+					}
+				}
         void* pBuffer = (*env)->GetPrimitiveArrayCritical(env, buffer, NULL);
 
         if (pBuffer)
@@ -102,6 +158,14 @@ static void* thread_function(void* arg)
             (*env)->ReleasePrimitiveArrayCritical(env, buffer, pBuffer, 0);
 
             (*env)->CallNonvirtualIntMethod(env, track, cAudioTrack, mWrite, buffer, 0, bufferSizeInBytes);
+            uint32_t currentFrame = (*env)->CallNonvirtualIntMethod(env, track, cAudioTrack, mGetPlaybackHeadPosition);
+
+            totalFrames += bufferSizeInSamples;
+            int diff = totalFrames - currentFrame - bufferToleranceInSamples;
+            if (diff > 0) {
+                int delay = STREAM_SIZE_IN_MS * ((float)diff / (float)bufferSizeInSamples) * 1000;
+                usleep(delay);
+            }
         }
         else
         {
@@ -115,10 +179,14 @@ static void* thread_function(void* arg)
     (*env)->PopLocalFrame(env, NULL);
 
     (*javaVM)->DetachCurrentThread(javaVM);
+
+    pthread_cond_destroy(&openal_android_condition);
+    pthread_mutex_destroy(&openal_android_mutex);
+
     return NULL;
 }
 
-static ALCboolean android_open_playback(ALCdevice *device, const ALCchar *deviceName)
+static ALCenum android_open_playback(ALCdevice *device, const ALCchar *deviceName)
 {
     JNIEnv* env = GetEnv();
     AndroidData* data;
@@ -143,9 +211,11 @@ static ALCboolean android_open_playback(ALCdevice *device, const ALCchar *device
         mAudioTrack = (*env)->GetMethodID(env, cAudioTrack, "<init>", "(IIIIII)V");
         mGetMinBufferSize = (*env)->GetStaticMethodID(env, cAudioTrack, "getMinBufferSize", "(III)I");
         mPlay = (*env)->GetMethodID(env, cAudioTrack, "play", "()V");
+        mPause = (*env)->GetMethodID(env, cAudioTrack, "pause", "()V");
         mStop = (*env)->GetMethodID(env, cAudioTrack, "stop", "()V");
         mRelease = (*env)->GetMethodID(env, cAudioTrack, "release", "()V");
         mWrite = (*env)->GetMethodID(env, cAudioTrack, "write", "([BII)I");
+        mGetPlaybackHeadPosition = (*env)->GetMethodID(env, cAudioTrack, "getPlaybackHeadPosition", "()I");
     }
 
     if (!deviceName)
@@ -154,13 +224,14 @@ static ALCboolean android_open_playback(ALCdevice *device, const ALCchar *device
     }
     else if (strcmp(deviceName, android_device) != 0)
     {
-        return ALC_FALSE;
+        return ALC_INVALID_VALUE;
     }
 
     data = (AndroidData*)calloc(1, sizeof(*data));
     device->szDeviceName = strdup(deviceName);
     device->ExtraData = data;
-    return ALC_TRUE;
+    
+    return ALC_NO_ERROR;
 }
 
 static void android_close_playback(ALCdevice *device)
@@ -177,14 +248,10 @@ static ALCboolean android_reset_playback(ALCdevice *device)
 {
     AndroidData* data = (AndroidData*)device->ExtraData;
 
-    if (aluChannelsFromFormat(device->Format) >= 2)
-    {
-        device->Format = aluBytesFromFormat(device->Format) >= 2 ? AL_FORMAT_STEREO16 : AL_FORMAT_STEREO8;
-    }
-    else
-    {
-        device->Format = aluBytesFromFormat(device->Format) >= 2 ? AL_FORMAT_MONO16 : AL_FORMAT_MONO8;
-    }
+    device->Frequency = 22050;
+    device->NumUpdates = 2;
+    device->FmtChans = ChannelsFromDevFmt(device->FmtChans) > 1 ? ALC_STEREO_SOFT : ALC_MONO_SOFT;
+    device->FmtType = BytesFromDevFmt(device->FmtType) > 1 ? ALC_SHORT_SOFT : ALC_UNSIGNED_BYTE_SOFT;
 
     SetDefaultChannelOrder(device);
 
@@ -205,11 +272,12 @@ static void android_stop_playback(ALCdevice *device)
     }
 }
 
-static ALCboolean android_open_capture(ALCdevice *pDevice, const ALCchar *deviceName)
+static ALCenum android_open_capture(ALCdevice *pDevice, const ALCchar *deviceName)
 {
     (void)pDevice;
     (void)deviceName;
-    return ALC_FALSE;
+    
+    return ALC_INVALID_DEVICE;
 }
 
 static void android_close_capture(ALCdevice *pDevice)
@@ -227,11 +295,13 @@ static void android_stop_capture(ALCdevice *pDevice)
     (void)pDevice;
 }
 
-static void android_capture_samples(ALCdevice *pDevice, ALCvoid *pBuffer, ALCuint lSamples)
+static ALCenum android_capture_samples(ALCdevice *pDevice, ALCvoid *pBuffer, ALCuint lSamples)
 {
     (void)pDevice;
     (void)pBuffer;
     (void)lSamples;
+    
+    return ALC_INVALID_DEVICE;
 }
 
 static ALCuint android_available_samples(ALCdevice *pDevice)

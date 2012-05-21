@@ -51,7 +51,7 @@ namespace machete {
       
       //! Try to lock a resource.
       /*!
-       \return True if it was locked, false if the resource is buisy.
+       \return True if it was locked, false if the resource is busy.
        */
       virtual bool TryLock();
       

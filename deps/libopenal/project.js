@@ -8,7 +8,6 @@ project.addIncludeDirs([".", "OpenAL32/include"]);
 
 project.addFiles(["OpenAL32/alAuxEffectSlot.c",
 	"OpenAL32/alBuffer.c",
-	"OpenAL32/alDatabuffer.c",
 	"OpenAL32/alEffect.c",
 	"OpenAL32/alError.c",
 	"OpenAL32/alExtension.c",
@@ -19,17 +18,25 @@ project.addFiles(["OpenAL32/alAuxEffectSlot.c",
 	"OpenAL32/alThunk.c",
 	"Alc/ALc.c",
 	"Alc/alcConfig.c",
+	"Alc/alcDedicated.c",
 	"Alc/alcEcho.c",
 	"Alc/alcModulator.c",
 	"Alc/alcReverb.c",
 	"Alc/alcRing.c",
 	"Alc/alcThread.c",
 	"Alc/ALu.c",
-	"Alc/android.c",
 	"Alc/bs2b.c",
-	"Alc/null.c"]);
+	"Alc/helpers.c",
+	"Alc/hrtf.c",
+	"Alc/mixer.c",
+	"Alc/panning.c",
+	"Alc/backends/android.c",
+	"Alc/backends/loopback.c",
+	"Alc/backends/null.c"]);
+//	"Alc/backends/opensl.c"]);
 	
 project.addLdLibs("log");
+// CFlags: -ffast-math
 project.addLdFlags("-Wl,-s");
 
 Library.addProjects(project);

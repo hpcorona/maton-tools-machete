@@ -135,6 +135,10 @@ namespace machete {
         toDo->RemoveAll();
       }
       
+      toDo->RemoveAll();
+      queue->RemoveAll();
+      done->RemoveAll();
+      
       finished = true;
     }
     
@@ -257,6 +261,18 @@ namespace machete {
       }
 
       alDeleteSources(1, &source);
+    }
+    
+    void Music::PauseWorker() {
+      if (worker->IsAlive()) {
+        worker->Shutdown();
+      }
+    }
+    
+    void Music::ResumeWorker() {
+      if (worker->IsAlive()) return;
+      
+      machete::thread::TheThreadMgr->Start(worker);
     }
     
     bool Music::PrepareMusic(const char *name) {
@@ -549,9 +565,15 @@ namespace machete {
     void SoundManager::Detach() {
       alcSuspendContext(context);
       alcMakeContextCurrent(NULL);
+#ifdef TARGET_ANDROID
+      alPauseThread();
+#endif
     }
     
     void SoundManager::Attach() {
+#ifdef TARGET_ANDROID
+      alResumeThread();
+#endif
       alcMakeContextCurrent(context);
       alcProcessContext(context);
     }
@@ -884,11 +906,27 @@ namespace machete {
       Stop();
       
       pausedMusicName = pmusic;
+      
+      if (fading != NULL) {
+        fading->PauseWorker();
+      }
+      
+      if (current != NULL) {
+        current->PauseWorker();
+      }
     }
     
     void MusicManager::Resume(unsigned int flags, float time) {
       if (pausedMusicName == "") {
         return;
+      }
+      
+      if (fading != NULL) {
+        fading->ResumeWorker();
+      }
+      
+      if (current != NULL) {
+        current->ResumeWorker();
       }
       
       char mname[50];
