@@ -93,6 +93,9 @@ namespace machete {
     
     //! Launch a website.
     virtual void LaunchURL(const char* url) = 0;
+
+		//! Exit the application.
+		virtual void Exit() = 0;
   };
 
   //! Platform specific features.

@@ -214,6 +214,10 @@ public:
     
     [[UIApplication sharedApplication] openURL:[NSURL URLWithString:nsURL]];
   }
+
+	void Exit() {
+		// Sorry, no exit for iOS for now
+	}
   
 protected:
   CFDataRef imageData;

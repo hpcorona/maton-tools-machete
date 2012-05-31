@@ -414,5 +414,9 @@ void AndroidPlatform::LaunchURL(const char * url) {
 
   jstring nsUrl = env->NewStringUTF(url);
 
-  env->CallStaticBooleanMethod(classAndroidPlatform, methodLaunchUrl, nsUrl);
+  env->CallStaticVoidMethod(classAndroidPlatform, methodLaunchUrl, nsUrl);
+}
+
+void AndroidPlatform::Exit() {
+	exit(0);
 }

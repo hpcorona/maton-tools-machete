@@ -38,6 +38,8 @@ import android.view.ViewGroup.LayoutParams;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageView;
+import android.content.pm.PackageInfo;
+
 
 public abstract class MacheteActivity extends Activity {
 
@@ -154,6 +156,7 @@ public abstract class MacheteActivity extends Activity {
 			});
 		} else {
 			glView = new GLSurfaceView(this);
+			glView.setKeepScreenOn(true);
 			
 			glView.setEGLConfigChooser(new ConfigChooser(5, 6, 5, 0, 24, 0));
 			
@@ -197,7 +200,6 @@ public abstract class MacheteActivity extends Activity {
 					if (gameReady) {
 						if (contextLost) {
 							engine.reconfigure();
-							
 							contextLost = false;
 						}
 						engine.resize(width, height, 1);

@@ -15,6 +15,12 @@ extern "C" {
 }
 #include <stdio.h>
 
+// START OF HACK TO END THE APP
+__BEGIN_DECLS
+extern __noreturn void exit(int);
+__END_DECLS
+// END OF HACK TO END THE APP
+
 struct AndroidResource {
   long offset;
   long length;
@@ -47,6 +53,8 @@ public:
   double AbsoluteTime();
 
   void LaunchURL(const char * url);
+
+	void Exit();
 
 protected:
   void OpenAPK();
