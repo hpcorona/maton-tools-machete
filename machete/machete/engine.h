@@ -34,6 +34,10 @@
 #include "input/key.h"
 #include "analytics/analytics.h"
 
+#ifdef TARGET_IOS
+#include "sound/backend/openal.h"
+#endif
+
 //! The main namespace. All the escential definitions of the engine are here.
 namespace machete {
   
@@ -136,6 +140,10 @@ namespace machete {
     thread::TheThreadMgr = new thread::ThreadManager();
     
     platform::ThePlatform = platf;
+    
+#ifdef TARGET_IOS
+    sound::backend::TheSoundBackend = new sound::backend::OpenALSoundBackend();
+#endif
     
     sound::TheSoundMgr = new sound::SoundManager();
     sound::TheMusicMgr = new sound::MusicManager();

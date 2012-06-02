@@ -11,135 +11,25 @@
 
 #pragma once
 
-#ifdef TARGET_IOS
-
-#include <OpenAL/al.h>
-#include <OpenAL/alc.h>
-#include <OpenAL/oalStaticBufferExtension.h>
-
-#elif TARGET_ANDROID
-
-#include <AL/al.h>
-#include <AL/alc.h>
-#define alBufferDataStatic alBufferData
-
-#endif
-
-#include <tremor/ogg.h>
-#include <tremor/ivorbiscodec.h>
-#include <tremor/ivorbisfile.h>
-
 #include "../data/tree.h"
 #include "../data/str.h"
 #include "../platform/platform.h"
 #include "../thread/thread.h"
+#include "backend/backend.h"
 
 #ifndef NULL
 #define NULL 0
 #endif
 
-using namespace machete::data;
-using namespace machete::platform;
-
-#define MAX_SOUNDS  5
-#define MAX_MUSIC_BUFFERS   3
-#define MUSIC_BUFFER_SIZE   128000
-
 namespace machete {
-  
+
   //! Classes related to sound management.
   namespace sound {
     
-    //! A music buffer.
-    struct MusicBuffer {
-      
-      unsigned int buffer;      //! OpenAL buffer.
-      
-      char* data;               //! Audio data.
-      
-      bool loaded;              //! If the buffer is loaded.
-      
-    };
-    
-#ifdef TARGET_ANDROID
-    size_t android_fread(void *ptr, size_t size, size_t nmemb, void *datasource);
-    int android_fseek(void *datasource, ogg_int64_t offset, int whence);
-    int android_fclose(void *datasource);
-    long android_ftell(void *datasource);
-#endif
-    
-    //! Internal class to manage background music streaming.
-    class MusicStreamWorker : public machete::thread::SequenceWorker<MusicBuffer*> {
-    public:
-      
-#ifdef TARGET_ANDROID
-      
-      friend size_t android_fread(void *ptr, size_t size, size_t nmemb, void *datasource);
-      friend int android_fseek(void *datasource, ogg_int64_t offset, int whence);
-      friend int android_fclose(void *datasource);
-      friend long android_ftell(void *datasource);
-      
-#endif
-      
-      MusicStreamWorker();
-      
-      ~MusicStreamWorker();
-      
-      //! Prepare a music file for playing.
-      /*!
-       \param name Name of the music file.
-       \param preload Preload the music with 3 buffers.
-       \return True if everything was ok.
-       */
-      bool PrepareMusic(const char *name);
-      
-      void Service();
-      
-      //! Get the music format;
-      ALenum GetFormat() const;
-      
-    protected:
-      
-      //! Load a buffer part.
-      void LoadPart(MusicBuffer* buff);
-      
-      //! Load Ogg file.
-      void LoadOgg();
-      
-      //! Close the current ogg.
-      void CloseOgg();
-
-      //! File handle.
-      FILE* handle;
-      
-      //! Vorbis Stream.
-      OggVorbis_File oggStream;
-      
-      //! Formatting data.
-      vorbis_info* vorbisInfo;
-      
-      //! Audio file name.
-      char *name;
-      
-      //! If the file is loaded.
-      bool loaded;
-      
-      //! Music format.
-      ALenum format;
-      
-#ifdef TARGET_ANDROID
-      //! Ogg Vorbis Callbacks for in-APK streaming.
-      ov_callbacks *android_ogg_callbacks;
-
-      //! Start of the file.
-      long start;
-
-      //! Maximum position within the file.
-      long maxPos;
-#endif
-
-    };
-    
+    using namespace machete::data;
+    using namespace machete::platform;
+    using namespace machete::sound::backend;
+        
     //! Represent a buffered ogg sound.
     class Music {
     public:
@@ -219,7 +109,7 @@ namespace machete {
       bool pause;
       
       //! Music format.
-      ALenum format;
+      int format;
       
       //! Sound loaded.
       bool soundLoaded;
@@ -244,7 +134,7 @@ namespace machete {
        \param buffer The start buffer.
        \param cat Category flags.
        */
-      Sound(ALuint buffer, unsigned int cat);
+      Sound(unsigned int buffer, unsigned int cat);
       
       //! Destructor.
       ~Sound();
@@ -254,7 +144,7 @@ namespace machete {
        \param buffer The new buffer.
        \param cat The new category flags.
        */
-      inline void Rebind(ALuint buffer, unsigned int cat);
+      inline void Rebind(unsigned int buffer, unsigned int cat);
       
       //! Rewind the source.
       inline void Rewind();
@@ -291,7 +181,7 @@ namespace machete {
       //! Category flag.
       unsigned int category;
       
-      //! The ALuint source.
+      //! The source.
       unsigned int source;
       
       //! Detects if it's paused.
@@ -380,14 +270,8 @@ namespace machete {
        */
       unsigned int LoadBuffer(const char* name);
       
-      //! OpenAL context.
-      ALCcontext* context;
-      
-      //! OpenAL device.
-      ALCdevice* device;
-      
       //! Loaded buffer sound fx.
-      Hash<Str, ALuint> buffers;
+      Hash<Str, unsigned int> buffers;
       
       //! Sound source singletons.
       Hash<Str, Sound*> singletons;

@@ -98,6 +98,8 @@
 		A8E4DD8713A93BB300A27214 /* draw.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A8E4DD8513A93BB300A27214 /* draw.cpp */; };
 		A8E4DD8813A93BB300A27214 /* draw.h in Headers */ = {isa = PBXBuildFile; fileRef = A8E4DD8613A93BB300A27214 /* draw.h */; };
 		A8F90985139606F80029D78E /* lists.h in Headers */ = {isa = PBXBuildFile; fileRef = A8F90984139606F80029D78E /* lists.h */; };
+		A8FF0A481579D90400FE0AF6 /* backend.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A8FF0A471579D90400FE0AF6 /* backend.cpp */; };
+		A8FF0A4B1579D93D00FE0AF6 /* openal.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A8FF0A4A1579D93D00FE0AF6 /* openal.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -200,6 +202,10 @@
 		A8E4DD8513A93BB300A27214 /* draw.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = draw.cpp; sourceTree = "<group>"; };
 		A8E4DD8613A93BB300A27214 /* draw.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = draw.h; sourceTree = "<group>"; };
 		A8F90984139606F80029D78E /* lists.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = lists.h; sourceTree = "<group>"; };
+		A8FF0A461579D8F700FE0AF6 /* backend.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = backend.h; sourceTree = "<group>"; };
+		A8FF0A471579D90400FE0AF6 /* backend.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = backend.cpp; sourceTree = "<group>"; };
+		A8FF0A491579D92F00FE0AF6 /* openal.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = openal.h; sourceTree = "<group>"; };
+		A8FF0A4A1579D93D00FE0AF6 /* openal.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = openal.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -286,6 +292,7 @@
 		A80A9A871406230B00614DB0 /* sound */ = {
 			isa = PBXGroup;
 			children = (
+				A8FF0A441579D8B500FE0AF6 /* backend */,
 				A80A9A881406238900614DB0 /* sound.h */,
 				A8A8D06A140AB2EC005C9E2B /* sound.cpp */,
 			);
@@ -539,6 +546,17 @@
 			path = machete/machete/graphics;
 			sourceTree = SOURCE_ROOT;
 		};
+		A8FF0A441579D8B500FE0AF6 /* backend */ = {
+			isa = PBXGroup;
+			children = (
+				A8FF0A461579D8F700FE0AF6 /* backend.h */,
+				A8FF0A471579D90400FE0AF6 /* backend.cpp */,
+				A8FF0A491579D92F00FE0AF6 /* openal.h */,
+				A8FF0A4A1579D93D00FE0AF6 /* openal.cpp */,
+			);
+			path = backend;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -679,6 +697,8 @@
 				A884A9E11516DFA200B6AB1E /* tween.cpp in Sources */,
 				A87DBA6F1517CC970092650B /* callback.cpp in Sources */,
 				A8401403152597E2008E88B0 /* analytics.mm in Sources */,
+				A8FF0A481579D90400FE0AF6 /* backend.cpp in Sources */,
+				A8FF0A4B1579D93D00FE0AF6 /* openal.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

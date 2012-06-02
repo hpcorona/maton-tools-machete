@@ -11,235 +11,6 @@
 namespace machete {
   namespace sound {
     
-#ifdef TARGET_IOS
-    ALvoid  alBufferDataStatic(const ALint bid, ALenum format, ALvoid* data, ALsizei size, ALsizei freq) {
-      static	alBufferDataStaticProcPtr	proc = NULL;
-      
-      if (proc == NULL) {
-        proc = (alBufferDataStaticProcPtr) alGetProcAddress((const ALCchar*) "alBufferDataStatic");
-      }
-      
-      if (proc)
-        proc(bid, format, data, size, freq);
-      
-      return;
-    }
-#endif
-    
-#ifdef TARGET_ANDROID
-    size_t android_fread(void *ptr, size_t size, size_t nmemb, void *datasource) {
-      MusicStreamWorker* worker = static_cast<MusicStreamWorker*>(datasource);
-      FILE* handle = worker->handle;
-      
-      long total = size * nmemb;
-      long pos = ftell(handle);
-      if (pos >= worker->maxPos) {
-        return 0;
-      }
-      
-      if (pos + total >= worker->maxPos) {
-        total = worker->maxPos - pos;
-        
-        return fread(ptr, total, 1, handle);
-      }
-      
-      return fread(ptr, size, nmemb, handle);
-    }
-    
-    int android_fseek(void *datasource, ogg_int64_t offset, int whence) {
-      MusicStreamWorker* worker = static_cast<MusicStreamWorker*>(datasource);
-      FILE* handle = worker->handle;
-
-      if (whence == SEEK_END) {
-        return fseek(handle, worker->maxPos, SEEK_SET);
-      } else if (whence == SEEK_CUR) {
-        long pos = ftell(handle);
-        if (pos + offset > worker->maxPos) {
-          return 1;
-        }
-        
-        return fseek(handle, offset, SEEK_CUR);
-      }
-      
-      return fseek(handle, worker->start + offset, whence);
-    }
-    
-    int android_fclose(void *datasource) {
-      MusicStreamWorker* worker = static_cast<MusicStreamWorker*>(datasource);
-      FILE* handle = worker->handle;
-      
-      return fclose(handle);
-    }
-    
-    long android_ftell(void *datasource) {
-      MusicStreamWorker* worker = static_cast<MusicStreamWorker*>(datasource);
-      FILE* handle = worker->handle;
-      
-      return ftell(handle) - worker->start;
-    }
-#endif
-    
-    MusicStreamWorker::MusicStreamWorker() {
-      name = new char[80];
-      name[0] = 0;
-      
-#ifdef TARGET_ANDROID
-      android_ogg_callbacks = new ov_callbacks();
-      android_ogg_callbacks->read_func = android_fread;
-      android_ogg_callbacks->seek_func = android_fseek;
-      android_ogg_callbacks->close_func = android_fclose;
-      android_ogg_callbacks->tell_func = android_ftell;
-#endif
-
-      loaded = false;
-    }
-    
-    MusicStreamWorker::~MusicStreamWorker() {
-      delete name;
-      
-      CloseOgg();
-
-#ifdef TARGET_ANDROID
-      delete android_ogg_callbacks;
-#endif
-    }
-    
-    void MusicStreamWorker::Service() {
-      while (alive) {
-        while (!TryLock()) { if (!alive) return; }
-        Wait();
-        if (!alive) {
-          Unlock();
-          break;
-        }
-        
-        if (queue->Count() == 0) {
-          Unlock();
-          continue;
-        }
-        
-        SwapQueues();
-        Unlock();
-        
-        toDo->Reset();
-        while (toDo->Next()) {
-          MusicBuffer* buff = toDo->GetCurrent()->GetValue();
-          LoadPart(buff);
-
-          while(!workDone->TryLock()) {}
-          done->Append(buff);
-          workDone->NotifyAll();
-          workDone->Unlock();
-        }
-        
-        toDo->RemoveAll();
-      }
-      
-      toDo->RemoveAll();
-      queue->RemoveAll();
-      done->RemoveAll();
-      
-      finished = true;
-    }
-    
-    void MusicStreamWorker::LoadPart(MusicBuffer* buff) {
-      int size;
-      int section;
-      char *data = buff->data;
-      
-      size = 0;
-      while (size < MUSIC_BUFFER_SIZE) {
-        int result = ov_read(&oggStream, data + size, MUSIC_BUFFER_SIZE - size, &section);
-        
-        if (result > 0) {
-          size += result;
-        } else if (result == 0) {
-          break;
-        } else {
-          LoadPart(buff);
-          return;
-        }
-      }
-      
-      if (size == 0)  {
-        ov_raw_seek(&oggStream, 0);
-          
-        LoadPart(buff);
-        return;
-      }
-
-      alBufferDataStatic(buff->buffer, format, data, size, vorbisInfo->rate);
-      int err = alGetError();
-      if (err != AL_NO_ERROR) {
-        std::cout << "THREAD " << err << std::endl;
-      }
-    }
-    
-    bool MusicStreamWorker::PrepareMusic(const char *name) {
-      while (!TryLock()) {}
-      
-      CloseOgg();
-
-      loaded = false;
-      
-      machete::data::Str n = name;
-      n.GetChars(this->name, 80);
-      
-      LoadOgg();
-      
-      Unlock();
-      
-      return loaded;
-    }
-    
-    void MusicStreamWorker::CloseOgg() {
-      if (!loaded) return;
-      
-      ov_clear(&oggStream);
-      ThePlatform->CloseFile(handle);
-      
-      loaded = false;
-    }
-    
-    ALenum MusicStreamWorker::GetFormat() const {
-      return format;
-    }
-    
-    void MusicStreamWorker::LoadOgg() {
-      if (name[0] == 0) return;
-      
-      loaded = false;
-      
-      unsigned long size;
-      handle = ThePlatform->OpenFile(name, size);
-      if (handle <= 0) {
-        return;
-      }
-      
-#ifdef TARGET_ANDROID
-      start = ftell(handle);
-      maxPos = ftell(handle) + size;
-
-      int result = ov_open_callbacks(this, &oggStream, NULL, 0, *android_ogg_callbacks);
-#elif TARGET_IOS
-      int result = ov_open(handle, &oggStream, NULL, (long)size);
-#endif
-      if (result < 0) {
-        ThePlatform->CloseFile(handle);
-        return;
-      }
-      
-      vorbisInfo = ov_info(&oggStream, -1);
-      if (vorbisInfo->channels == 1) {
-        format = AL_FORMAT_MONO16;
-      } else {
-        format = AL_FORMAT_STEREO16;
-      }
-      
-      loaded = true;
-    }
-
-    
     Music::Music() {
       firstRun = true;
       soundLoaded = false;
@@ -255,12 +26,12 @@ namespace machete {
       delete worker;
       
       for (int i = 0; i < MAX_MUSIC_BUFFERS; i++) {
-        alSourceUnqueueBuffers(source, 1, &(buffers[i].buffer));
-        alDeleteBuffers(1, &buffers[i].buffer);
+        TheSoundBackend->UnqueueBuffer(source, &(buffers[i].buffer));
+        TheSoundBackend->DeleteBuffer(buffers[i].buffer);
         delete buffers[i].data;
       }
 
-      alDeleteSources(1, &source);
+      TheSoundBackend->DeleteSource(source);
     }
     
     void Music::PauseWorker() {
@@ -295,10 +66,8 @@ namespace machete {
       for (int i = 0; i < MAX_MUSIC_BUFFERS; i++) {
         if (buffers[i].loaded) {
           unsigned int unbuff = buffers[i].buffer;
-          alSourceUnqueueBuffers(source, 1, &unbuff);
-          int err = alGetError();
-          if (err != AL_NO_ERROR) {
-            std::cout << "UNLOAD " << err << std::endl;
+          if (TheSoundBackend->UnqueueBuffer(source, &unbuff) == false) {
+            std::cout << "UNLOAD " << std::endl;
           }
           buffers[i].loaded = false;
         }
@@ -318,10 +87,8 @@ namespace machete {
     }
     
     void Music::Enqueue(MusicBuffer *buff) {
-      alSourceQueueBuffers(source, 1, &(buff->buffer));
-      int err = alGetError();
-      if (err != AL_NO_ERROR) {
-        std::cout << "ENQUEUE " << err << std::endl;
+      if (!TheSoundBackend->QueueBuffer(source, buff->buffer)) {
+        std::cout << "ENQUEUE " << std::endl;
       }
       buff->loaded = true;
       
@@ -333,10 +100,10 @@ namespace machete {
     void Music::Rewind() {
       if (!soundLoaded) return;
       
-      alSourceStop(source);
+      TheSoundBackend->Stop(source);
       
       if (pause == false) {
-        alSourcePlay(source);
+        TheSoundBackend->Play(source);
       }
     }
     
@@ -346,13 +113,11 @@ namespace machete {
       pause = false;
 
       int queued;
-      alGetSourcei(source, AL_BUFFERS_QUEUED, &queued);
+      queued = TheSoundBackend->QueuedBuffers(source);
       
       if (queued > 0) {
-        alSourcePlay(source);
-        int err = alGetError();
-        if (err != AL_NO_ERROR) {
-          std::cout << "PLAY " << err << std::endl;
+        if (!TheSoundBackend->Play(source)) {
+          std::cout << "PLAY " << std::endl;
         }
       }
     }
@@ -360,15 +125,15 @@ namespace machete {
     void Music::Pause() {
       if (!soundLoaded) return;
       
-      alSourcePause(source);
+      TheSoundBackend->Pause(source);
       
       pause = true;
     }
     
     void Music::Resume() {
       if (!soundLoaded) return;
-      
-      alSourcePlay(source);
+
+      TheSoundBackend->Play(source);
       
       pause = false;
     }
@@ -376,7 +141,7 @@ namespace machete {
     void Music::Stop() {
       if (!soundLoaded) return;
       
-      alSourceStop(source);
+      TheSoundBackend->Stop(source);
       
       pause = true;
       
@@ -384,16 +149,13 @@ namespace machete {
     }
     
     void Music::SetVolume(float volume) {
-       alSourcef(source, AL_GAIN, volume);
+      TheSoundBackend->SetVolume(source, volume);
     }
     
     bool Music::IsPlaying() {
       if (!soundLoaded) return false;
       
-      ALint val;
-      
-      alGetSourcei(source, AL_SOURCE_STATE, &val);
-      return val == AL_PLAYING;
+      return TheSoundBackend->IsPlaying(source);
     }
     
     void Music::Update(float time) {
@@ -407,11 +169,11 @@ namespace machete {
 
       int processed;
       
-      alGetSourcei(source, AL_BUFFERS_PROCESSED, &processed);
+      processed = TheSoundBackend->ProcessedBuffers(source);
       if (processed > 0) {
         while (processed-- > 0) {
           unsigned int unbuff;
-          alSourceUnqueueBuffers(source, 1, &unbuff);
+          TheSoundBackend->UnqueueBuffer(source, &unbuff);
         
           for (int i = 0; i < MAX_MUSIC_BUFFERS; i++) {
             if (buffers[i].buffer == unbuff) {
@@ -441,30 +203,20 @@ namespace machete {
     }
     
     void Music::CreateBuffers() {
-      alGenSources(1, &source);
-      alSourcef(source, AL_PITCH, 1.0f);
-      alSourcef(source, AL_GAIN, 0.25f);
-      alSourcei(source, AL_LOOPING, 0);
-      alSource3f(source, AL_POSITION, 0, 0, 0);
-      alSource3f(source, AL_VELOCITY, 0, 0, 0);
+      source = TheSoundBackend->CreateSource(0.25f);
       
       pause = true;
       
       for (int i = 0; i < MAX_MUSIC_BUFFERS; i++) {
-        alGenBuffers(1, &buffers[i].buffer);
+        buffers[i].buffer = TheSoundBackend->CreateBuffer();
         buffers[i].data = new char[MUSIC_BUFFER_SIZE];
         buffers[i].loaded = false;
       }
     }
     
-    Sound::Sound(ALuint buffer, unsigned int cat) {
-      alGenSources(1, &source);
-      alSourcei(source, AL_BUFFER, buffer);
-      alSourcef(source, AL_PITCH, 1.0f);
-      alSourcef(source, AL_GAIN, 1.0f);
-      alSourcei(source, AL_LOOPING, 0);
-      alSource3f(source, AL_POSITION, 0, 0, 0);
-      alSource3f(source, AL_VELOCITY, 0, 0, 0);
+    Sound::Sound(unsigned int buffer, unsigned int cat) {
+      source = TheSoundBackend->CreateSource(1.0f);
+      TheSoundBackend->BindBufferToSource(buffer, source);
       
       category = cat;
       
@@ -472,51 +224,48 @@ namespace machete {
     }
     
     Sound::~Sound() {
-      alDeleteSources(1, &source);
+      TheSoundBackend->DeleteSource(source);
       source = 0;
     }
     
-    void Sound::Rebind(ALuint buffer, unsigned int cat) {
-      alSourceStop(source);
-      alSourcei(source, AL_BUFFER, buffer);
+    void Sound::Rebind(unsigned int buffer, unsigned int cat) {
+      TheSoundBackend->Stop(source);
+      TheSoundBackend->BindBufferToSource(buffer, source);
       
       pause = true;
       category = cat;
     }
     
     void Sound::Rewind() {
-      alSourceRewind(source);
+      TheSoundBackend->Rewind(source);
     }
     
     void Sound::Play() {
-      alSourcePlay(source);
+      TheSoundBackend->Play(source);
       
       pause = false;
     }
     
     void Sound::Pause() {
-      alSourcePause(source);
+      TheSoundBackend->Pause(source);
       
       pause = true;
     }
     
     void Sound::Resume() {
-      alSourcePlay(source);
+      TheSoundBackend->Play(source);
       
       pause = false;
     }
     
     void Sound::Stop() {
-      alSourceStop(source);
+      TheSoundBackend->Stop(source);
       
       pause = true;
     }
     
     bool Sound::IsPlaying() {
-      ALint val;
-      
-      alGetSourcei(source, AL_SOURCE_STATE, &val);
-      return val == AL_PLAYING;
+      return TheSoundBackend->IsPlaying(source);
     }
     
     unsigned int Sound::GetCategory() const {
@@ -524,12 +273,10 @@ namespace machete {
     }
     
     void Sound::SetVolume(float volume) {
-      alSourcef(source, AL_GAIN, volume);
+      TheSoundBackend->SetVolume(source, volume);
     }
     
     SoundManager::SoundManager() {
-      device = NULL;
-      context = NULL;
     }
     
     SoundManager::~SoundManager() {
@@ -537,45 +284,15 @@ namespace machete {
     }
     
     bool SoundManager::Initialize() {
-      if (device != NULL || context != NULL) {
-        return true;
-      }
-      
-      device = alcOpenDevice(NULL);
-      
-      if (device == NULL) {
-        return false;
-      }
-      
-      context = alcCreateContext(device, NULL);
-      
-      alcMakeContextCurrent(context);
-      
-      ALfloat listPos[] = { 0, 0, 0 };
-      ALfloat listVel[] = { 0, 0, 0 };
-      ALfloat listOri[] = { 0, 0, -1, 0, 1, 0 };
-      
-      alListenerfv(AL_POSITION, listPos);
-      alListenerfv(AL_VELOCITY, listVel);
-      alListenerfv(AL_ORIENTATION, listOri);
-      
-      return true;
+      return backend::TheSoundBackend->Initialize();
     }
     
     void SoundManager::Detach() {
-      alcSuspendContext(context);
-      alcMakeContextCurrent(NULL);
-#ifdef TARGET_ANDROID
-      alPauseThread();
-#endif
+      backend::TheSoundBackend->Detach();
     }
     
     void SoundManager::Attach() {
-#ifdef TARGET_ANDROID
-      alResumeThread();
-#endif
-      alcMakeContextCurrent(context);
-      alcProcessContext(context);
+      backend::TheSoundBackend->Attach();
     }
     
     void SoundManager::Unload() {
@@ -589,34 +306,22 @@ namespace machete {
       
       delete singl;
       
-      Iterator<Tree<Str,ALuint>*>* buffs = buffers.Enumerate();
+      Iterator<Tree<Str,unsigned int>*>* buffs = buffers.Enumerate();
       buffs->Reset();
       while (buffs->Next()) {
-        ALuint buff = buffs->GetCurrent()->GetValue()->GetValue();
-        alDeleteBuffers(1, &buff);
+        unsigned int buff = buffs->GetCurrent()->GetValue()->GetValue();
+        TheSoundBackend->DeleteBuffer(buff);
       }
       
       delete buffs;
       
-      if (context != NULL) {
-        alcMakeContextCurrent(NULL);
-        
-        alcDestroyContext(context);
-        
-        context = NULL;
-      }
-      
-      if (device != NULL) {
-        alcCloseDevice(device);
-        
-        device = NULL;
-      }
+      backend::TheSoundBackend->Shutdown();
     }
     
     bool SoundManager::Preload(const char *name) {
-      Tree<Str, ALuint>* node = buffers.Seek(name);
+      Tree<Str, unsigned int>* node = buffers.Seek(name);
       if (node == NULL) {
-        ALuint buff = ThePlatform->LoadAudio(name);
+        unsigned int buff = TheSoundBackend->LoadSound(name);
         if (buff == 0) {
           return false;
         }
@@ -718,7 +423,7 @@ namespace machete {
     }
     
     unsigned int SoundManager::LoadBuffer(const char* name) {
-      Tree<Str, ALuint>* node = buffers.Seek(name);
+      Tree<Str, unsigned int>* node = buffers.Seek(name);
       if (node == NULL) {
         if (Preload(name) == false) {
           return 0;
@@ -771,7 +476,6 @@ namespace machete {
         return node->GetValue();
       }
     }
-
     
     MusicManager::MusicManager() {
       volume = 0.4f;
