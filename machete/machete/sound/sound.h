@@ -79,49 +79,13 @@ namespace machete {
        */
       bool PrepareMusic(const char *name);
       
-      //! Unload buffers.
-      void Unload();
-      
-      //! Preload all buffers.
-      void Preload();
-      
-      //! Pause Workers.
-      void PauseWorker();
-      
-      //! Resume Workers.
-      void ResumeWorker();
-      
     protected:
       
-      //! Create the sound buffers.
-      void CreateBuffers();
-      
-      //! Enqueue next packets.
-      /*!
-       \param buff The buffer to enqueue.
-       */
-      void Enqueue(MusicBuffer* buff);
-      
-      //! The ALuint source.
+      //! The music source.
       unsigned int source;
       
       //! Detects if it's paused.
       bool pause;
-      
-      //! Music format.
-      int format;
-      
-      //! Sound loaded.
-      bool soundLoaded;
-      
-      //! First run.
-      bool firstRun;
-      
-      //! Music buffers.
-      MusicBuffer buffers[MAX_MUSIC_BUFFERS];
-      
-      //! Music stream worker.
-      MusicStreamWorker *worker;
       
     };
     
@@ -293,11 +257,6 @@ namespace machete {
       
     };
     
-    enum MusicFlag {
-      PlayInstant = 0,
-      PlayFade = 1
-    };
-    
     //! A music manager.
     class MusicManager {
     public:
@@ -311,10 +270,8 @@ namespace machete {
       //! Play a music file on stream mode.
       /*!
        \param file File name to play.
-       \param flags Music flags.
-       \param fade Fade time.
        */
-      void Play(const char *file, unsigned int flags, float fade);
+      void Play(const char *file);
       
       //! Change the global music volume.
       /*!
@@ -341,7 +298,7 @@ namespace machete {
       void Pause();
       
       //! Resume the playing.
-      void Resume(unsigned int flags, float time);
+      void Resume();
       
     protected:
       
@@ -349,22 +306,7 @@ namespace machete {
       float volume;
       
       //! Music Buffer 1.
-      Music* buff1;
-      
-      //! Music Buffer 2.
-      Music* buff2;
-      
-      //! Current playing Music.
-      Music* current;
-      
-      //! Fading music.
-      Music* fading;
-      
-      //! Current elapsed time used for fading.
-      float time;
-      
-      //! Maximum fade time.
-      float maxTime;
+      Music* music;
       
       //! Current music name.
       Str currentMusicName;

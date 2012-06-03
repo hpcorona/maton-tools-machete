@@ -12,211 +12,61 @@ namespace machete {
   namespace sound {
     
     Music::Music() {
-      firstRun = true;
-      soundLoaded = false;
-      
-      worker = new MusicStreamWorker();
-      machete::thread::TheThreadMgr->Start(worker);
-      
-      CreateBuffers();
+      source = 0;
+      pause = true;
     }
     
     Music::~Music() {
-      worker->Shutdown();
-      delete worker;
-      
-      for (int i = 0; i < MAX_MUSIC_BUFFERS; i++) {
-        TheSoundBackend->UnqueueBuffer(source, &(buffers[i].buffer));
-        TheSoundBackend->DeleteBuffer(buffers[i].buffer);
-        delete buffers[i].data;
-      }
-
-      TheSoundBackend->DeleteSource(source);
-    }
-    
-    void Music::PauseWorker() {
-      if (worker->IsAlive()) {
-        worker->Shutdown();
-      }
-    }
-    
-    void Music::ResumeWorker() {
-      if (worker->IsAlive()) return;
-      
-      machete::thread::TheThreadMgr->Start(worker);
+      TheSoundBackend->StreamDelete(source);
     }
     
     bool Music::PrepareMusic(const char *name) {
       Stop();
       
-      soundLoaded = worker->PrepareMusic(name);
-
-      format = worker->GetFormat();
-      firstRun = true;
+      source = TheSoundBackend->StreamCreate(name);
       
-      return soundLoaded;
-    }
-    
-    void Music::Unload() {
-      while (worker->TryLock()) {}
-      while (worker->GetDoneResource()->TryLock()) {}
-      
-      worker->GetDoneTasks()->RemoveAll();
-      
-      for (int i = 0; i < MAX_MUSIC_BUFFERS; i++) {
-        if (buffers[i].loaded) {
-          unsigned int unbuff = buffers[i].buffer;
-          if (TheSoundBackend->UnqueueBuffer(source, &unbuff) == false) {
-            std::cout << "UNLOAD " << std::endl;
-          }
-          buffers[i].loaded = false;
-        }
-      }
-      
-      worker->GetDoneResource()->Unlock();
-      worker->Unlock();
-    }
-    
-    void Music::Preload() {
-      for (int i = 0; i < MAX_MUSIC_BUFFERS; i++) {
-        MusicBuffer* buff = &buffers[i];
-        worker->Push(buff);
-      }
-      
-      worker->Work();
-    }
-    
-    void Music::Enqueue(MusicBuffer *buff) {
-      if (!TheSoundBackend->QueueBuffer(source, buff->buffer)) {
-        std::cout << "ENQUEUE " << std::endl;
-      }
-      buff->loaded = true;
-      
-      if (pause == false && !IsPlaying()) {
-        Play();
-      }
+      return source != 0;
     }
     
     void Music::Rewind() {
-      if (!soundLoaded) return;
-      
-      TheSoundBackend->Stop(source);
-      
-      if (pause == false) {
-        TheSoundBackend->Play(source);
-      }
+      TheSoundBackend->StreamRewind(source);
     }
     
     void Music::Play() {
-      if (!soundLoaded) return;
-
-      pause = false;
-
-      int queued;
-      queued = TheSoundBackend->QueuedBuffers(source);
-      
-      if (queued > 0) {
-        if (!TheSoundBackend->Play(source)) {
-          std::cout << "PLAY " << std::endl;
-        }
-      }
+      TheSoundBackend->StreamPlay(source);
     }
     
     void Music::Pause() {
-      if (!soundLoaded) return;
-      
-      TheSoundBackend->Pause(source);
-      
-      pause = true;
+      TheSoundBackend->StreamPause(source);
     }
     
     void Music::Resume() {
-      if (!soundLoaded) return;
-
-      TheSoundBackend->Play(source);
-      
-      pause = false;
+      TheSoundBackend->StreamPlay(source);
     }
     
     void Music::Stop() {
-      if (!soundLoaded) return;
-      
-      TheSoundBackend->Stop(source);
-      
-      pause = true;
-      
-      Rewind();
+      TheSoundBackend->StreamStop(source);
     }
     
     void Music::SetVolume(float volume) {
-      TheSoundBackend->SetVolume(source, volume);
+      TheSoundBackend->StreamSetVolume(volume);
     }
     
     bool Music::IsPlaying() {
-      if (!soundLoaded) return false;
-      
-      return TheSoundBackend->IsPlaying(source);
+      return TheSoundBackend->StreamIsPlaying(source);
     }
     
     void Music::Update(float time) {
-      if (!soundLoaded) return;
       
-      if (firstRun) {
-        firstRun = false;
-        worker->Work();
-        return;
-      }
-
-      int processed;
-      
-      processed = TheSoundBackend->ProcessedBuffers(source);
-      if (processed > 0) {
-        while (processed-- > 0) {
-          unsigned int unbuff;
-          TheSoundBackend->UnqueueBuffer(source, &unbuff);
-        
-          for (int i = 0; i < MAX_MUSIC_BUFFERS; i++) {
-            if (buffers[i].buffer == unbuff) {
-              buffers[i].loaded = false;
-              MusicBuffer* buff = &buffers[i];
-              worker->Push(buff);
-              break;
-            }
-          }
-        }
-        
-        worker->Work();
-      }
-      
-      while (!worker->GetDoneResource()->TryLock()) {}
-      machete::data::Iterator<MusicBuffer*> *done = worker->GetDoneTasks();
-      done->Reset();
-      while (done->Next()) {
-        Enqueue(done->GetCurrent()->GetValue());
-      }
-      done->RemoveAll();
-      worker->GetDoneResource()->Unlock();
     }
     
     bool Music::IsLoaded() const {
-      return soundLoaded;
-    }
-    
-    void Music::CreateBuffers() {
-      source = TheSoundBackend->CreateSource(0.25f);
-      
-      pause = true;
-      
-      for (int i = 0; i < MAX_MUSIC_BUFFERS; i++) {
-        buffers[i].buffer = TheSoundBackend->CreateBuffer();
-        buffers[i].data = new char[MUSIC_BUFFER_SIZE];
-        buffers[i].loaded = false;
-      }
+      return source != 0;
     }
     
     Sound::Sound(unsigned int buffer, unsigned int cat) {
-      source = TheSoundBackend->CreateSource(1.0f);
-      TheSoundBackend->BindBufferToSource(buffer, source);
+      source = TheSoundBackend->SoundCreate(buffer);
+      TheSoundBackend->SoundSetVolume(source, 1.0f);
       
       category = cat;
       
@@ -224,48 +74,48 @@ namespace machete {
     }
     
     Sound::~Sound() {
-      TheSoundBackend->DeleteSource(source);
+      TheSoundBackend->SourceDelete(source);
       source = 0;
     }
     
     void Sound::Rebind(unsigned int buffer, unsigned int cat) {
-      TheSoundBackend->Stop(source);
-      TheSoundBackend->BindBufferToSource(buffer, source);
+      TheSoundBackend->SoundStop(source);
+      TheSoundBackend->SourceBind(source, buffer);
       
       pause = true;
       category = cat;
     }
     
     void Sound::Rewind() {
-      TheSoundBackend->Rewind(source);
+      TheSoundBackend->SoundRewind(source);
     }
     
     void Sound::Play() {
-      TheSoundBackend->Play(source);
+      TheSoundBackend->SoundPlay(source);
       
       pause = false;
     }
     
     void Sound::Pause() {
-      TheSoundBackend->Pause(source);
+      TheSoundBackend->SoundPause(source);
       
       pause = true;
     }
     
     void Sound::Resume() {
-      TheSoundBackend->Play(source);
+      TheSoundBackend->SoundPlay(source);
       
       pause = false;
     }
     
     void Sound::Stop() {
-      TheSoundBackend->Stop(source);
+      TheSoundBackend->SoundStop(source);
       
       pause = true;
     }
     
     bool Sound::IsPlaying() {
-      return TheSoundBackend->IsPlaying(source);
+      return TheSoundBackend->SoundIsPlaying(source);
     }
     
     unsigned int Sound::GetCategory() const {
@@ -273,7 +123,7 @@ namespace machete {
     }
     
     void Sound::SetVolume(float volume) {
-      TheSoundBackend->SetVolume(source, volume);
+      TheSoundBackend->SoundSetVolume(source, volume);
     }
     
     SoundManager::SoundManager() {
@@ -288,11 +138,11 @@ namespace machete {
     }
     
     void SoundManager::Detach() {
-      backend::TheSoundBackend->Detach();
+      backend::TheSoundBackend->Pause();
     }
     
     void SoundManager::Attach() {
-      backend::TheSoundBackend->Attach();
+      backend::TheSoundBackend->Resume();
     }
     
     void SoundManager::Unload() {
@@ -310,7 +160,7 @@ namespace machete {
       buffs->Reset();
       while (buffs->Next()) {
         unsigned int buff = buffs->GetCurrent()->GetValue()->GetValue();
-        TheSoundBackend->DeleteBuffer(buff);
+        TheSoundBackend->BufferDelete(buff);
       }
       
       delete buffs;
@@ -321,7 +171,7 @@ namespace machete {
     bool SoundManager::Preload(const char *name) {
       Tree<Str, unsigned int>* node = buffers.Seek(name);
       if (node == NULL) {
-        unsigned int buff = TheSoundBackend->LoadSound(name);
+        unsigned int buff = TheSoundBackend->SoundLoad(name);
         if (buff == 0) {
           return false;
         }
@@ -479,77 +329,46 @@ namespace machete {
     
     MusicManager::MusicManager() {
       volume = 0.4f;
-      current = NULL;
-      fading = NULL;
-      time = 0;
-      
-      buff1 = NULL;
-      buff2 = NULL;
+      music = NULL;
       
       pausedMusicName = "";
     }
     
     MusicManager::~MusicManager() {
-      delete buff1;
-      delete buff2;
+      delete music;
     }
     
-    void MusicManager::Play(const char *file, unsigned int flags, float fade) {
+    void MusicManager::Play(const char *file) {
       if (currentMusicName == file) {
         return;
       }
       
-      if (buff1 == NULL || buff2 == NULL) {
-        buff1 = new Music();
-        buff2 = new Music();
-        
-        current = buff1;
-        fading = buff2;
+      if (music == NULL) {
+        music = new Music();
       }
       
       currentMusicName = file;
       pausedMusicName = "";
       
-      fading->Stop();
-      fading->Unload();
-      fading->PrepareMusic(file);
-      
-      if (flags == PlayInstant || fade <= 0) {
-        current->Stop();
-        current->Unload();
-        fading->SetVolume(volume);
-        fading->Preload();
-        fading->Play();
-        
-        maxTime = 0;
-        time = 0;
-      } else {
-        maxTime = fade;
-        time = fade;
-        
-        current->SetVolume(volume);
-        fading->SetVolume(0);
-        fading->Preload();
-        fading->Play();
-      }
-      
-      Music* mid = current;
-      current = fading;
-      fading = mid;
+      music->Stop();
+      music->PrepareMusic(file);
+      music->SetVolume(volume);
+      music->Play();
     }
     
     void MusicManager::SetVolume(float volume) {
-      if (this->volume == 0 && volume != 0 && current != NULL && current->IsPlaying() == false) {
-        current->Play();
+      if (this->volume == 0 && volume != 0 && music != NULL && music->IsPlaying() == false) {
+        music->Play();
       }
       
       this->volume = volume;
+      if (music != NULL) {
+        music->SetVolume(volume);
+      }
       
-      if (time == 0 && current != NULL) {
-        current->SetVolume(volume);
-        
-        if (volume == 0) {
-          current->Stop();
+      if (volume == 0) {
+        if (music != NULL) {
+          music->Stop();
         }
       }
     }
@@ -559,40 +378,18 @@ namespace machete {
     }
     
     void MusicManager::Update(float time) {
-      if (buff1 == NULL || buff2 == NULL) return;
-      
-      if (this->time > 0) {
-        this->time -= time;
-        if (this->time <= 0) {
-          this->time = 0;
-          fading->Stop();
-          fading->Unload();
-        }
-        
-        float factor = this->time / maxTime;
-        
-        current->SetVolume(volume * (1 - factor));
-        fading->SetVolume(volume * factor);
-      }
+      if (music == NULL) return;
       
       if (volume == 0) return;
       
-      current->Update(time);
+      music->Update(time);
       
-      if (fading->IsPlaying()) {
-        fading->Update(time);
-      }
+      TheSoundBackend->Update(time);
     }
     
     void MusicManager::Stop() {
-      if (fading != NULL) {
-        fading->Stop();
-        fading->Unload();
-      }
-      
-      if (current != NULL) {
-        current->Stop();
-        current->Unload();
+      if (music != NULL) {
+        music->Stop();
       }
       
       currentMusicName = "";
@@ -610,32 +407,16 @@ namespace machete {
       Stop();
       
       pausedMusicName = pmusic;
-      
-      if (fading != NULL) {
-        fading->PauseWorker();
-      }
-      
-      if (current != NULL) {
-        current->PauseWorker();
-      }
     }
     
-    void MusicManager::Resume(unsigned int flags, float time) {
+    void MusicManager::Resume() {
       if (pausedMusicName == "") {
         return;
       }
       
-      if (fading != NULL) {
-        fading->ResumeWorker();
-      }
-      
-      if (current != NULL) {
-        current->ResumeWorker();
-      }
-      
       char mname[50];
       pausedMusicName.GetChars(mname, 50);
-      Play(mname, flags, time);
+      Play(mname);
     }
     
     SoundManager* TheSoundMgr = NULL;
