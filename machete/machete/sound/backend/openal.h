@@ -16,6 +16,12 @@
 #include <OpenAL/alc.h>
 #include <OpenAL/oalStaticBufferExtension.h>
 
+#elif TARGET_ANDROID
+
+#include <AL/al.h>
+#include <AL/alc.h>
+#define alBufferDataStatic alBufferData
+
 #endif
 
 #include "../../platform/platform.h"
@@ -44,11 +50,25 @@ namespace machete {
         bool loaded;              //<! If the buffer is loaded.
         
       };
+	  
+#ifdef TARGET_ANDROID
+			size_t android_fread(void *ptr, size_t size, size_t nmemb, void *datasource);
+			int android_fseek(void *datasource, ogg_int64_t offset, int whence);
+			int android_fclose(void *datasource);
+			long android_ftell(void *datasource);
+#endif
       
       //! Internal class to manage background music streaming.
       class MusicStreamWorker : public SequenceWorker<MusicBuffer*> {
       public:
         
+#ifdef TARGET_ANDROID
+	      friend size_t android_fread(void *ptr, size_t size, size_t nmemb, void *datasource);
+	      friend int android_fseek(void *datasource, ogg_int64_t offset, int whence);
+	      friend int android_fclose(void *datasource);
+	      friend long android_ftell(void *datasource);
+#endif
+		
         //! Creator.
         MusicStreamWorker();
         
@@ -100,6 +120,17 @@ namespace machete {
         //! Music format.
         int format;
         
+#ifdef TARGET_ANDROID
+	      //! Ogg Vorbis Callbacks for in-APK streaming.
+	      ov_callbacks *android_ogg_callbacks;
+
+	      //! Start of the file.
+	      long ogg_start;
+
+	      //! Maximum position within the file.
+	      long ogg_maxPos;
+#endif
+				
       };
       
       class OpenALSoundBackend : public SoundBackend {

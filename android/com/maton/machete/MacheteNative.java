@@ -11,6 +11,8 @@ public class MacheteNative {
 			System.loadLibrary("game");
 			GL_VERSION = 2;
 		} catch (Throwable e) {
+			e.printStackTrace();
+			
 			Log.i("machete", "Fallback into OpenGLES 1.1...");
 			System.loadLibrary("game11");
 			GL_VERSION = 1;

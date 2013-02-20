@@ -36,6 +36,8 @@
 
 #ifdef TARGET_IOS
 #include "sound/backend/openal.h"
+#elif TARGET_ANDROID
+#include "sound/backend/openal.h"
 #endif
 
 //! The main namespace. All the escential definitions of the engine are here.
@@ -143,6 +145,8 @@ namespace machete {
     
 #ifdef TARGET_IOS
     sound::backend::TheSoundBackend = new sound::backend::OpenALSoundBackend();
+#elif TARGET_ANDROID
+		sound::backend::TheSoundBackend = new sound::backend::OpenALSoundBackend();
 #endif
     
     sound::TheSoundMgr = new sound::SoundManager();

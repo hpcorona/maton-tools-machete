@@ -12,6 +12,7 @@ project.addFiles(["machete/widget/extended.cpp",
 	"machete/storage/sqlite3.c",
 	"machete/storage/sql.cpp",
 	"machete/sound/sound.cpp",
+	"machete/sound/backend/backend.cpp",
 	"machete/platform/platform.cpp",
 	"machete/input/touch.cpp",
 	"machete/graphics/draw.cpp",
@@ -31,6 +32,7 @@ project.addLdLibs(["GLESv2", "dl", "log", "z"]);
 project.addConfigurator("android", null, function(_proj) {
 	_proj.addDefines("TARGET_ANDROID");
 	_proj.addFiles(["machete/android/com_maton_machete_MacheteNative.cpp",
+		"machete/sound/backend/openal.cpp",
 		"machete/android/utils.cpp",
 		"machete/android/analytics.cpp",
 		"machete/android/AndroidPlatform.cpp"]);
@@ -40,6 +42,7 @@ project.addConfigurator("android", null, function(_proj) {
 
 project.addConfigurator("ios", null, function(_proj) {
 	_proj.addDefines("TARGET_IOS");
+	_proj.addFiles(["machete/sound/backend/openal.cpp"]);
 });
 
 project.addConfigurator(null, "debug", function(_proj) {

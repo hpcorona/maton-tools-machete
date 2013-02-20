@@ -26,18 +26,84 @@ namespace machete {
         return;
       }
 #endif
+
+#ifdef TARGET_ANDROID
+	    size_t android_fread(void *ptr, size_t size, size_t nmemb, void *datasource) {
+	      MusicStreamWorker* worker = static_cast<MusicStreamWorker*>(datasource);
+	      FILE* handle = worker->handle;
+      
+	      long total = size * nmemb;
+	      long pos = ftell(handle);
+	      if (pos >= worker->ogg_maxPos) {
+	        return 0;
+	      }
+      
+	      if (pos + total >= worker->ogg_maxPos) {
+	        total = worker->ogg_maxPos - pos;
+        
+	        return fread(ptr, total, 1, handle);
+	      }
+      
+	      return fread(ptr, size, nmemb, handle);
+	    }
+    
+	    int android_fseek(void *datasource, ogg_int64_t offset, int whence) {
+	      MusicStreamWorker* worker = static_cast<MusicStreamWorker*>(datasource);
+	      FILE* handle = worker->handle;
+
+	      if (whence == SEEK_END) {
+	        return fseek(handle, worker->ogg_maxPos, SEEK_SET);
+	      } else if (whence == SEEK_CUR) {
+	        long pos = ftell(handle);
+	        if (pos + offset > worker->ogg_maxPos) {
+	          return 1;
+	        }
+        
+	        return fseek(handle, offset, SEEK_CUR);
+	      }
+      
+	      return fseek(handle, worker->ogg_start + offset, whence);
+	    }
+    
+	    int android_fclose(void *datasource) {
+	      MusicStreamWorker* worker = static_cast<MusicStreamWorker*>(datasource);
+	      FILE* handle = worker->handle;
+      
+	      return fclose(handle);
+	    }
+    
+	    long android_ftell(void *datasource) {
+	      MusicStreamWorker* worker = static_cast<MusicStreamWorker*>(datasource);
+	      FILE* handle = worker->handle;
+      
+	      return ftell(handle) - worker->ogg_start;
+	    }
+#endif
+
       
       MusicStreamWorker::MusicStreamWorker() {
         name = new char[80];
         name[0] = 0;
         
         loaded = false;
+				
+#ifdef TARGET_ANDROID
+	      android_ogg_callbacks = new ov_callbacks();
+	      android_ogg_callbacks->read_func = android_fread;
+	      android_ogg_callbacks->seek_func = android_fseek;
+	      android_ogg_callbacks->close_func = android_fclose;
+	      android_ogg_callbacks->tell_func = android_ftell;
+#endif
       }
       
       MusicStreamWorker::~MusicStreamWorker() {
         delete name;
         
         CloseOgg();
+				
+#ifdef TARGET_ANDROID
+	      delete android_ogg_callbacks;
+#endif
       }
       
       void MusicStreamWorker::Service() {
@@ -171,7 +237,14 @@ namespace machete {
           return;
         }
         
-        int result = ov_open(handle, &oggStream, NULL, (long)size);
+#ifdef TARGET_ANDROID
+	      ogg_start = ftell(handle);
+	      ogg_maxPos = ftell(handle) + size;
+
+	      int result = ov_open_callbacks(this, &oggStream, NULL, 0, *android_ogg_callbacks);
+#elif TARGET_IOS
+	      int result = ov_open(handle, &oggStream, NULL, (long)size);
+#endif
         if (result < 0) {
           ThePlatform->CloseFile(handle);
           return;
@@ -288,9 +361,15 @@ namespace machete {
       void OpenALSoundBackend::Pause() {
         alcSuspendContext(context);
         alcMakeContextCurrent(NULL);
+#ifdef TARGET_ANDROID
+	      alPauseThread();
+#endif
       }
       
       void OpenALSoundBackend::Resume() {
+#ifdef TARGET_ANDROID
+	      alResumeThread();
+#endif
         alcMakeContextCurrent(context);
         alcProcessContext(context);
       }
