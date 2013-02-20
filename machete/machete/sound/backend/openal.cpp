@@ -151,12 +151,13 @@ namespace machete {
       }
       
       void MusicStreamWorker::Clear() {
+        while(!TryLock()) {}
+				
         while(!workDone->TryLock()) {}
         done->RemoveAll();
         workDone->NotifyAll();
         workDone->Unlock();
-        
-        while(!TryLock()) {}
+				
         queue->RemoveAll();
         toDo->RemoveAll();
         NotifyAll();
