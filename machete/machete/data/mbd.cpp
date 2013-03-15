@@ -9,17 +9,47 @@
 #include "mbd.h"
 #include <stdarg.h>
 
+#ifdef TARGET_EMSCRIPTEN
+#define ENDIAN_SWAP
+#define ADDRESS_FIX
+#endif
+
 using namespace machete::platform;
 using namespace machete::math;
 
 namespace machete { 
   namespace data {
+
+#ifdef ENDIAN_SWAP
+		unsigned int change_endian(unsigned int x) {
+			return (unsigned int)__builtin_bswap32((int)x);
+		}
+#endif
+		
+		unsigned int address_value(const char* address) {
+#ifdef ADDRESS_FIX
+			unsigned int c1 = (unsigned char)address[0];
+			unsigned int c2 = (unsigned char)address[1];
+			unsigned int c3 = (unsigned char)address[2];
+			unsigned int c4 = (unsigned char)address[3];
+			unsigned int value = (c1 << 24) | (c2 << 16) | (c3 << 8) | c4;
+#else
+			unsigned int value = *(unsigned int *)(address);
+#endif
+#ifdef ENDIAN_SWAP
+			return change_endian(value);
+#else
+			return value;
+#endif
+		}
+		
+		#define HEADER_SIZE 19
     
     Mbd::Mbd(const char *file) {
       char *data = NULL;
       
       ThePlatform->LoadFile(file, &data);
-      
+			
       ParseFile(data);
       
       delete data;
@@ -169,43 +199,43 @@ namespace machete {
       
       if (all[0] != 'M' || all[1] != 'B' || all[2] != 'D') return;
       
-      unsigned int headerSize = 19;
+      unsigned int addrSize = address_value(all + HEADER_SIZE);
+      unsigned int dictionarySize = address_value(all + HEADER_SIZE + 4);
+
+			unsigned int dataSize = address_value(all + HEADER_SIZE + 8);
       
-      unsigned int addrSize = *(unsigned int *)(all + headerSize);
-      unsigned int dictionarySize = *(unsigned int *)(all + headerSize + 4);
+      addr = (char *)(all + HEADER_SIZE + 12);
+      dictionary = (char *)(all + HEADER_SIZE + 12 + addrSize);
+      data = (char *)(all + HEADER_SIZE + 12 + addrSize + dictionarySize);
       
-      addr = (char *)(all + headerSize + 12);
-      dictionary = (char *)(all + headerSize + 12 + addrSize);
-      data = (char *)(all + headerSize + 12 + addrSize + dictionarySize);
-      
-      unsigned int addrCount = *(unsigned int *)(addr);
+      unsigned int addrCount = address_value(addr);
       addr += 4;
       
-      unsigned int dictionaryCount = *(unsigned int*)(dictionary);
+      unsigned int dictionaryCount = address_value(dictionary);
       dictionary += 4;
-      
+			
       for (unsigned int i = 0; i < addrCount; i++) {
         Str *v;
         
         unsigned int xoff = ReadString(addr, &v);
-        unsigned int val = *(unsigned int *)(addr + xoff);
+        unsigned int val = address_value(addr + xoff);
         
         addr += xoff + 4;
         
         counts.Add(*v, val);
-        
+				
         delete v;
       }
-      
+
       for (unsigned int i = 0; i < dictionaryCount; i++) {
         Str *k, *v;
         
         unsigned int koff = ReadString(dictionary, &k);
-        unsigned int address = *(unsigned int *)(dictionary + koff);
+        unsigned int address = address_value(dictionary + koff);
         
         dictionary += koff + 4;
         
-        ReadString((char*)(data + address), &v);
+        ReadString((const char*)(data + address), &v);
         
         dict.Add(*k, *v);
         
@@ -215,11 +245,12 @@ namespace machete {
     }
     
     unsigned int Mbd::ReadString(const char* data, Str **v) const {
-      unsigned int size = *(unsigned int *)(data);
-      
+      unsigned int size = address_value(data);
+			
       data += 4;
       
       *v = new Str(size);
+			
       (*v)->Append(data, 0, size);
       
       return size + 4;

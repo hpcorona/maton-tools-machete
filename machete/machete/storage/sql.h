@@ -18,6 +18,10 @@
 
 #include "sqlite3.h"
 
+#elif TARGET_EMSCRIPTEN
+
+#include "sqlite3.h"
+
 #endif
 
 #include "../data/str.h"

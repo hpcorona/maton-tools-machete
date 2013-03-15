@@ -257,9 +257,9 @@ namespace machete {
         
         int s = CharSizeAt(idx);
         if (s == 3) {
-          c = chars[idx] + chars[idx+1] >> 8 + chars[idx+2] >> 16;
+          c = chars[idx] + (chars[idx+1] >> 8) + (chars[idx+2] >> 16);
         } else if (s == 2) {
-          c = chars[idx] + chars[idx+1] >> 8;
+          c = chars[idx] + (chars[idx+1] >> 8);
         } else {
           c = chars[idx];
         }

@@ -36,7 +36,7 @@ namespace machete {
       
 #ifdef MACHETE_STORAGE_DEBUG
       if (result != SQLITE_OK) {
-        std::cout << "ERROR IN SQL:" << std::endl << "\t" << pqry << std::endl;
+        std::cout << "ERROR IN SQL:" << std::endl << "\t" << pqry << std::endl << sqlite3_errmsg(database) << std::endl;
       } else {
         std::cout << "SUCCESS:" << std::endl << "\t" << pqry << std::endl;
       }
@@ -55,7 +55,7 @@ namespace machete {
       
 #ifdef MACHETE_STORAGE_DEBUG
       if (result != SQLITE_OK) {
-        std::cout << "ERROR IN SQL:" << std::endl << "\t" << pqry << std::endl;
+        std::cout << "ERROR IN SQL:" << std::endl << "\t" << pqry << std::endl << sqlite3_errmsg(database) << std::endl;
       } else {
         std::cout << "SUCCESS:" << std::endl << "\t" << pqry << std::endl;
       }
@@ -118,10 +118,15 @@ namespace machete {
     Database::Database(const char* name) {
       db = NULL;
       
+#ifdef TARGET_EMSCRIPTEN
+			sqlite3_open(":memory:", &db);
+#else
       char *full = ThePlatform->WritableFile(name);
+			
       sqlite3_open(full, &db);
       
       delete full;
+#endif
     }
     
     Database::~Database() {

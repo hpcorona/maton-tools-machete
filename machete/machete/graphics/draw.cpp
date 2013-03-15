@@ -155,7 +155,7 @@ namespace machete {
       lastTexBind = 0;
       renderer = NULL;
       
-#ifdef TARGET_ANDROID
+#ifndef TARGET_IOS
       if (target == TargetTexture) {
 #endif
 #ifndef OPENGL_11
@@ -165,7 +165,7 @@ namespace machete {
         glGenFramebuffersOES(1, &framebuffer);
         CheckGLError("glGenFramebuffersOES");
 #endif
-#ifdef TARGET_ANDROID
+#ifndef TARGET_IOS
       }
 #endif
       
@@ -178,7 +178,7 @@ namespace machete {
 #endif
       
       if (target == TargetScreen) {
-#ifdef TARGET_IOS
+#ifndef TARGET_ANDROID
         glGenRenderbuffers(1, &renderbuffer);
         CheckGLError("glGenRenderbuffers");
         glBindRenderbuffer(GL_RENDERBUFFER, renderbuffer);

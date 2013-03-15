@@ -149,6 +149,8 @@ namespace machete {
         FontChar *fchar = new FontChar(Vec2(px, py), Vec2(w, h), Vec2(x / texture->width, y / texture->height), Vec2(x1 / texture->width, y1 / texture->height), texture);
 #elif TARGET_ANDROID
         FontChar *fchar = new FontChar(Vec2(px, py), Vec2(w, h), Vec2(x / texture->width, 1 - (y / texture->height)), Vec2(x1 / texture->width, 1 - (y1 / texture->height)), texture);
+#elif TARGET_EMSCRIPTEN
+        FontChar *fchar = new FontChar(Vec2(px, py), Vec2(w, h), Vec2(x / texture->width, y / texture->height), Vec2(x1 / texture->width, y1 / texture->height), texture);
 #endif
         
         fchar->SetXAdvance(xa);

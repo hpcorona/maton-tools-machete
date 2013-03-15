@@ -120,7 +120,9 @@ namespace machete {
     
     ThreadManager::ThreadManager() {
       pthread_attr_init(&attr);
+#ifndef TARGET_EMSCRIPTEN
       pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);
+#endif
     }
     
     ThreadManager::~ThreadManager() {

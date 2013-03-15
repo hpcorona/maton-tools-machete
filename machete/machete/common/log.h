@@ -27,13 +27,18 @@
 #define  LOGI(...)  __android_log_print(ANDROID_LOG_INFO,LOG_TAG,__VA_ARGS__)
 #define  LOGE(...)  __android_log_print(ANDROID_LOG_ERROR,LOG_TAG,__VA_ARGS__)
 
+#elif TARGET_EMSCRIPTEN
+
+#include <iostream>
+#include <stdio.h>
+
 #endif
 
 namespace machete {
 	
 	//! Common classes used by all the engine
   namespace common {
-    
+		
 		//! Log text to the console
 		/*!
 		 \param msg Message to log. It can be formatted with %1, %2, etc...
@@ -71,6 +76,8 @@ namespace machete {
       
 #ifdef TARGET_ANDROID
       LOGI(c);
+#elif TARGET_EMSCRIPTEN
+			printf("%s\n", c);
 #else
       std::cout << c << std::endl;
 #endif

@@ -25,6 +25,9 @@
 #elif TARGET_IOS
 #include <OpenGLES/ES2/gl.h>
 #include <OpenGLES/ES2/glext.h>
+#elif TARGET_EMSCRIPTEN
+#include <GLES2/gl2.h>
+#include <GLES2/gl2ext.h>
 #endif
 
 #include "../data/str.h"
